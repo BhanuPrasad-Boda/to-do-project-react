@@ -8,11 +8,29 @@ const bcrypt = require("bcryptjs");
 // ===================== REGISTER =====================
 router.post("/register", async (req, res) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.Password, 10);
+    const { UserId, UserName, Password, Email, Mobile } = req.body;
+
+    // Check if user already exists
+    const existingUser = await User.findOne({ 
+      $or: [
+        { UserId },
+        { Email },
+        { Mobile }
+      ]
+    });
+
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists with same UserId, Email or Mobile" });
+    }
+
+    const hashedPassword = await bcrypt.hash(Password, 10);
 
     const user = new User({
-      ...req.body,
-      Password: hashedPassword
+      UserId,
+      UserName,
+      Password: hashedPassword,
+      Email,
+      Mobile
     });
 
     await user.save();
@@ -23,44 +41,40 @@ router.post("/register", async (req, res) => {
     });
 
   } catch (err) {
-    if (err.code === 11000) {
-      return res.status(400).json({ message: "User already exists" });
-    }
+    console.error(err);
     res.status(500).json({ message: "Registration failed" });
   }
 });
 
-
 // ===================== LOGIN =====================
 router.post("/login", async (req, res) => {
   try {
-    const user = await User.findOne({ UserId: req.body.UserId });
+    const { UserId, Password } = req.body;
+
+    const user = await User.findOne({ UserId });
     if (!user) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const isMatch = await bcrypt.compare(req.body.Password, user.Password);
+    const isMatch = await bcrypt.compare(Password, user.Password);
     if (!isMatch) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
+    // Send only necessary fields for cookies
     res.json({
-      message: "Login successful",
-      user: {
-        UserId: user.UserId,
-        UserName: user.UserName,
-        Email: user.Email
-      }
+      UserId: user.UserId,
+      UserName: user.UserName,
+      Email: user.Email
     });
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Login error" });
   }
 });
 
-
-
-// ===================== FORGOT PASSWORD (using Mobile) =====================
+// ===================== FORGOT PASSWORD =====================
 router.post("/forgot-password", async (req, res) => {
   try {
     const { Mobile } = req.body;
@@ -70,12 +84,12 @@ router.post("/forgot-password", async (req, res) => {
 
     const token = crypto.randomBytes(32).toString("hex");
     user.resetToken = token;
-    user.resetTokenExpiry = Date.now() + 15 * 60 * 1000;
+    user.resetTokenExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes
     await user.save();
 
     const resetLink = `${process.env.CLIENT_URL}/reset-password/${token}`;
 
-    sendEmail(
+    await sendEmail(
       user.Email,
       "Reset Password - ToDo App",
       `<p>Reset link:</p><a href="${resetLink}">${resetLink}</a>`
@@ -84,12 +98,10 @@ router.post("/forgot-password", async (req, res) => {
     res.json({ message: "Reset link sent to email" });
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Error sending reset link" });
   }
 });
-
-
-
 
 // ===================== RESET PASSWORD =====================
 router.post("/reset-password/:token", async (req, res) => {
@@ -109,32 +121,32 @@ router.post("/reset-password/:token", async (req, res) => {
     res.json({ message: "Password reset successful" });
 
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Reset failed" });
   }
 });
 
-
-// ===================== FORGOT USERID (using Mobile) =====================
-router.post("/reset-password/:token", async (req, res) => {
+// ===================== FORGOT USERID =====================
+router.post("/forgot-userid", async (req, res) => {
   try {
-    const user = await User.findOne({
-      resetToken: req.params.token,
-      resetTokenExpiry: { $gt: Date.now() }
-    });
+    const { Mobile } = req.body;
 
-    if (!user) return res.status(400).json({ message: "Invalid or expired token" });
+    const user = await User.findOne({ Mobile });
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    user.Password = await bcrypt.hash(req.body.newPassword, 10);
-    user.resetToken = undefined;
-    user.resetTokenExpiry = undefined;
-    await user.save();
+    // You can send UserId via email
+    await sendEmail(
+      user.Email,
+      "Your UserID - ToDo App",
+      `<p>Your UserId is: <strong>${user.UserId}</strong></p>`
+    );
 
-    res.json({ message: "Password reset successful" });
+    res.json({ message: "UserId sent to email" });
 
   } catch (err) {
-    res.status(500).json({ message: "Reset failed" });
+    console.error(err);
+    res.status(500).json({ message: "Error sending UserId" });
   }
 });
-
 
 module.exports = router;
