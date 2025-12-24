@@ -36,6 +36,8 @@ export function ToDoUserDashBoard() {
             .catch(error => console.error("Failed to delete appointment:", error));
     }
 }
+console.log("Cookies in dashboard:", cookies);
+
 
 
     return (
@@ -44,6 +46,7 @@ export function ToDoUserDashBoard() {
             <nav className="d-flex justify-content-between mt-4 p-2">
                 <div className="h3 text-light">
     Welcome, {cookies.username} 👋
+            
 </div>
 
                 <div className="ms-4">

@@ -5,7 +5,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useState } from "react";
 
 export function ToDoUserLogin() {
-  const [cookies, setCookie] = useCookies(['userid']);
+  const [cookies, setCookie] =  useCookies(['userid', 'username']);
   const [showForgotOptions, setShowForgotOptions] = useState(false); // new state
   const navigate = useNavigate();
 
