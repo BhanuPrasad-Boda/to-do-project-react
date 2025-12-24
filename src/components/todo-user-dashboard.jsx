@@ -5,7 +5,7 @@ import axios from "../api/axiosConfig"; // import the axios instance
 
 export function ToDoUserDashBoard() {
 
-    const [cookies, , removeCookie] = useCookies(['userid', 'username']);
+    const [cookies , removeCookie] = useCookies(['userid', 'username']);
 
 
     // Use regular JS array state, no TypeScript typing
