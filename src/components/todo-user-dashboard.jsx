@@ -5,7 +5,9 @@ import axios from "../api/axiosConfig"; // import the axios instance
 
 export function ToDoUserDashBoard() {
 
-    const [cookies , removeCookie] = useCookies(['userid', 'username']);
+    const [cookies, removeCookie] = useCookies(['userid', 'username']);
+console.log("Cookies in dashboard:", cookies);
+
 
 
     // Use regular JS array state, no TypeScript typing
@@ -36,7 +38,7 @@ export function ToDoUserDashBoard() {
             .catch(error => console.error("Failed to delete appointment:", error));
     }
 }
-console.log("Cookies in dashboard:", cookies);
+
 
 
 
