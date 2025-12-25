@@ -7,23 +7,40 @@ import { useNavigate, Link } from "react-router-dom";
 export function ToDoUserLogin() {
   const [cookies, setCookie] = useCookies(['userid', 'username']);
   const [showForgotOptions, setShowForgotOptions] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: { UserId: "", Password: "" },
-    onSubmit: (values) => {
-      axios.post("/users/login", values)
-        .then(res => {
-          const { UserId, UserName } = res.data;
-          setCookie("userid", UserId, { path: "/" });
-          setCookie("username", UserName, { path: "/" });
-          navigate("/user-dashboard");
-        })
-        .catch(err => {
-          console.error(err.response?.data || err);
-          alert("Invalid UserId or Password");
-        });
-    }
+    onSubmit: async (values) => {
+      setLoading(true);
+      try {
+        const res = await axios.post("/users/login", values, { withCredentials: true })
+
+        console.log("Login response:", res.data); // Check backend response
+
+        const { UserId, UserName } = res.data;
+
+        if (!UserId || !UserName) {
+          alert("Login failed: Invalid response from server");
+          setLoading(false);
+          return;
+        }
+
+        // Set cookies
+        setCookie("userid", UserId, { path: "/" });
+        setCookie("username", UserName, { path: "/" });
+
+        // Navigate to dashboard
+        navigate("/user-dashboard");
+
+      } catch (err) {
+        console.error(err.response?.data || err);
+        alert(err.response?.data?.message || "Invalid UserId or Password");
+      } finally {
+        setLoading(false);
+      }
+    },
   });
 
   return (
@@ -33,13 +50,33 @@ export function ToDoUserLogin() {
 
         <dl>
           <dt>UserId</dt>
-          <dd><input type="text" name="UserId" onChange={formik.handleChange} className="form-control" /></dd>
+          <dd>
+            <input
+              type="text"
+              name="UserId"
+              onChange={formik.handleChange}
+              value={formik.values.UserId}
+              className="form-control"
+              required
+            />
+          </dd>
 
           <dt>Password</dt>
-          <dd><input type="password" name="Password" onChange={formik.handleChange} className="form-control" /></dd>
+          <dd>
+            <input
+              type="password"
+              name="Password"
+              onChange={formik.handleChange}
+              value={formik.values.Password}
+              className="form-control"
+              required
+            />
+          </dd>
         </dl>
 
-        <button type="submit" className="btn btn-warning w-100">Login</button>
+        <button type="submit" className="btn btn-warning w-100" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
 
         <div className="mt-2 d-flex justify-content-between">
           <Link to="/">Home</Link>

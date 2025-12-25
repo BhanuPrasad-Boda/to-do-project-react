@@ -15,16 +15,21 @@ export function ToDoUserRegister() {
       Mobile: ""
     },
     onSubmit: (values) => {
+      console.log("Sending values:", values); // 🔥 IMPORTANT
       // Send all required fields to backend
       axios.post("/users/register", values)
-        .then(res => {
-          alert("Registration successful! Please login.");
-          navigate("/login");
-        })
-        .catch(err => {
-          console.error(err.response?.data || err);
-          alert(err.response?.data?.message || "Registration cancelled. Check unique fields.");
-        });
+  .then(res => {
+    if(res.status === 201){
+      alert(res.data.message);  // show the backend message
+      navigate("/login");
+    } else {
+      alert("Something went wrong");
+    }
+  })
+  .catch(err => {
+    alert(err.response?.data?.message || "Registration cancelled. Check unique fields.");
+  });
+
     }
   });
 
