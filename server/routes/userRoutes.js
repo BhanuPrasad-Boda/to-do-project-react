@@ -82,24 +82,28 @@ router.post("/forgot-password", async (req, res) => {
     const user = await User.findOne({ Mobile });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    const token = crypto.randomBytes(32).toString("hex");
+    const token = require("crypto").randomBytes(32).toString("hex");
     user.resetToken = token;
     user.resetTokenExpiry = Date.now() + 15 * 60 * 1000; // 15 minutes
     await user.save();
 
     const resetLink = `${process.env.CLIENT_URL}/reset-password/${token}`;
 
-    await sendEmail(
-      user.Email,
-      "Reset Password - ToDo App",
-      `<p>Reset link:</p><a href="${resetLink}">${resetLink}</a>`
-    );
-
-    res.json({ message: "Reset link sent to email" });
+    try {
+      await sendEmail(
+        user.Email,
+        "Reset Password - ToDo App",
+        `<p>Click to reset password:</p><a href="${resetLink}">${resetLink}</a>`
+      );
+      res.json({ message: "Reset link sent to email" });
+    } catch (err) {
+      console.error("Email sending error:", err);
+      res.status(500).json({ message: "Failed to send reset email" });
+    }
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error sending reset link" });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
@@ -134,18 +138,22 @@ router.post("/forgot-userid", async (req, res) => {
     const user = await User.findOne({ Mobile });
     if (!user) return res.status(404).json({ message: "User not found" });
 
-    // You can send UserId via email
-    await sendEmail(
-      user.Email,
-      "Your UserID - ToDo App",
-      `<p>Your UserId is: <strong>${user.UserId}</strong></p>`
-    );
+    try {
+      await sendEmail(
+        user.Email,
+        "Your UserID - ToDo App",
+        `<p>Your UserId is: <strong>${user.UserId}</strong></p>`
+      );
 
-    res.json({ message: "UserId sent to email" });
+      res.json({ message: "UserId sent to email" });
+    } catch (err) {
+      console.error("Email sending error:", err);
+      res.status(500).json({ message: "Failed to send UserId email" });
+    }
 
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error sending UserId" });
+    res.status(500).json({ message: "Server error" });
   }
 });
 

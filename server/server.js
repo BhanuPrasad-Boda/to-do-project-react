@@ -6,6 +6,10 @@ const todoRoutes = require("./routes/TodoRoutes");
 const appointmentRoutes = require("./routes/AppointmentRoutes");
 const userRoutes = require("./routes/userRoutes");
 const path = require("path");
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://to-do-project-react-one.vercel.app"
+];
 
 
 
@@ -15,9 +19,23 @@ const path = require("path");
 const app = express();
 
 // Middleware
+
 app.use(cors({
-  origin: process.env.CLIENT_URL, // only allow frontend
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true); // allow Postman
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"]
 }));
+
+
+
+
 
 app.use(express.json());
 app.use("/api/todos", todoRoutes);
