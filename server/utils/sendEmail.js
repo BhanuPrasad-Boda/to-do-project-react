@@ -23,9 +23,8 @@ transporter.verify((err) => {
 });
 
 const sendEmail = (to, subject, html) => {
-  // fire-and-forget → non-blocking
-  setImmediate(async () => {
-    try {
+  Promise.resolve()
+    .then(async () => {
       console.log("📧 Sending email to:", to);
 
       await transporter.sendMail({
@@ -36,11 +35,11 @@ const sendEmail = (to, subject, html) => {
       });
 
       console.log("✅ Email sent successfully");
-    } catch (err) {
-      // DO NOT throw — never crash server
-      console.error("❌ Email send failed:", err.message);
-    }
-  });
+    })
+    .catch(err => {
+      console.error("❌ Email send failed FULL:", err);
+    });
 };
+
 
 module.exports = sendEmail;
