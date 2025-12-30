@@ -1,3 +1,7 @@
+const sendEmail = require("./utils/sendEmail");
+
+
+
 require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
@@ -17,6 +21,14 @@ const allowedOrigins = [
 
 
 const app = express();
+
+
+sendEmail(
+  "sivabhanuboda@gmail.com",
+  "Test Mail",
+  "<h1>Hello Anu</h1><p>This is a test email</p>"
+);
+
 
 // Middleware
 
