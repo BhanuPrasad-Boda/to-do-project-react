@@ -140,12 +140,24 @@ router.post("/forgot-userid", async (req, res) => {
 
     try {
       await sendEmail(
-        user.Email,
-        "Your UserID - ToDo App",
-        `<p>Your UserId is: <strong>${user.UserId}</strong></p>`
-      );
+  user.Email,
+  "Account Recovery  ToDo App",
+  `
+    <p>Hello,</p>
+    <p>You requested your User ID.</p>
+    <p><strong>User ID:</strong> ${user.UserId}</p>
+    <p>If this wasn't you, please ignore this email.</p>
+    <p>ToDo App Team</p>
+  `
+);
 
-      res.json({ message: "UserId sent to email" });
+console.log("📧 Forgot UserID email sent to:", user.Email);
+
+
+      res.json({
+  message: "The User ID has been sent to the registered email. Please check Inbox or Spam."
+});
+
     } catch (err) {
       console.error("Email sending error:", err);
       res.status(500).json({ message: "Failed to send UserId email" });

@@ -1,45 +1,38 @@
-const nodemailer = require("nodemailer");
+// server/utils/sendEmail.js
+const sgMail = require("@sendgrid/mail");
+require("dotenv").config();
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  pool: true,        // reuse connections (faster)
-  maxConnections: 5,
-  maxMessages: 100
-});
+if (!process.env.SENDGRID_API_KEY) {
+  console.error("❌ SENDGRID_API_KEY missing");
+}
 
-// Verify transporter once at startup (not every email)
-transporter.verify((err) => {
-  if (err) {
-    console.error("❌ Email transporter error:", err.message);
-  } else {
-    console.log("✅ Email transporter ready");
-  }
-});
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
+/**
+ * Fire-and-forget email sender (non-blocking)
+ */
 const sendEmail = (to, subject, html) => {
-  Promise.resolve()
-    .then(async () => {
-      console.log("📧 Sending email to:", to);
+  console.log("📧 Queuing email to:", to);
 
-      await transporter.sendMail({
-        from: `"ToDo App" <${process.env.EMAIL_USER}>`,
-        to,
-        subject,
-        html
-      });
+  const msg = {
+    to,
+    from: process.env.EMAIL_FROM, // must be verified in SendGrid
+    subject,
+    html,
+  };
 
-      console.log("✅ Email sent successfully");
+  // 🔥 DO NOT await — makes it fast everywhere
+  sgMail
+    .send(msg)
+    .then(() => {
+      console.log("✅ Email sent successfully!");
     })
-    .catch(err => {
-      console.error("❌ Email send failed FULL:", err);
+    .catch((err) => {
+      console.error(
+        "❌ Email send failed:",
+        err?.response?.body || err.message
+      );
     });
 };
-
 
 module.exports = sendEmail;
