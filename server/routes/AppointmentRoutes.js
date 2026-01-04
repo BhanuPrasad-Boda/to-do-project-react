@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const Appointment = require("../models/Appointment");
-const authMiddleware = require("../middleware/authMiddleware");
+
 
 
 // 🔹 GET single appointment (protected)
-router.get("/single/:id", authMiddleware, async (req, res) => {
+router.get("/single/:id",  async (req, res) => {
   try {
     const appointment = await Appointment.findOne({
       Appointment_Id: Number(req.params.id),
@@ -27,7 +27,7 @@ router.get("/single/:id", authMiddleware, async (req, res) => {
 });
 
 // 🔹 GET all appointments for a user (protected)
-router.get("/:userId", authMiddleware, async (req, res) => {
+router.get("/:userId",  async (req, res) => {
   try {
     // Ensure only the logged-in user can fetch their appointments
     if (req.user.UserId !== req.params.userId) {
@@ -42,7 +42,7 @@ router.get("/:userId", authMiddleware, async (req, res) => {
 });
 
 // 🔹 CREATE appointment (protected)
-router.post("/", authMiddleware, async (req, res) => {
+router.post("/",  async (req, res) => {
   try {
     // Only allow creating for logged-in user
     const appointment = new Appointment({
@@ -58,7 +58,7 @@ router.post("/", authMiddleware, async (req, res) => {
 });
 
 // 🔹 UPDATE appointment (protected)
-router.put("/:id", authMiddleware, async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const appointment = await Appointment.findOne({ Appointment_Id: Number(req.params.id) });
     if (!appointment) {
@@ -83,7 +83,7 @@ router.put("/:id", authMiddleware, async (req, res) => {
 });
 
 // 🔹 DELETE appointment (protected)
-router.delete("/:id", authMiddleware, async (req, res) => {
+router.delete("/:id",  async (req, res) => {
   try {
     const appointment = await Appointment.findOne({ Appointment_Id: Number(req.params.id) });
     if (!appointment) {
