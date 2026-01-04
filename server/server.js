@@ -18,17 +18,29 @@ const userRoutes = require("./routes/userRoutes");
 const app = express();
 
 // Middleware
-const corsOptions = {
-  origin: "https://to-do-project-react-one.vercel.app", // your frontend
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"], // allow auth header
-};
-
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
-
 
 app.use(express.json());
+app.use(cors({
+  origin: "https://to-do-project-react-one.vercel.app",
+  credentials: false,
+}));
+
+// VERY IMPORTANT
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://to-do-project-react-one.vercel.app");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+
+  next();
+});
+
+
+
+
 app.use("/api/users", userRoutes);
 app.use("/api/todos", todoRoutes);
 app.use("/api/appointments", appointmentRoutes);
