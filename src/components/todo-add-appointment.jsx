@@ -14,7 +14,7 @@ export function ToDoAddAppointment() {
     function handleSubmit(e) {
     e.preventDefault();
 
-    console.log("Appointment payload being sent:", appointmentData);
+    
 
     const appointmentData = {
         Appointment_Id: Date.now(),
