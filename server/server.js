@@ -18,14 +18,14 @@ const userRoutes = require("./routes/userRoutes");
 const app = express();
 
 // Middleware
-app.use(
-  cors({
-    origin: "https://to-do-project-react-one.vercel.app",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type"],
-    credentials: false
-  })
-);
+const corsOptions = {
+  origin: "https://to-do-project-react-one.vercel.app", // your deployed frontend
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true // if you plan to use cookies
+};
+
+app.use(cors(corsOptions));
 
 
 app.use(express.json());

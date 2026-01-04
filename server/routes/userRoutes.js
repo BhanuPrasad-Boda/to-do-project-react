@@ -49,44 +49,39 @@ router.post("/register", async (req, res) => {
 });
 
 // ===================== LOGIN =====================
-router.post("/login", async (req, res) => {
+   router.post("/login", async (req, res) => {
   try {
     const { UserId, Password } = req.body;
 
     const user = await User.findOne({ UserId });
-    if (!user) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+    if (!user) return res.status(401).json({ message: "Invalid credentials" });
 
     const isMatch = await bcrypt.compare(Password, user.Password);
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid credentials" });
-    }
+    if (!isMatch) return res.status(401).json({ message: "Invalid credentials" });
 
-    // ✅ Create JWT
+    // Generate JWT
     const token = jwt.sign(
       {
         id: user._id,
         UserId: user.UserId,
-        UserName: user.UserName
+        UserName: user.UserName,
+        Email: user.Email
       },
       process.env.JWT_SECRET,
-      { expiresIn: "1d" }
+      { expiresIn: "7d" } // token valid for 7 days
     );
 
     res.json({
-      token,
       UserId: user.UserId,
       UserName: user.UserName,
-      Email: user.Email
+      Email: user.Email,
+      token
     });
-
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Login error" });
   }
 });
-
 // ===================== FORGOT PASSWORD =====================
 router.post("/forgot-password", async (req, res) => {
   try {

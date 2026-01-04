@@ -1,13 +1,19 @@
 import axios from "axios";
 
-const storedUser = JSON.parse(localStorage.getItem("user"));
-const token = storedUser?.token;
-
-const axiosInstance = axios.create({
+const instance = axios.create({
   baseURL: "https://to-do-project-react-backend.onrender.com/api",
   headers: {
-    Authorization: `Bearer ${token}` // ✅ JWT sent in all requests
+    "Content-Type": "application/json"
   }
 });
 
-export default axiosInstance;
+// Add token to all requests
+instance.interceptors.request.use(config => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  if (user?.token) {
+    config.headers.Authorization = `Bearer ${user.token}`;
+  }
+  return config;
+});
+
+export default instance;

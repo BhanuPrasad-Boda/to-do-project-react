@@ -14,26 +14,24 @@ export function ToDoUserLogin() {
       setLoading(true);
       try {
         const res = await axios.post("/users/login", values);
-
         console.log("Login response:", res.data);
 
         const { UserId, UserName, Email, token } = res.data;
 
         if (!token) {
-          alert("Login failed: Token missing");
+          alert("Login failed: Token missing from server response");
           setLoading(false);
           return;
         }
 
-        // ✅ Store user info + token in localStorage
+        // Store user info and JWT in localStorage
         localStorage.setItem(
           "user",
-          JSON.stringify({ UserId, UserName, Email, token })
+          JSON.stringify({ UserId, UserName, Email })
         );
+        localStorage.setItem("token", token);
 
-        // ✅ Navigate to dashboard
         navigate("/user-dashboard");
-
       } catch (err) {
         console.error(err.response?.data || err);
         alert(err.response?.data?.message || "Invalid UserId or Password");
@@ -74,7 +72,11 @@ export function ToDoUserLogin() {
           </dd>
         </dl>
 
-        <button type="submit" className="btn btn-warning w-100" disabled={loading}>
+        <button
+          type="submit"
+          className="btn btn-warning w-100"
+          disabled={loading}
+        >
           {loading ? "Logging in..." : "Login"}
         </button>
 
@@ -94,8 +96,12 @@ export function ToDoUserLogin() {
 
           {showForgotOptions && (
             <div className="mt-1">
-              <Link to="/forgot-password" className="d-block">Forgot Password</Link>
-              <Link to="/forgot-userid" className="d-block">Forgot UserID</Link>
+              <Link to="/forgot-password" className="d-block">
+                Forgot Password
+              </Link>
+              <Link to="/forgot-userid" className="d-block">
+                Forgot UserID
+              </Link>
             </div>
           )}
         </div>

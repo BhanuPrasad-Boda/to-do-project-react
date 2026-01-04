@@ -7,31 +7,67 @@ export function ToDoUserDashBoard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const userData = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
 
-    if (!storedUser || !storedUser.token) {
-      // ✅ No token → go to login
+    if (!userData || !token) {
       navigate("/login");
       return;
     }
 
-    // Fetch appointments for logged-in user
-    axios.get(`/appointments/${storedUser.UserId}`)
-      .then(res => setAppointments(res.data))
-      .catch(err => console.error("Failed to fetch appointments:", err));
+    const fetchAppointments = async () => {
+      try {
+        const res = await axios.get(`/appointments/${userData.UserId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+        setAppointments(res.data);
+      } catch (err) {
+        console.error("Failed to fetch appointments:", err);
+        alert(err.response?.data?.message || "Failed to load appointments");
+        if (err.response?.status === 401 || err.response?.status === 403) {
+          localStorage.removeItem("user");
+          localStorage.removeItem("token");
+          navigate("/login");
+        }
+      }
+    };
+
+    fetchAppointments();
   }, [navigate]);
 
-  function handleSignout() {
-    localStorage.removeItem("user"); // remove token
+  const handleSignout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
     navigate("/login");
-  }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this appointment?")) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      await axios.delete(`/appointments/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+      setAppointments(prev => prev.filter(a => a.Appointment_Id !== id));
+    } catch (err) {
+      console.error("Failed to delete appointment:", err);
+      alert(err.response?.data?.message || "Delete failed");
+    }
+  };
+
+  const userData = JSON.parse(localStorage.getItem("user")) || {};
 
   return (
     <div className="p-2">
       <div className="h2 d-flex justify-content-center">Dashboard</div>
       <nav className="d-flex justify-content-between mt-4 p-2">
         <div className="h3 text-light">
-          Welcome, {JSON.parse(localStorage.getItem("user"))?.UserName} 👋
+          Welcome, {userData.UserName || "User"} 👋
         </div>
         <div className="ms-4">
           <button onClick={handleSignout} className="btn btn-danger">Signout</button>
@@ -50,13 +86,7 @@ export function ToDoUserDashBoard() {
               <p>{app.Description}</p>
               <div className="bi bi-calendar-date">{new Date(app.Date).toLocaleDateString()}</div>
               <div className="mt-2">
-                <button onClick={() => {
-                  if(window.confirm("Are you sure?")) {
-                    axios.delete(`/appointments/${app.Appointment_Id}`)
-                      .then(() => setAppointments(prev => prev.filter(a => a.Appointment_Id !== app.Appointment_Id)))
-                      .catch(err => console.error(err));
-                  }
-                }} className="bi bi-trash btn btn-danger me-2">Remove</button>
+                <button onClick={() => handleDelete(app.Appointment_Id)} className="bi bi-trash btn btn-danger me-2">Remove</button>
                 <Link to={`/edit-appointment/${app.Appointment_Id}`} className="bi bi-pen-fill btn btn-warning">Edit</Link>
               </div>
             </div>

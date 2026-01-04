@@ -1,19 +1,18 @@
 const jwt = require("jsonwebtoken");
 
-const authMiddleware = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ message: "Unauthorized" });
-  }
-
-  const token = authHeader.split(" ")[1];
+const auth = (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // attach user info to request
-    next();
+    // Get token from headers
+    const token = req.headers.authorization?.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "Access Denied: No Token" });
+
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // JWT_SECRET should be your secret key
+    req.user = decoded; // attach decoded payload to request
+    next(); // proceed to route
   } catch (err) {
-    return res.status(401).json({ message: "Invalid or expired token" });
+    res.status(401).json({ message: "Invalid or expired token" });
   }
 };
 
-module.exports = authMiddleware;
+module.exports = auth;
