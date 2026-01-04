@@ -20,7 +20,7 @@ export function ToDoAddAppointment() {
         Appointment_Id: Date.now(),
         Title: title,
         Description: description,
-        Date: date,
+        Date: new Date(date),
         UserId: cookies['userid']
     };
 
