@@ -18,13 +18,15 @@ const userRoutes = require("./routes/userRoutes");
 const app = express();
 
 // Middleware
-app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://to-do-project-react.vercel.app" // add later if needed
-  ],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: "https://to-do-project-react-one.vercel.app",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type"],
+    credentials: false
+  })
+);
+
 
 app.use(express.json());
 app.use("/api/users", userRoutes);

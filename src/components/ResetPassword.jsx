@@ -6,15 +6,20 @@ export function ResetPassword() {
   const { token } = useParams();
   const [newPassword, setNewPassword] = useState("");
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post(`/users/reset-password/${token}`, { newPassword });
-      alert(res.data.message);
-    } catch (err) {
-      alert(err.response?.data?.message || "Error");
-    }
-  };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await axios.post(
+      `/users/reset-password/${token}`,
+      { newPassword }
+    );
+    alert(res.data.message); // Password reset successful
+  } catch (err) {
+    console.error(err);
+    alert(err.response?.data?.message || "Server error");
+  }
+};
+
 
   return (
     <div className="text-start d-flex justify-content-center">
