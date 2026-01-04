@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import axios from "../api/axiosConfig";
-import { useCookies } from "react-cookie";
+
 import { useNavigate, Link } from "react-router-dom";
 
 export function ToDoUserLogin() {
-  const [cookies, setCookie] = useCookies(['userid', 'username']);
+
   const [showForgotOptions, setShowForgotOptions] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -13,34 +13,30 @@ export function ToDoUserLogin() {
   const formik = useFormik({
     initialValues: { UserId: "", Password: "" },
     onSubmit: async (values) => {
-      setLoading(true);
-      try {
-        const res = await axios.post("/users/login", values, { withCredentials: true })
+  setLoading(true);
+  try {
+    const res = await axios.post("/users/login", values);
 
-        console.log("Login response:", res.data); // Check backend response
+    console.log("Login response:", res.data);
 
-        const { UserId, UserName } = res.data;
+    const { UserId, UserName, Email } = res.data;
 
-        if (!UserId || !UserName) {
-          alert("Login failed: Invalid response from server");
-          setLoading(false);
-          return;
-        }
+    // Store user data (production safe)
+    localStorage.setItem(
+      "user",
+      JSON.stringify({ UserId, UserName, Email })
+    );
 
-        // Set cookies
-        setCookie("userid", UserId, { path: "/" });
-        setCookie("username", UserName, { path: "/" });
+    navigate("/user-dashboard");
 
-        // Navigate to dashboard
-        navigate("/user-dashboard");
+  } catch (err) {
+    console.error(err.response?.data || err);
+    alert(err.response?.data?.message || "Invalid UserId or Password");
+  } finally {
+    setLoading(false);
+  }
+}
 
-      } catch (err) {
-        console.error(err.response?.data || err);
-        alert(err.response?.data?.message || "Invalid UserId or Password");
-      } finally {
-        setLoading(false);
-      }
-    },
   });
 
   return (
