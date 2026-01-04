@@ -1,37 +1,41 @@
 import React, { useState } from "react";
-import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
 import axios from "../api/axiosConfig";
 
 export function ToDoAddAppointment() {
-    const [cookies] = useCookies(['userid']);
     const navigate = useNavigate();
 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [date, setDate] = useState("");
 
-    function handleSubmit(e) {
-    e.preventDefault();
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    
+        const userId = localStorage.getItem("userid"); // get logged-in user ID
+        if (!userId) {
+            alert("User not logged in. Please login first.");
+            return;
+        }
 
-    const appointmentData = {
-        Appointment_Id: Date.now(),
-        Title: title,
-        Description: description,
-        Date: new Date(date),
-        UserId: cookies['userid']
+        const appointmentData = {
+            Appointment_Id: Date.now(),
+            Title: title.trim(),
+            Description: description.trim(),
+            Date: new Date(date), // ensure Date object
+            UserId: userId
+        };
+
+        console.log("Sending appointment:", appointmentData);
+
+        try {
+            await axios.post("/appointments", appointmentData);
+            navigate("/user-dashboard"); // redirect to dashboard
+        } catch (error) {
+            console.error("Appointment add error:", error.response?.data || error);
+            alert(error.response?.data?.message || "Failed to add appointment");
+        }
     };
-
-
-
-
-    axios.post("/appointments", appointmentData)
-         .then(() => navigate("/user-dashboard")) // redirect to dashboard
-         .catch(error => console.error(error));
-}
-
 
     return (
         <div className="p-4">

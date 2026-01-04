@@ -24,12 +24,14 @@ export function ToDoUserLogin() {
           return;
         }
 
-        // Store user info and JWT in localStorage
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ UserId, UserName, Email })
-        );
-        localStorage.setItem("token", token);
+     // Store user info and JWT in localStorage
+localStorage.setItem(
+  "user",
+  JSON.stringify({ UserId, UserName, Email })
+);
+localStorage.setItem("userid", UserId); // <-- ADD THIS LINE
+localStorage.setItem("token", token);
+
 
         navigate("/user-dashboard");
       } catch (err) {
