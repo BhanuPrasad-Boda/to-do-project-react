@@ -1,42 +1,49 @@
 import React, { useState } from "react";
 import { useFormik } from "formik";
 import axios from "../api/axiosConfig";
-
 import { useNavigate, Link } from "react-router-dom";
 
 export function ToDoUserLogin() {
-
   const [showForgotOptions, setShowForgotOptions] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: { UserId: "", Password: "" },
+
     onSubmit: async (values) => {
-  setLoading(true);
-  try {
-    const res = await axios.post("/users/login", values);
+      setLoading(true);
+      try {
+        const res = await axios.post("/users/login", values);
 
-    console.log("Login response:", res.data);
+        console.log("Login response:", res.data);
 
-    const { UserId, UserName, Email } = res.data;
+        const { token, UserId, UserName, Email } = res.data;
 
-    // Store user data (production safe)
-    localStorage.setItem(
-      "user",
-      JSON.stringify({ UserId, UserName, Email })
-    );
+        // 🔐 IMPORTANT CHECK
+        if (!token) {
+          alert("Login failed: Token not received");
+          return;
+        }
 
-    navigate("/user-dashboard");
+        // ✅ Store JWT (production standard)
+        localStorage.setItem("token", token);
 
-  } catch (err) {
-    console.error(err.response?.data || err);
-    alert(err.response?.data?.message || "Invalid UserId or Password");
-  } finally {
-    setLoading(false);
-  }
-}
+        // ✅ Store user info (optional, for UI)
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ UserId, UserName, Email })
+        );
 
+        navigate("/user-dashboard");
+
+      } catch (err) {
+        console.error(err.response?.data || err);
+        alert(err.response?.data?.message || "Invalid UserId or Password");
+      } finally {
+        setLoading(false);
+      }
+    }
   });
 
   return (

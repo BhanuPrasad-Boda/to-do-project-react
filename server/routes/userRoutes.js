@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User");
 const sendEmail = require("../utils/sendEmail");
+const jwt = require("jsonwebtoken");
+
 
 const bcrypt = require("bcryptjs");
 
@@ -61,8 +63,19 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Send only necessary fields for cookies
+    // ✅ Create JWT
+    const token = jwt.sign(
+      {
+        id: user._id,
+        UserId: user.UserId,
+        UserName: user.UserName
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
     res.json({
+      token,
       UserId: user.UserId,
       UserName: user.UserName,
       Email: user.Email
