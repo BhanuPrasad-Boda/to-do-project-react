@@ -2,10 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Appointment = require("../models/Appointment");
 
-
-
-// 🔹 GET single appointment (protected)
-router.get("/single/:id",  async (req, res) => {
+// 🔹 GET single appointment
+router.get("/single/:id", async (req, res) => {
   try {
     const appointment = await Appointment.findOne({
       Appointment_Id: Number(req.params.id),
@@ -15,87 +13,58 @@ router.get("/single/:id",  async (req, res) => {
       return res.status(404).json({ message: "Appointment not found" });
     }
 
-    // Only allow owner to access
-    if (appointment.UserId !== req.user.UserId) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
-
     res.json(appointment);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// 🔹 GET all appointments for a user (protected)
-router.get("/:userId",  async (req, res) => {
+// 🔹 GET all appointments for a user
+router.get("/:userId", async (req, res) => {
   try {
-    // Ensure only the logged-in user can fetch their appointments
-    if (req.user.UserId !== req.params.userId) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
+    const appointments = await Appointment.find({
+      UserId: req.params.userId,
+    }).sort({ Date: -1 });
 
-    const appointments = await Appointment.find({ UserId: req.params.userId }).sort({ Date: -1 });
     res.json(appointments);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// 🔹 CREATE appointment (protected)
-router.post("/",  async (req, res) => {
+// 🔹 CREATE appointment
+router.post("/", async (req, res) => {
   try {
-    // Only allow creating for logged-in user
-    const appointment = new Appointment({
-      ...req.body,
-      UserId: req.user.UserId
-    });
-
-    const savedAppointment = await appointment.save();
-    res.status(201).json(savedAppointment);
+    const appointment = new Appointment(req.body);
+    const saved = await appointment.save();
+    res.status(201).json(saved);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
 
-// 🔹 UPDATE appointment (protected)
+// 🔹 UPDATE appointment
 router.put("/:id", async (req, res) => {
   try {
-    const appointment = await Appointment.findOne({ Appointment_Id: Number(req.params.id) });
-    if (!appointment) {
-      return res.status(404).json({ message: "Appointment not found" });
-    }
-
-    // Only allow owner to update
-    if (appointment.UserId !== req.user.UserId) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
-
-    const updatedAppointment = await Appointment.findOneAndUpdate(
+    const updated = await Appointment.findOneAndUpdate(
       { Appointment_Id: Number(req.params.id) },
       req.body,
       { new: true }
     );
 
-    res.json(updatedAppointment);
+    res.json(updated);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
 
-// 🔹 DELETE appointment (protected)
-router.delete("/:id",  async (req, res) => {
+// 🔹 DELETE appointment
+router.delete("/:id", async (req, res) => {
   try {
-    const appointment = await Appointment.findOne({ Appointment_Id: Number(req.params.id) });
-    if (!appointment) {
-      return res.status(404).json({ message: "Appointment not found" });
-    }
+    await Appointment.findOneAndDelete({
+      Appointment_Id: Number(req.params.id),
+    });
 
-    // Only allow owner to delete
-    if (appointment.UserId !== req.user.UserId) {
-      return res.status(403).json({ message: "Forbidden" });
-    }
-
-    await Appointment.findOneAndDelete({ Appointment_Id: Number(req.params.id) });
     res.json({ message: "Appointment deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
