@@ -33,15 +33,21 @@ router.get("/:userId", async (req, res) => {
 });
 
 // 🔹 CREATE appointment
+// 🔹 CREATE appointment (NO JWT)
 router.post("/", async (req, res) => {
   try {
+    console.log("Incoming appointment body:", req.body);
+
     const appointment = new Appointment(req.body);
-    const saved = await appointment.save();
-    res.status(201).json(saved);
+    const savedAppointment = await appointment.save();
+
+    res.status(201).json(savedAppointment);
   } catch (err) {
+    console.error("Appointment save error:", err.message);
     res.status(400).json({ error: err.message });
   }
 });
+
 
 // 🔹 UPDATE appointment
 router.put("/:id", async (req, res) => {

@@ -14,6 +14,8 @@ export function ToDoAddAppointment() {
     function handleSubmit(e) {
     e.preventDefault();
 
+    console.log("Appointment payload being sent:", appointmentData);
+
     const appointmentData = {
         Appointment_Id: Date.now(),
         Title: title,
@@ -21,6 +23,9 @@ export function ToDoAddAppointment() {
         Date: date,
         UserId: cookies['userid']
     };
+
+
+
 
     axios.post("/appointments", appointmentData)
          .then(() => navigate("/user-dashboard")) // redirect to dashboard
