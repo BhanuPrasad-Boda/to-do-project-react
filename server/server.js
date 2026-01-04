@@ -19,10 +19,9 @@ const app = express();
 
 // Middleware
 const corsOptions = {
-  origin: "https://to-do-project-react-one.vercel.app", // your deployed frontend
+  origin: "https://to-do-project-react-one.vercel.app", // your frontend
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true // if you plan to use cookies
+  allowedHeaders: ["Content-Type", "Authorization"], // allow auth header
 };
 
 app.use(cors(corsOptions));

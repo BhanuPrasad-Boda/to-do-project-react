@@ -1,7 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Appointment = require("../models/Appointment");
-const authMiddleware = require("../middlewares/authMiddleware"); // JWT middleware
+ const authMiddleware = require("../middleware/authMiddleware");
+
 
 // 🔹 GET single appointment (protected)
 router.get("/single/:id", authMiddleware, async (req, res) => {
