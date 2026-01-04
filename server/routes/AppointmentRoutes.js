@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Appointment = require("../models/Appointment");
- const authMiddleware = require("../middleware/authMiddleware");
+const authMiddleware = require("../middleware/authMiddleware");
 
 
 // 🔹 GET single appointment (protected)
