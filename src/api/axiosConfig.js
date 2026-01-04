@@ -1,9 +1,13 @@
 import axios from "axios";
 
-const instance = axios.create({
+const storedUser = JSON.parse(localStorage.getItem("user"));
+const token = storedUser?.token;
+
+const axiosInstance = axios.create({
   baseURL: "https://to-do-project-react-backend.onrender.com/api",
-  withCredentials: false, // important for cookies
-  headers: { "Content-Type": "application/json" }
+  headers: {
+    Authorization: `Bearer ${token}` // ✅ JWT sent in all requests
+  }
 });
 
-export default instance;
+export default axiosInstance;

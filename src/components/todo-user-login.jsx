@@ -10,7 +10,6 @@ export function ToDoUserLogin() {
 
   const formik = useFormik({
     initialValues: { UserId: "", Password: "" },
-
     onSubmit: async (values) => {
       setLoading(true);
       try {
@@ -18,23 +17,21 @@ export function ToDoUserLogin() {
 
         console.log("Login response:", res.data);
 
-        const { token, UserId, UserName, Email } = res.data;
+        const { UserId, UserName, Email, token } = res.data;
 
-        // 🔐 IMPORTANT CHECK
         if (!token) {
-          alert("Login failed: Token not received");
+          alert("Login failed: Token missing");
+          setLoading(false);
           return;
         }
 
-        // ✅ Store JWT (production standard)
-        localStorage.setItem("token", token);
-
-        // ✅ Store user info (optional, for UI)
+        // ✅ Store user info + token in localStorage
         localStorage.setItem(
           "user",
-          JSON.stringify({ UserId, UserName, Email })
+          JSON.stringify({ UserId, UserName, Email, token })
         );
 
+        // ✅ Navigate to dashboard
         navigate("/user-dashboard");
 
       } catch (err) {
@@ -43,7 +40,7 @@ export function ToDoUserLogin() {
       } finally {
         setLoading(false);
       }
-    }
+    },
   });
 
   return (
