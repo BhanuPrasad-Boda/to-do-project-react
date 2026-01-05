@@ -49,6 +49,14 @@ export function ToDoEditAppointment() {
                     <input type="date" className="form-control" value={date} onChange={e => setDate(e.target.value)} required />
                 </div>
                 <button type="submit" className="btn btn-warning">Update Appointment</button>
+                <button
+  type="button"
+  className="btn btn-secondary ms-2"
+  onClick={() => navigate("/user-dashboard")}
+>
+  Cancel
+</button>
+
             </form>
         </div>
     );
