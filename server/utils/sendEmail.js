@@ -17,9 +17,9 @@ const sendEmail = (to, subject, html) => {
   const msg = {
     to,
     from: {
-  email: process.env.EMAIL_FROM,
-  name: "To-Do App"
-}, // must be verified in SendGrid
+      name: "To-Do App",
+  email: process.env.EMAIL_FROM
+    }, // must be verified in SendGrid
     subject,
     html,
   };
