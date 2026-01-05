@@ -6,6 +6,8 @@ import { startAutoLogout } from "../utils/autoLogout";
 export function ToDoUserDashBoard() {
   const [appointments, setAppointments] = useState([]);
   const navigate = useNavigate();
+  const formatDateTime = (date) =>
+  new Date(date).toLocaleString();
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
@@ -86,7 +88,20 @@ export function ToDoUserDashBoard() {
             <div className="alert w-50 my-4 alert-success" key={app.Appointment_Id}>
               <h2>{app.Title}</h2>
               <p>{app.Description}</p>
-              <div className="bi bi-calendar-date">{new Date(app.Date).toLocaleDateString()}</div>
+              <div className="bi bi-calendar-date">
+  Appointment Date: {new Date(app.Date).toLocaleDateString()}
+</div>
+
+<div className="mt-1 text-muted">
+  Created: {formatDateTime(app.createdAt)}
+</div>
+
+{app.updatedAt && app.updatedAt !== app.createdAt && (
+  <div className="text-muted">
+    Updated: {formatDateTime(app.updatedAt)}
+  </div>
+)}
+
               <div className="mt-2">
                 <button onClick={() => handleDelete(app.Appointment_Id)} className="bi bi-trash btn btn-danger me-2">Remove</button>
                 <Link to={`/edit-appointment/${app.Appointment_Id}`} className="bi bi-pen-fill btn btn-warning">Edit</Link>
