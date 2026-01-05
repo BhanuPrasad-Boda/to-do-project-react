@@ -1,33 +1,28 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 
-const api = axios.create({
-  baseURL: "https://to-do-project-react-backend.onrender.com/api",
+const instance = axios.create({
+  baseURL: "https://to-do-project-react-backend.onrender.com/api"
 });
 
-// 🔐 Attach token to every request
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+instance.interceptors.response.use(
+  response => response,
+  error => {
+    const status = error.response?.status;
+    const url = error.config?.url;
 
-// 🚨 Handle expired token globally
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      // token expired
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+    // 🔴 DO NOT auto-logout for login failures
+    if (status === 401 && !url.includes("/users/login")) {
+      localStorage.clear();
+      toast.error("Session expired. Please login again.");
 
-      alert("Session expired. Please login again.");
-
-      window.location.href = "/login"; // 🔥 redirect
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 1500);
     }
+
     return Promise.reject(error);
   }
 );
 
-export default api;
+export default instance;
