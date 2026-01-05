@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "../api/axiosConfig";
-import { startAutoLogout } from "../utils/autoLogout";
+
 
 export function ToDoUserDashBoard() {
   const [appointments, setAppointments] = useState([]);
   const navigate = useNavigate();
-  const formatDateTime = (date) =>
-  new Date(date).toLocaleString();
+
+  // Format date for display
+  const formatDateTime = (date) => {
+    return date ? new Date(date).toLocaleString() : "-";
+  };
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
     const token = localStorage.getItem("token");
-    startAutoLogout(navigate);
+
+    
 
     if (!userData || !token) {
       navigate("/login");
@@ -23,13 +27,14 @@ export function ToDoUserDashBoard() {
       try {
         const res = await axios.get(`/appointments/${userData.UserId}`, {
           headers: {
-            Authorization: `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
         setAppointments(res.data);
       } catch (err) {
         console.error("Failed to fetch appointments:", err);
         alert(err.response?.data?.message || "Failed to load appointments");
+
         if (err.response?.status === 401 || err.response?.status === 403) {
           localStorage.removeItem("user");
           localStorage.removeItem("token");
@@ -54,10 +59,10 @@ export function ToDoUserDashBoard() {
       const token = localStorage.getItem("token");
       await axios.delete(`/appointments/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
-      setAppointments(prev => prev.filter(a => a.Appointment_Id !== id));
+      setAppointments((prev) => prev.filter((a) => a.Appointment_Id !== id));
     } catch (err) {
       console.error("Failed to delete appointment:", err);
       alert(err.response?.data?.message || "Delete failed");
@@ -74,35 +79,50 @@ export function ToDoUserDashBoard() {
           Welcome, {userData.UserName || "User"} 👋
         </div>
         <div className="ms-4">
-          <button onClick={handleSignout} className="btn btn-danger">Signout</button>
+          <button onClick={handleSignout} className="btn btn-danger">
+            Signout
+          </button>
         </div>
       </nav>
 
-      <section className="text-start" style={{ height: '100vh' }}>
-        <div>
-          <Link to="/add-appointment" className="bi bi-calendar-date btn btn-dark"> Add Appointment</Link>
+      <section className="text-start" style={{ minHeight: "80vh" }}>
+        <div className="mb-3">
+          <Link to="/add-appointment" className="bi bi-calendar-date btn btn-dark">
+            Add Appointment
+          </Link>
         </div>
 
-        <div>
-          {appointments.map(app => (
-  <div className="alert w-50 my-4 alert-success" key={app.Appointment_Id}>
-    <h2>{app.Title}</h2>
-    <p>{app.Description}</p>
-    <div className="bi bi-calendar-date">
-      Scheduled Date: {new Date(app.Date).toLocaleDateString()}
-    </div>
-    <div>
-      Created: {new Date(app.createdAt).toLocaleString()} <br />
-      Updated: {new Date(app.updatedAt).toLocaleString()}
-    </div>
-    <div className="mt-2">
-      <button onClick={() => handleDelete(app.Appointment_Id)} className="bi bi-trash btn btn-danger me-2">Remove</button>
-      <Link to={`/edit-appointment/${app.Appointment_Id}`} className="bi bi-pen-fill btn btn-warning">Edit</Link>
-    </div>
-  </div>
-))}
+        {appointments.length === 0 && (
+          <div className="alert alert-info w-50">No appointments found.</div>
+        )}
 
-        </div>
+        {appointments.map((app) => (
+          <div className="alert w-50 my-4 alert-success" key={app.Appointment_Id}>
+            <h2>{app.Title}</h2>
+            <p>{app.Description}</p>
+            <div className="bi bi-calendar-date">
+              Scheduled Date: {formatDateTime(app.Date)}
+            </div>
+            <div>
+              Created: {formatDateTime(app.createdAt)} <br />
+              Updated: {formatDateTime(app.updatedAt)}
+            </div>
+            <div className="mt-2">
+              <button
+                onClick={() => handleDelete(app.Appointment_Id)}
+                className="bi bi-trash btn btn-danger me-2"
+              >
+                Remove
+              </button>
+              <Link
+                to={`/edit-appointment/${app.Appointment_Id}`}
+                className="bi bi-pen-fill btn btn-warning"
+              >
+                Edit
+              </Link>
+            </div>
+          </div>
+        ))}
       </section>
     </div>
   );

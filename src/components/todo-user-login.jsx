@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useFormik } from "formik";
 import axios from "../api/axiosConfig";
 import { useNavigate, Link } from "react-router-dom";
-import jwtDecode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 
 export function ToDoUserLogin() {
