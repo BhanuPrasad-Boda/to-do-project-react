@@ -1,6 +1,7 @@
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "../api/axiosConfig";
+import { toast } from "react-toastify";
 
 export function ToDoDeleteAppointment() {
   const { id } = useParams();
@@ -25,7 +26,7 @@ export function ToDoDeleteAppointment() {
         setAppointment(res.data);
       })
       .catch((err) => {
-        alert(err.response?.data?.message || "Failed to load appointment");
+        toast.error(err.response?.data?.message || "Failed to load appointment");
         navigate("/user-dashboard");
       });
   }, [id, navigate]);
@@ -41,7 +42,7 @@ export function ToDoDeleteAppointment() {
       });
       navigate("/user-dashboard");
     } catch (err) {
-      alert(err.response?.data?.message || "Delete failed");
+      toast.error(err.response?.data?.message || "Delete failed");
     }
   };
 

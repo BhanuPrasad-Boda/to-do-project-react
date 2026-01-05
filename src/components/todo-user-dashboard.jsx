@@ -55,21 +55,55 @@ export function ToDoUserDashBoard() {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this appointment?")) return;
+  toast(
+    ({ closeToast }) => (
+      <div>
+        <p>Are you sure you want to delete this appointment?</p>
+        <div className="d-flex justify-content-end gap-2 mt-2">
+          <button
+            className="btn btn-danger btn-sm"
+            onClick={async () => {
+              try {
+                const token = localStorage.getItem("token");
+                await axios.delete(`/appointments/${id}`, {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                  },
+                });
 
-    try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`/appointments/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      setAppointments((prev) => prev.filter((a) => a.Appointment_Id !== id));
-    } catch (err) {
-      console.error("Failed to delete appointment:", err);
-      toast.error(err.response?.data?.message || "Delete failed");
+                setAppointments((prev) =>
+                  prev.filter((a) => a.Appointment_Id !== id)
+                );
+
+                toast.success("Appointment deleted successfully");
+              } catch (err) {
+                console.error("Failed to delete appointment:", err);
+                toast.error(
+                  err.response?.data?.message || "Delete failed"
+                );
+              }
+              closeToast();
+            }}
+          >
+            Yes
+          </button>
+
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={closeToast}
+          >
+            No
+          </button>
+        </div>
+      </div>
+    ),
+    {
+      autoClose: false,
+      closeOnClick: false,
     }
-  };
+  );
+};
+
 
   const userData = JSON.parse(localStorage.getItem("user")) || {};
 
