@@ -3,6 +3,7 @@ import { useFormik } from "formik";
 import axios from "../api/axiosConfig";
 import { useNavigate, Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 
 
 export function ToDoUserLogin() {
@@ -21,7 +22,7 @@ export function ToDoUserLogin() {
         const { UserId, UserName, Email, token } = res.data;
 
         if (!token) {
-          alert("Login failed: Token missing from server response");
+          toast.error("Login failed: Token missing from server response");
           setLoading(false);
           return;
         }
@@ -54,7 +55,7 @@ localStorage.setItem("token", token);
         navigate("/user-dashboard");
       } catch (err) {
         console.error(err.response?.data || err);
-        alert(err.response?.data?.message || "Invalid UserId or Password");
+        toast.error(err.response?.data?.message || "Invalid UserId or Password");
       } finally {
         setLoading(false);
       }

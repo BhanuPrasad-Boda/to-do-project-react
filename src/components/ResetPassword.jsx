@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "../api/axiosConfig";
+import { toast } from "react-toastify";
 
 export function ResetPassword() {
   const { token } = useParams();
@@ -13,10 +14,10 @@ const handleSubmit = async (e) => {
       `/users/reset-password/${token}`,
       { newPassword }
     );
-    alert(res.data.message); // Password reset successful
+    toast.success(res.data.message); // Password reset successful
   } catch (err) {
     console.error(err);
-    alert(err.response?.data?.message || "Server error");
+    toast.error(err.response?.data?.message || "Server error");
   }
 };
 

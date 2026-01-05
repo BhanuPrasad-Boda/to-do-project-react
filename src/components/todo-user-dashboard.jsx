@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "../api/axiosConfig";
-
+import { toast } from "react-toastify";
 
 
 
@@ -35,7 +35,7 @@ export function ToDoUserDashBoard() {
         setAppointments(res.data);
       } catch (err) {
         console.error("Failed to fetch appointments:", err);
-        alert(err.response?.data?.message || "Failed to load appointments");
+        toast.error(err.response?.data?.message || "Failed to load appointments");
 
         if (err.response?.status === 401 || err.response?.status === 403) {
           localStorage.removeItem("user");
@@ -67,7 +67,7 @@ export function ToDoUserDashBoard() {
       setAppointments((prev) => prev.filter((a) => a.Appointment_Id !== id));
     } catch (err) {
       console.error("Failed to delete appointment:", err);
-      alert(err.response?.data?.message || "Delete failed");
+      toast.error(err.response?.data?.message || "Delete failed");
     }
   };
 

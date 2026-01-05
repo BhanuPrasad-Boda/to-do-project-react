@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "../api/axiosConfig";
+import { toast } from "react-toastify";
 
 export function ForgotUserId() {
   const [mobile, setMobile] = useState("");
@@ -8,9 +9,9 @@ export function ForgotUserId() {
     e.preventDefault();
     try {
       const res = await axios.post("/users/forgot-userid", { Mobile: mobile });
-      alert(res.data.message);
+      toast.success(res.data.message);
     } catch (err) {
-      alert(err.response?.data?.message || "Error");
+      toast.error(err.response?.data?.message || "Error");
     }
   };
 

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../api/axiosConfig";
+import { toast } from "react-toastify";
 
 export function ToDoAddAppointment() {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ export function ToDoAddAppointment() {
 
         const userId = localStorage.getItem("userid"); // get logged-in user ID
         if (!userId) {
-            alert("User not logged in. Please login first.");
+            toast.error("User not logged in. Please login first.");
             return;
         }
 
@@ -33,7 +34,7 @@ export function ToDoAddAppointment() {
             navigate("/user-dashboard"); // redirect to dashboard
         } catch (error) {
             console.error("Appointment add error:", error.response?.data || error);
-            alert(error.response?.data?.message || "Failed to add appointment");
+            toast.error(error.response?.data?.message || "Failed to add appointment");
         }
     };
 

@@ -2,6 +2,7 @@ import React from "react";
 import { useFormik } from "formik";
 import axios from "../api/axiosConfig";
 import { useNavigate, Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export function ToDoUserRegister() {
   const navigate = useNavigate();
@@ -20,14 +21,14 @@ export function ToDoUserRegister() {
       axios.post("/users/register", values)
   .then(res => {
     if(res.status === 201){
-      alert(res.data.message);  // show the backend message
+      toast.success(res.data.message);  // show the backend message
       navigate("/login");
     } else {
-      alert("Something went wrong");
+      toast.error("Something went wrong");
     }
   })
   .catch(err => {
-    alert(err.response?.data?.message || "Registration cancelled. Check unique fields.");
+    toast.error(err.response?.data?.message || "Registration cancelled. Check unique fields.");
   });
 
     }
