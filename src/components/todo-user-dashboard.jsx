@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "../api/axiosConfig";
+import { startAutoLogout } from "../utils/autoLogout";
 
 export function ToDoUserDashBoard() {
   const [appointments, setAppointments] = useState([]);
@@ -9,6 +10,7 @@ export function ToDoUserDashBoard() {
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem("user"));
     const token = localStorage.getItem("token");
+    startAutoLogout(navigate);
 
     if (!userData || !token) {
       navigate("/login");

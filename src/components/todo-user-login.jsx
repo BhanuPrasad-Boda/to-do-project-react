@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useFormik } from "formik";
 import axios from "../api/axiosConfig";
 import { useNavigate, Link } from "react-router-dom";
+import jwtDecode from "jwt-decode";
+
 
 export function ToDoUserLogin() {
   const [showForgotOptions, setShowForgotOptions] = useState(false);
@@ -23,6 +25,22 @@ export function ToDoUserLogin() {
           setLoading(false);
           return;
         }
+        
+
+// decode token
+const decoded = jwtDecode(token);
+
+// save expiry time (milliseconds)
+localStorage.setItem("tokenExpiry", decoded.exp * 1000);
+
+localStorage.setItem(
+  "user",
+  JSON.stringify({ UserId, UserName, Email })
+);
+localStorage.setItem("token", token);
+
+navigate("/user-dashboard");
+
 
      // Store user info and JWT in localStorage
 localStorage.setItem(
