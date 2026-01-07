@@ -13,56 +13,126 @@ export function ToDoUserRegister() {
       UserName: "",
       Password: "",
       Email: "",
-      Mobile: ""
+      Mobile: "",
     },
     onSubmit: (values) => {
-      console.log("Sending values:", values); // 🔥 IMPORTANT
-      // Send all required fields to backend
-      axios.post("/users/register", values)
-  .then(res => {
-    if(res.status === 201){
-      toast.success(res.data.message);  // show the backend message
-      navigate("/login");
-    } else {
-      toast.error("Something went wrong");
-    }
-  })
-  .catch(err => {
-    toast.error(err.response?.data?.message || "Registration cancelled. Check unique fields.");
-  });
+      console.log("Sending values:", values);
 
-    }
+      axios
+        .post("/users/register", values)
+        .then((res) => {
+          if (res.status === 201) {
+            toast.success(res.data.message);
+            navigate("/login");
+          } else {
+            toast.error("Something went wrong");
+          }
+        })
+        .catch((err) => {
+          toast.error(
+            err.response?.data?.message || "Registration cancelled. Check unique fields."
+          );
+        });
+    },
   });
 
   return (
-    <div className="d-flex justify-content-center mt-4">
-      <form className="bg-light p-3 w-50" onSubmit={formik.handleSubmit}>
-        <h3>User Registration</h3>
+    <div className="min-vh-100 d-flex align-items-center bg-light py-4">
+      <div className="container">
+        <div
+          className="card shadow-lg rounded-4 mx-auto p-4 p-md-5"
+          style={{ maxWidth: "450px" }}
+        >
+          <h2 className="text-center text-primary mb-4 fw-bold">User Registration</h2>
 
-        <dl>
-          <dt>UserId</dt>
-          <dd><input type="text" name="UserId" onChange={formik.handleChange} className="form-control" /></dd>
+          <form onSubmit={formik.handleSubmit}>
+            {/* UserId */}
+            <div className="mb-3">
+              <label className="form-label">User ID</label>
+              <input
+                type="text"
+                name="UserId"
+                onChange={formik.handleChange}
+                value={formik.values.UserId}
+                className="form-control"
+                placeholder="Enter unique User ID"
+                required
+              />
+            </div>
 
-          <dt>UserName</dt>
-          <dd><input type="text" name="UserName" onChange={formik.handleChange} className="form-control" /></dd>
+            {/* UserName */}
+            <div className="mb-3">
+              <label className="form-label">User Name</label>
+              <input
+                type="text"
+                name="UserName"
+                onChange={formik.handleChange}
+                value={formik.values.UserName}
+                className="form-control"
+                placeholder="Enter your name"
+                required
+              />
+            </div>
 
-          <dt>Password</dt>
-          <dd><input type="password" name="Password" onChange={formik.handleChange} className="form-control" /></dd>
+            {/* Password */}
+            <div className="mb-3">
+              <label className="form-label">Password</label>
+              <input
+                type="password"
+                name="Password"
+                onChange={formik.handleChange}
+                value={formik.values.Password}
+                className="form-control"
+                placeholder="Enter password"
+                required
+              />
+            </div>
 
-          <dt>Email</dt>
-          <dd><input type="email" name="Email" onChange={formik.handleChange} className="form-control" /></dd>
+            {/* Email */}
+            <div className="mb-3">
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                name="Email"
+                onChange={formik.handleChange}
+                value={formik.values.Email}
+                className="form-control"
+                placeholder="Enter email"
+                required
+              />
+            </div>
 
-          <dt>Mobile</dt>
-          <dd><input type="text" name="Mobile" onChange={formik.handleChange} className="form-control" /></dd>
-        </dl>
+            {/* Mobile */}
+            <div className="mb-3">
+              <label className="form-label">Mobile</label>
+              <input
+                type="text"
+                name="Mobile"
+                onChange={formik.handleChange}
+                value={formik.values.Mobile}
+                className="form-control"
+                placeholder="Enter mobile number"
+                required
+              />
+            </div>
 
-        <button type="submit" className="btn btn-success w-100">Register</button>
+            {/* Submit */}
+            <button type="submit" className="btn btn-success w-100 rounded-pill mb-3">
+              Register
+            </button>
+          </form>
 
-        <div className="mt-2 d-flex justify-content-between">
-          <Link to="/login">Already have account? Login</Link>
-          <Link to="/">Home</Link>
+          {/* Links */}
+          <div className="d-flex justify-content-between">
+            <Link to="/login" className="text-decoration-none">
+              Already have an account? Login
+            </Link>
+            <Link to="/" className="text-decoration-none">
+              Home
+            </Link>
+          </div>
         </div>
-      </form>
+      </div>
     </div>
   );
 }
