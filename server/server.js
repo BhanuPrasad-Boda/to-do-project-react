@@ -54,6 +54,10 @@ mongoose
 
 // Test route
 app.get("/", (req, res) => res.send("Backend is running 🚀"));
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "OK" });
+});
+
 
 // Server start
 const PORT = process.env.PORT || 5000;
