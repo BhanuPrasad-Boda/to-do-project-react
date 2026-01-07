@@ -124,11 +124,12 @@ export function ToDoUserRegister() {
 
           {/* Links */}
           <div className="d-flex justify-content-between mt-3">
-            <Link to="/login" className="btn btn-outline-primary btn-sm">
-               Already have an account? Login
-             </Link>
+           
              <Link to="/" className="btn btn-outline-secondary btn-sm">
                  Home
+             </Link>
+              <Link to="/login" className="btn btn-outline-primary btn-sm">
+               Already have an account? Login
              </Link>
           </div>
 
