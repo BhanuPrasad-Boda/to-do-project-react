@@ -4,77 +4,89 @@ import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
 
 export function ToDoAddAppointment() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [date, setDate] = useState("");
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [dateTime, setDateTime] = useState(""); // now stores both date + time
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-        const userId = localStorage.getItem("userid"); // get logged-in user ID
-        if (!userId) {
-            toast.error("User not logged in. Please login first.");
-            return;
-        }
+    const user = JSON.parse(localStorage.getItem("user")); // get logged-in user
+    if (!user?.UserId) {
+      toast.error("User not logged in. Please login first.");
+      return;
+    }
 
-        const appointmentData = {
-            Appointment_Id: Date.now(),
-            Title: title.trim(),
-            Description: description.trim(),
-            Date: new Date(date), // ensure Date object
-            UserId: userId
-        };
+    if (!dateTime) {
+      toast.error("Please select a date and time");
+      return;
+    }
 
-        console.log("Sending appointment:", appointmentData);
+    // Convert input value to JS Date object
+    const selectedDate = new Date(dateTime);
 
-        try {
-            await axios.post("/appointments", appointmentData);
-            navigate("/user-dashboard"); // redirect to dashboard
-        } catch (error) {
-            console.error("Appointment add error:", error.response?.data || error);
-            toast.error(error.response?.data?.message || "Failed to add appointment");
-        }
+    const appointmentData = {
+      Appointment_Id: Date.now(),
+      Title: title.trim(),
+      Description: description.trim(),
+      Date: selectedDate, // stores exact datetime selected by user
+      UserId: user.UserId
     };
 
-    return (
-        <div className="p-4">
-            <h2>Add Appointment</h2>
-            <form onSubmit={handleSubmit}>
-                <div className="mb-3">
-                    <label>Title</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        value={title}
-                        onChange={(e) => setTitle(e.target.value)}
-                        required
-                    />
-                </div>
+    console.log("Sending appointment:", appointmentData);
 
-                <div className="mb-3">
-                    <label>Description</label>
-                    <textarea
-                        className="form-control"
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                    ></textarea>
-                </div>
+    try {
+      await axios.post("/appointments", appointmentData);
+      toast.success("Appointment added successfully");
+      navigate("/user-dashboard");
+    } catch (error) {
+      console.error("Appointment add error:", error.response?.data || error);
+      toast.error(error.response?.data?.message || "Failed to add appointment");
+    }
+  };
 
-                <div className="mb-3">
-                    <label>Date</label>
-                    <input
-                        type="date"
-                        className="form-control"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                        required
-                    />
-                </div>
-
-                <button type="submit" className="btn btn-primary">Add Appointment</button>
-            </form>
+  return (
+    <div className="container py-4">
+      <h2 className="mb-4">Add Appointment</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="mb-3">
+          <label className="form-label">Title</label>
+          <input
+            type="text"
+            className="form-control"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            required
+          />
         </div>
-    );
+
+        <div className="mb-3">
+          <label className="form-label">Description</label>
+          <textarea
+            className="form-control"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={3}
+          ></textarea>
+        </div>
+
+        <div className="mb-3">
+          <label className="form-label">Scheduled Date & Time</label>
+          <input
+            type="datetime-local"
+            className="form-control"
+            value={dateTime}
+            onChange={(e) => setDateTime(e.target.value)}
+            required
+          />
+        </div>
+
+        <button type="submit" className="btn btn-primary">
+          Add Appointment
+        </button>
+      </form>
+    </div>
+  );
 }
