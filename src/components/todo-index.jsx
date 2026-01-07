@@ -1,15 +1,25 @@
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
+export function ToDoIndex() {
+  return (
+    <div className="min-vh-100 d-flex align-items-center bg-light">
+      <div className="container text-center">
+        <div className="card shadow-lg rounded-4 p-4 p-md-5 mx-auto" style={{ maxWidth: "400px" }}>
+          <h1 className="mb-4 text-primary fw-bold">Welcome to ToDo App</h1>
+          <p className="mb-4 text-muted">
+            Organize your appointments easily and stay on top of your schedule!
+          </p>
 
-export function ToDoIndex(){
-    return(
-        <div className="container-fluid">
-            <div className='d-flex justify-content-center align-items-center' style={{height:'100vh'}}>
-                    <div>
-                        <Link to="/register" className='btn btn-dark mx-2'> New User Register </Link>
-                        <Link to="/login" className='btn btn-warning'> Existing User Login </Link>
-                    </div>
-            </div>
+          <div className="d-grid gap-3">
+            <Link to="/register" className="btn btn-dark btn-lg rounded-pill">
+              📝 New User Register
+            </Link>
+            <Link to="/login" className="btn btn-warning btn-lg rounded-pill">
+              🔑 Existing User Login
+            </Link>
+          </div>
         </div>
-    )
+      </div>
+    </div>
+  );
 }
