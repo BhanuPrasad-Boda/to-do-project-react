@@ -9,9 +9,18 @@ export function ToDoUserDashBoard() {
 
   const userData = JSON.parse(localStorage.getItem("user")) || {};
 
-  // Format date
+  // Format date & time in IST
   const formatDateTime = (date) => {
-    return date ? new Date(date).toLocaleString() : "-";
+    if (!date) return "-";
+    return new Date(date).toLocaleString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+      timeZone: "Asia/Kolkata", // ensures IST
+    });
   };
 
   useEffect(() => {
