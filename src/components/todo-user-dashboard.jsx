@@ -3,24 +3,21 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
 
-
-
 export function ToDoUserDashBoard() {
   const [appointments, setAppointments] = useState([]);
   const navigate = useNavigate();
 
-  // Format date for display
+  const userData = JSON.parse(localStorage.getItem("user")) || {};
+
+  // Format date
   const formatDateTime = (date) => {
     return date ? new Date(date).toLocaleString() : "-";
   };
 
   useEffect(() => {
-    const userData = JSON.parse(localStorage.getItem("user"));
     const token = localStorage.getItem("token");
 
-    
-
-    if (!userData || !token) {
+    if (!userData.UserId || !token) {
       navigate("/login");
       return;
     }
@@ -28,138 +25,135 @@ export function ToDoUserDashBoard() {
     const fetchAppointments = async () => {
       try {
         const res = await axios.get(`/appointments/${userData.UserId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
         setAppointments(res.data);
       } catch (err) {
-        console.error("Failed to fetch appointments:", err);
         toast.error(err.response?.data?.message || "Failed to load appointments");
 
-        if (err.response?.status === 401 || err.response?.status === 403) {
-          localStorage.removeItem("user");
-          localStorage.removeItem("token");
+        if ([401, 403].includes(err.response?.status)) {
+          localStorage.clear();
           navigate("/login");
         }
       }
     };
 
     fetchAppointments();
-  }, [navigate]);
+  }, [navigate, userData.UserId]);
 
   const handleSignout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+    localStorage.clear();
     navigate("/login");
   };
 
-  const handleDelete = async (id) => {
-  toast(
-    ({ closeToast }) => (
-      <div>
-        <p>Are you sure you want to delete this appointment?</p>
-        <div className="d-flex justify-content-end gap-2 mt-2">
-          <button
-            className="btn btn-danger btn-sm"
-            onClick={async () => {
-              try {
-                const token = localStorage.getItem("token");
-                await axios.delete(`/appointments/${id}`, {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                  },
-                });
+  const handleDelete = (id) => {
+    toast(
+      ({ closeToast }) => (
+        <div>
+          <p className="mb-2">Are you sure you want to delete this appointment?</p>
+          <div className="d-flex justify-content-end gap-2">
+            <button
+              className="btn btn-danger btn-sm"
+              onClick={async () => {
+                try {
+                  const token = localStorage.getItem("token");
+                  await axios.delete(`/appointments/${id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                  });
 
-                setAppointments((prev) =>
-                  prev.filter((a) => a.Appointment_Id !== id)
-                );
+                  setAppointments((prev) =>
+                    prev.filter((a) => a.Appointment_Id !== id)
+                  );
 
-                toast.success("Appointment deleted successfully");
-              } catch (err) {
-                console.error("Failed to delete appointment:", err);
-                toast.error(
-                  err.response?.data?.message || "Delete failed"
-                );
-              }
-              closeToast();
-            }}
-          >
-            Yes
-          </button>
-
-          <button
-            className="btn btn-secondary btn-sm"
-            onClick={closeToast}
-          >
-            No
-          </button>
+                  toast.success("Appointment deleted successfully");
+                } catch {
+                  toast.error("Delete failed");
+                }
+                closeToast();
+              }}
+            >
+              Yes
+            </button>
+            <button className="btn btn-secondary btn-sm" onClick={closeToast}>
+              No
+            </button>
+          </div>
         </div>
-      </div>
-    ),
-    {
-      autoClose: false,
-      closeOnClick: false,
-    }
-  );
-};
-
-
-  const userData = JSON.parse(localStorage.getItem("user")) || {};
+      ),
+      { autoClose: false, closeOnClick: false }
+    );
+  };
 
   return (
-    <div className="p-2">
-      <div className="h2 d-flex justify-content-center">Dashboard</div>
-      <nav className="d-flex justify-content-between mt-4 p-2">
-        <div className="h3 text-light">
-          Welcome, {userData.UserName || "User"} 👋
-        </div>
-        <div className="ms-4">
-          <button onClick={handleSignout} className="btn btn-danger">
-            Signout
+    <div className="min-vh-100 bg-light py-4">
+      <div className="container">
+        {/* HEADER */}
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+          <h2 className="fw-bold text-primary mb-2 mb-md-0">
+            Dashboard
+          </h2>
+          <button onClick={handleSignout} className="btn btn-outline-danger btn-sm">
+            Sign out
           </button>
         </div>
-      </nav>
 
-      <section className="text-start" style={{ minHeight: "80vh" }}>
-        <div className="mb-3">
-          <Link to="/add-appointment" className="bi bi-calendar-date btn btn-dark">
-            Add Appointment
-          </Link>
+        {/* WELCOME CARD */}
+        <div className="card shadow-sm border-0 rounded-4 mb-4">
+          <div className="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center">
+            <h5 className="mb-2 mb-md-0">
+              Welcome, <strong>{userData.UserName || "User"}</strong> 👋
+            </h5>
+            <Link to="/add-appointment" className="btn btn-primary btn-sm">
+              + Add Appointment
+            </Link>
+          </div>
         </div>
 
+        {/* EMPTY STATE */}
         {appointments.length === 0 && (
-          <div className="alert alert-info w-50">No appointments found.</div>
+          <div className="alert alert-info text-center">
+            No appointments found 😊
+          </div>
         )}
 
-        {appointments.map((app) => (
-          <div className="alert w-50 my-4 alert-success" key={app.Appointment_Id}>
-            <h2>{app.Title}</h2>
-            <p>{app.Description}</p>
-            <div className="bi bi-calendar-date">
-              Scheduled Date: {formatDateTime(app.Date)}
+        {/* APPOINTMENT LIST */}
+        <div className="row g-4">
+          {appointments.map((app) => (
+            <div className="col-12 col-md-6 col-lg-4" key={app.Appointment_Id}>
+              <div className="card h-100 shadow-sm border-0 rounded-4">
+                <div className="card-body d-flex flex-column">
+                  <h5 className="fw-bold text-success">{app.Title}</h5>
+                  <p className="text-muted small">{app.Description}</p>
+
+                  <div className="small mb-2">
+                    📅 <strong>Scheduled:</strong> {formatDateTime(app.Date)}
+                  </div>
+                  <div className="small text-muted">
+                    Created: {formatDateTime(app.createdAt)} <br />
+                    Updated: {formatDateTime(app.updatedAt)}
+                  </div>
+
+                  <div className="mt-auto pt-3 d-flex justify-content-between">
+                    <button
+                      onClick={() => handleDelete(app.Appointment_Id)}
+                      className="btn btn-outline-danger btn-sm"
+                    >
+                      Delete
+                    </button>
+                    <Link
+                      to={`/edit-appointment/${app.Appointment_Id}`}
+                      className="btn btn-outline-warning btn-sm"
+                    >
+                      Edit
+                    </Link>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div>
-              Created: {formatDateTime(app.createdAt)} <br />
-              Updated: {formatDateTime(app.updatedAt)}
-            </div>
-            <div className="mt-2">
-              <button
-                onClick={() => handleDelete(app.Appointment_Id)}
-                className="bi bi-trash btn btn-danger me-2"
-              >
-                Remove
-              </button>
-              <Link
-                to={`/edit-appointment/${app.Appointment_Id}`}
-                className="bi bi-pen-fill btn btn-warning"
-              >
-                Edit
-              </Link>
-            </div>
-          </div>
-        ))}
-      </section>
+          ))}
+        </div>
+
+      </div>
     </div>
   );
 }
