@@ -1,4 +1,4 @@
-/* REGISTER PAGE */
+/* ================= REGISTER PAGE ================= */
 
 .register-page {
   min-height: 100vh;
@@ -18,6 +18,9 @@
   border-radius: 1.2rem;
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
   text-align: center;
+
+  /* SAFE animation */
+  animation: cardScaleIn 0.4s ease-out both;
 }
 
 /* Title */
@@ -25,6 +28,7 @@
   color: #ff6f61;
   font-weight: 700;
   margin-bottom: 1.4rem;
+  letter-spacing: 0.4px;
 }
 
 /* Inputs */
@@ -32,12 +36,16 @@
   border-radius: 0.6rem;
   padding: 0.6rem 0.75rem;
   border: 1px solid #ced4da;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+  transition: 
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
 }
 
 .register-card .form-control:focus {
   border-color: #ff6f61;
   box-shadow: 0 0 0 2px rgba(255, 111, 97, 0.25);
+  transform: scale(1.02);
   outline: none;
 }
 
@@ -47,12 +55,19 @@
   padding: 0.6rem;
   border-radius: 50px;
   font-weight: 600;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: 
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background-color 0.25s ease;
 }
 
 .register-card .btn-success:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+.register-card .btn-success:active {
+  transform: scale(0.97);
 }
 
 /* Links */
@@ -70,12 +85,30 @@
   border: 1px solid #ff6f61;
   padding: 6px 14px;
   border-radius: 20px;
-  transition: all 0.25s ease;
+  transition: 
+    background-color 0.25s ease,
+    color 0.25s ease,
+    transform 0.2s ease;
 }
 
 .register-links a:hover {
   background-color: #ff6f61;
   color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.register-links a:active {
+  transform: scale(0.95);
+}
+
+/* SAFE keyframes (no opacity tricks) */
+@keyframes cardScaleIn {
+  from {
+    transform: scale(0.96);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 
 /* Mobile */
