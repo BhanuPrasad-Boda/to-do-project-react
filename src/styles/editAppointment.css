@@ -1,0 +1,113 @@
+/* Page background */
+.edit-page {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fbff, #ffffff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+/* Card */
+.edit-card {
+  width: 100%;
+  max-width: 480px;
+  background: #ffffff;
+  padding: 25px;
+  border-radius: 1.5rem;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+}
+
+.edit-card h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-weight: 800;
+  color: #fd7e14;
+}
+
+/* Form */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 0.8rem;
+  border: 1px solid #ced4da;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #fd7e14;
+  box-shadow: 0 0 0 2px rgba(253,126,20,0.2);
+}
+
+/* Buttons */
+.btn-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 15px;
+}
+
+.btn-update {
+  flex: 1;
+  background: #fd7e14;
+  border: none;
+  color: #fff;
+  padding: 10px;
+  border-radius: 0.9rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-update:hover {
+  background: #e96b0c;
+  transform: translateY(-2px);
+}
+
+.btn-cancel {
+  flex: 1;
+  background: #6c757d;
+  border: none;
+  color: #fff;
+  padding: 10px;
+  border-radius: 0.9rem;
+  font-weight: 600;
+}
+
+.btn-cancel:hover {
+  background: #5a6268;
+}
+
+/* Animation */
+.animate-up {
+  animation: fadeUp 0.6s ease;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .edit-card {
+    padding: 20px;
+  }
+}

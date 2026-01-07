@@ -2,6 +2,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
+import  "../styles/deleteAppointment.css" // ✅ unique css
 
 export function ToDoDeleteAppointment() {
   const { id } = useParams();
@@ -18,13 +19,9 @@ export function ToDoDeleteAppointment() {
 
     axios
       .get(`/appointments/single/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       })
-      .then((res) => {
-        setAppointment(res.data);
-      })
+      .then((res) => setAppointment(res.data))
       .catch((err) => {
         toast.error(err.response?.data?.message || "Failed to load appointment");
         navigate("/user-dashboard");
@@ -32,14 +29,12 @@ export function ToDoDeleteAppointment() {
   }, [id, navigate]);
 
   const handleDeleteClick = async () => {
-    const token = localStorage.getItem("token");
-
     try {
+      const token = localStorage.getItem("token");
       await axios.delete(`/appointments/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
+      toast.success("Appointment deleted");
       navigate("/user-dashboard");
     } catch (err) {
       toast.error(err.response?.data?.message || "Delete failed");
@@ -47,24 +42,32 @@ export function ToDoDeleteAppointment() {
   };
 
   if (!appointment) {
-    return <p className="text-center mt-4">Loading...</p>;
+    return <div className="delete-loader">Loading...</div>;
   }
 
   return (
-    <div className="bg-light mt-3 w-25 text-start p-2">
-      <h3>Delete Appointment</h3>
-      <dl>
-        <dt>Title</dt>
-        <dd>{appointment.Title}</dd>
-        <dt>Description</dt>
-        <dd>{appointment.Description}</dd>
-      </dl>
-      <button onClick={handleDeleteClick} className="btn btn-danger me-2">
-        Yes
-      </button>
-      <Link className="btn btn-warning" to="/user-dashboard">
-        No
-      </Link>
+    <div className="delete-page">
+      <div className="delete-card animate-scale">
+        <h3>Delete Appointment</h3>
+
+        <p className="warning-text">
+          Are you sure you want to delete this appointment?
+        </p>
+
+        <div className="info-box">
+          <p><strong>Title:</strong> {appointment.Title}</p>
+          <p><strong>Description:</strong> {appointment.Description}</p>
+        </div>
+
+        <div className="btn-group">
+          <button onClick={handleDeleteClick} className="btn-delete">
+            Yes, Delete
+          </button>
+          <Link to="/user-dashboard" className="btn-cancel">
+            Cancel
+          </Link>
+        </div>
+      </div>
     </div>
   );
 }

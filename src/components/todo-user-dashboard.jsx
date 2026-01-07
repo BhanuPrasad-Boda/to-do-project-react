@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
+import  "../styles/dashboardStyles.css" // ✅ unique CSS
 
 export function ToDoUserDashBoard() {
   const [appointments, setAppointments] = useState([]);
@@ -9,7 +10,6 @@ export function ToDoUserDashBoard() {
 
   const userData = JSON.parse(localStorage.getItem("user")) || {};
 
-  // Format date & time in IST
   const formatDateTime = (date) => {
     if (!date) return "-";
     return new Date(date).toLocaleString("en-IN", {
@@ -19,7 +19,7 @@ export function ToDoUserDashBoard() {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
-      timeZone: "Asia/Kolkata", // ensures IST
+      timeZone: "Asia/Kolkata",
     });
   };
 
@@ -38,12 +38,9 @@ export function ToDoUserDashBoard() {
         });
         setAppointments(res.data);
       } catch (err) {
-        toast.error(err.response?.data?.message || "Failed to load appointments");
-
-        if ([401, 403].includes(err.response?.status)) {
-          localStorage.clear();
-          navigate("/login");
-        }
+        toast.error("Failed to load appointments");
+        localStorage.clear();
+        navigate("/login");
       }
     };
 
@@ -59,7 +56,7 @@ export function ToDoUserDashBoard() {
     toast(
       ({ closeToast }) => (
         <div>
-          <p className="mb-2">Are you sure you want to delete this appointment?</p>
+          <p className="mb-2">Delete this appointment?</p>
           <div className="d-flex justify-content-end gap-2">
             <button
               className="btn btn-danger btn-sm"
@@ -74,7 +71,7 @@ export function ToDoUserDashBoard() {
                     prev.filter((a) => a.Appointment_Id !== id)
                   );
 
-                  toast.success("Appointment deleted successfully");
+                  toast.success("Appointment deleted");
                 } catch {
                   toast.error("Delete failed");
                 }
@@ -89,73 +86,72 @@ export function ToDoUserDashBoard() {
           </div>
         </div>
       ),
-      { autoClose: false, closeOnClick: false }
+      { autoClose: false }
     );
   };
 
   return (
-    <div className="min-vh-100 bg-light py-4">
+    <div className="dashboard-page">
       <div className="container">
+
         {/* HEADER */}
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
-          <h2 className="fw-bold text-primary mb-2 mb-md-0">
-            Dashboard
-          </h2>
+        <div className="dashboard-header animate-down">
+          <h2>Dashboard</h2>
           <button onClick={handleSignout} className="btn btn-outline-danger btn-sm">
             Sign out
           </button>
         </div>
 
-        {/* WELCOME CARD */}
-        <div className="card shadow-sm border-0 rounded-4 mb-4">
-          <div className="card-body d-flex flex-column flex-md-row justify-content-between align-items-md-center">
-            <h5 className="mb-2 mb-md-0">
-              Welcome, <strong>{userData.UserName || "User"}</strong> 👋
-            </h5>
-            <Link to="/add-appointment" className="btn btn-primary btn-sm">
-              + Add Appointment
-            </Link>
-          </div>
+        {/* WELCOME */}
+        <div className="welcome-card animate-up">
+          <h5>
+            Welcome, <span>{userData.UserName || "User"}</span> 👋
+          </h5>
+          <Link to="/add-appointment" className="btn btn-primary btn-sm">
+            + Add Appointment
+          </Link>
         </div>
 
-        {/* EMPTY STATE */}
+        {/* EMPTY */}
         {appointments.length === 0 && (
-          <div className="alert alert-info text-center">
+          <div className="empty-state animate-fade">
             No appointments found 😊
           </div>
         )}
 
-        {/* APPOINTMENT LIST */}
-        <div className="row g-4">
+        {/* APPOINTMENTS */}
+        <div className="row g-4 mt-1">
           {appointments.map((app) => (
-            <div className="col-12 col-md-6 col-lg-4" key={app.Appointment_Id}>
-              <div className="card h-100 shadow-sm border-0 rounded-4">
-                <div className="card-body d-flex flex-column">
-                  <h5 className="fw-bold text-success">{app.Title}</h5>
-                  <p className="text-muted small">{app.Description}</p>
+            <div
+              className="col-12 col-md-6 col-lg-4 animate-card"
+              key={app.Appointment_Id}
+            >
+              <div className="appointment-card">
+                <h5>{app.Title}</h5>
+                <p>{app.Description}</p>
 
-                  <div className="small mb-2">
-                    📅 <strong>Scheduled:</strong> {formatDateTime(app.Date)}
-                  </div>
-                  <div className="small text-muted">
-                    Created: {formatDateTime(app.createdAt)} <br />
-                    Updated: {formatDateTime(app.updatedAt)}
-                  </div>
+                <div className="meta">
+                  📅 {formatDateTime(app.Date)}
+                </div>
 
-                  <div className="mt-auto pt-3 d-flex justify-content-between">
-                    <button
-                      onClick={() => handleDelete(app.Appointment_Id)}
-                      className="btn btn-outline-danger btn-sm"
-                    >
-                      Delete
-                    </button>
-                    <Link
-                      to={`/edit-appointment/${app.Appointment_Id}`}
-                      className="btn btn-outline-warning btn-sm"
-                    >
-                      Edit
-                    </Link>
-                  </div>
+                <div className="timestamps">
+                  Created: {formatDateTime(app.createdAt)} <br />
+                  Updated: {formatDateTime(app.updatedAt)}
+                </div>
+
+                <div className="actions">
+                  <button
+                    className="btn btn-outline-danger btn-sm"
+                    onClick={() => handleDelete(app.Appointment_Id)}
+                  >
+                    Delete
+                  </button>
+                  <Link
+                    to={`/edit-appointment/${app.Appointment_Id}`}
+                    className="btn btn-outline-warning btn-sm"
+                  >
+                    Edit
+                  </Link>
                 </div>
               </div>
             </div>

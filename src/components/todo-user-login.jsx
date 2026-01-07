@@ -4,7 +4,7 @@ import axios from "../api/axiosConfig";
 import { useNavigate, Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
-
+import "../styles/loginStyles.css" // ✅ unique CSS
 
 export function ToDoUserLogin() {
   const [showForgotOptions, setShowForgotOptions] = useState(false);
@@ -13,48 +13,34 @@ export function ToDoUserLogin() {
 
   const formik = useFormik({
     initialValues: { UserId: "", Password: "" },
+
     onSubmit: async (values) => {
       setLoading(true);
       try {
         const res = await axios.post("/users/login", values);
-        console.log("Login response:", res.data);
 
         const { UserId, UserName, Email, token } = res.data;
 
         if (!token) {
-          toast.error("Login failed: Token missing from server response");
-          setLoading(false);
+          toast.error("Login failed. Token missing.");
           return;
         }
-        
 
-// decode token
-const decoded = jwtDecode(token);
+        // decode token
+        const decoded = jwtDecode(token);
+        localStorage.setItem("tokenExpiry", decoded.exp * 1000);
 
-// save expiry time (milliseconds)
-localStorage.setItem("tokenExpiry", decoded.exp * 1000);
+        // store user
+        localStorage.setItem(
+          "user",
+          JSON.stringify({ UserId, UserName, Email })
+        );
+        localStorage.setItem("userid", UserId);
+        localStorage.setItem("token", token);
 
-localStorage.setItem(
-  "user",
-  JSON.stringify({ UserId, UserName, Email })
-);
-localStorage.setItem("token", token);
-
-navigate("/user-dashboard");
-
-
-     // Store user info and JWT in localStorage
-localStorage.setItem(
-  "user",
-  JSON.stringify({ UserId, UserName, Email })
-);
-localStorage.setItem("userid", UserId); // <-- ADD THIS LINE
-localStorage.setItem("token", token);
-
-
+        toast.success(`Welcome back, ${UserName} 👋`);
         navigate("/user-dashboard");
       } catch (err) {
-        console.error(err.response?.data || err);
         toast.error(err.response?.data?.message || "Invalid UserId or Password");
       } finally {
         setLoading(false);
@@ -63,70 +49,72 @@ localStorage.setItem("token", token);
   });
 
   return (
-    <div className="text-start d-flex justify-content-center">
-      <form className="bg-light p-3 mt-4 w-50" onSubmit={formik.handleSubmit}>
-        <h3>User Login</h3>
+    <div className="login-page">
+      <div className="login-card animate-login">
+        <h2 className="login-title">User Login</h2>
 
-        <dl>
-          <dt>UserId</dt>
-          <dd>
+        <form onSubmit={formik.handleSubmit}>
+          <div className="mb-3">
+            <label className="form-label">User ID</label>
             <input
               type="text"
               name="UserId"
-              onChange={formik.handleChange}
+              className="form-control login-input"
               value={formik.values.UserId}
-              className="form-control"
+              onChange={formik.handleChange}
               required
             />
-          </dd>
+          </div>
 
-          <dt>Password</dt>
-          <dd>
+          <div className="mb-3">
+            <label className="form-label">Password</label>
             <input
               type="password"
               name="Password"
-              onChange={formik.handleChange}
+              className="form-control login-input"
               value={formik.values.Password}
-              className="form-control"
+              onChange={formik.handleChange}
               required
             />
-          </dd>
-        </dl>
+          </div>
 
-        <button
-          type="submit"
-          className="btn btn-warning w-100"
-          disabled={loading}
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
+          <button
+            type="submit"
+            className="btn btn-warning w-100 rounded-pill login-btn"
+            disabled={loading}
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
 
-        <div className="mt-2 d-flex justify-content-between">
-          <Link to="/">Home</Link>
-          <Link to="/register">New User Register</Link>
+        {/* Links */}
+        <div className="login-links">
+          <Link to="/" className="btn btn-outline-secondary btn-sm">
+            Home
+          </Link>
+          <Link to="/register" className="btn btn-outline-primary btn-sm">
+            New User Register
+          </Link>
         </div>
 
-        <div className="mt-2">
+        {/* Forgot Section */}
+        <div className="forgot-section">
           <button
             type="button"
-            className="btn btn-link p-0"
+            className="btn btn-link forgot-btn"
             onClick={() => setShowForgotOptions(!showForgotOptions)}
           >
             Forgot?
           </button>
 
           {showForgotOptions && (
-            <div className="mt-1">
-              <Link to="/forgot-password" className="d-block">
-                Forgot Password
-              </Link>
-              <Link to="/forgot-userid" className="d-block">
-                Forgot UserID
-              </Link>
+            <div className="forgot-links animate-forgot">
+              <Link to="/forgot-password">Forgot Password</Link>
+              <Link to="/forgot-userid">Forgot UserID</Link>
             </div>
           )}
         </div>
-      </form>
+      </div>
     </div>
   );
 }

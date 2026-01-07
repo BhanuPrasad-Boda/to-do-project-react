@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import axios from "../api/axiosConfig";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import "./todoregisterStyles.css"
+import "../styles/todoregisterStyles.css" // ✅ unique CSS
 
 export function ToDoUserRegister() {
   const navigate = useNavigate();
