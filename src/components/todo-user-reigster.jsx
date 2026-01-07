@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import axios from "../api/axiosConfig";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import   "../stylestodoregisterStyles.css"
+import "../styles/todoregisterStyles.css";
 
 export function ToDoUserRegister() {
   const navigate = useNavigate();
@@ -20,16 +20,13 @@ export function ToDoUserRegister() {
       axios
         .post("/users/register", values)
         .then((res) => {
-          if (res.status === 201) {
-            toast.success(res.data.message);
-            navigate("/login");
-          } else {
-            toast.error("Something went wrong");
-          }
+          toast.success(res.data.message || "Registration successful");
+          navigate("/login");
         })
         .catch((err) => {
           toast.error(
-            err.response?.data?.message || "Registration cancelled. Check unique fields."
+            err.response?.data?.message ||
+              "Registration failed. Check unique fields."
           );
         });
     },
@@ -37,91 +34,83 @@ export function ToDoUserRegister() {
 
   return (
     <div className="register-page">
-      <div className="container">
-        <div className="register-card animate-card">
-          <h2 className="text-center text-primary mb-4 fw-bold animate-title">
-            User Registration
-          </h2>
+      <div className="register-card">
+        <h3>User Registration</h3>
 
-          <form onSubmit={formik.handleSubmit}>
-            <div className="mb-3">
-              <label className="form-label">User ID</label>
-              <input
-                type="text"
-                name="UserId"
-                onChange={formik.handleChange}
-                value={formik.values.UserId}
-                className="form-control animate-input"
-                placeholder="Enter unique User ID"
-                required
-              />
-            </div>
+        <form onSubmit={formik.handleSubmit}>
+          <div className="mb-3 text-start">
+            <label className="form-label">User ID</label>
+            <input
+              type="text"
+              name="UserId"
+              className="form-control"
+              placeholder="Enter unique User ID"
+              onChange={formik.handleChange}
+              value={formik.values.UserId}
+              required
+            />
+          </div>
 
-            <div className="mb-3">
-              <label className="form-label">User Name</label>
-              <input
-                type="text"
-                name="UserName"
-                onChange={formik.handleChange}
-                value={formik.values.UserName}
-                className="form-control animate-input"
-                placeholder="Enter your name"
-                required
-              />
-            </div>
+          <div className="mb-3 text-start">
+            <label className="form-label">User Name</label>
+            <input
+              type="text"
+              name="UserName"
+              className="form-control"
+              placeholder="Enter your name"
+              onChange={formik.handleChange}
+              value={formik.values.UserName}
+              required
+            />
+          </div>
 
-            <div className="mb-3">
-              <label className="form-label">Password</label>
-              <input
-                type="password"
-                name="Password"
-                onChange={formik.handleChange}
-                value={formik.values.Password}
-                className="form-control animate-input"
-                placeholder="Enter password"
-                required
-              />
-            </div>
+          <div className="mb-3 text-start">
+            <label className="form-label">Password</label>
+            <input
+              type="password"
+              name="Password"
+              className="form-control"
+              placeholder="Enter password"
+              onChange={formik.handleChange}
+              value={formik.values.Password}
+              required
+            />
+          </div>
 
-            <div className="mb-3">
-              <label className="form-label">Email</label>
-              <input
-                type="email"
-                name="Email"
-                onChange={formik.handleChange}
-                value={formik.values.Email}
-                className="form-control animate-input"
-                placeholder="Enter email"
-                required
-              />
-            </div>
+          <div className="mb-3 text-start">
+            <label className="form-label">Email</label>
+            <input
+              type="email"
+              name="Email"
+              className="form-control"
+              placeholder="Enter email"
+              onChange={formik.handleChange}
+              value={formik.values.Email}
+              required
+            />
+          </div>
 
-            <div className="mb-3">
-              <label className="form-label">Mobile</label>
-              <input
-                type="text"
-                name="Mobile"
-                onChange={formik.handleChange}
-                value={formik.values.Mobile}
-                className="form-control animate-input"
-                placeholder="Enter mobile number"
-                required
-              />
-            </div>
+          <div className="mb-3 text-start">
+            <label className="form-label">Mobile</label>
+            <input
+              type="text"
+              name="Mobile"
+              className="form-control"
+              placeholder="Enter mobile number"
+              onChange={formik.handleChange}
+              value={formik.values.Mobile}
+              required
+            />
+          </div>
 
-            <button
-              type="submit"
-              className="btn btn-success w-100 rounded-pill animate-button"
-            >
-              Register
-            </button>
-          </form>
+          <button type="submit" className="btn btn-success w-100">
+            Register
+          </button>
+        </form>
 
-<div className="register-links">
-  <Link to="/login">Login</Link>
-  <Link to="/">Home</Link>
-</div>
-
+        <div className="register-links">
+          <Link to="/">Home</Link>
+          <Link to="/login">Already have account? Login</Link>
         </div>
       </div>
     </div>

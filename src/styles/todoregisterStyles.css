@@ -1,4 +1,4 @@
-/* REGISTER PAGE – STABLE VERSION (NO FLICKER) */
+/* REGISTER PAGE */
 
 .register-page {
   min-height: 100vh;
@@ -11,28 +11,26 @@
 
 /* Card */
 .register-card {
-  background-color: #ffffff;
-  border-radius: 1.25rem;
-  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
-  padding: 32px 26px;
-  max-width: 440px;
+  background: #ffffff;
   width: 100%;
+  max-width: 440px;
+  padding: 30px 25px;
+  border-radius: 1.2rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
   text-align: center;
 }
 
 /* Title */
 .register-card h3 {
   color: #ff6f61;
-  margin-bottom: 1.4rem;
   font-weight: 700;
-  font-size: 1.8rem;
+  margin-bottom: 1.4rem;
 }
 
 /* Inputs */
 .register-card .form-control {
   border-radius: 0.6rem;
   padding: 0.6rem 0.75rem;
-  margin-bottom: 1rem;
   border: 1px solid #ced4da;
   transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
@@ -43,11 +41,12 @@
   outline: none;
 }
 
-/* Register button */
+/* Button */
 .register-card .btn-success {
+  margin-top: 10px;
+  padding: 0.6rem;
   border-radius: 50px;
   font-weight: 600;
-  padding: 0.55rem;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -60,8 +59,7 @@
 .register-links {
   display: flex;
   justify-content: space-between;
-  margin-top: 14px;
-  gap: 10px;
+  margin-top: 15px;
 }
 
 .register-links a {
@@ -70,14 +68,14 @@
   font-weight: 600;
   color: #ff6f61;
   border: 1px solid #ff6f61;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 20px;
   transition: all 0.25s ease;
 }
 
 .register-links a:hover {
   background-color: #ff6f61;
-  color: #fff;
+  color: #ffffff;
 }
 
 /* Mobile */
@@ -88,6 +86,7 @@
 
   .register-links {
     flex-direction: column;
+    gap: 10px;
   }
 
   .register-links a {
