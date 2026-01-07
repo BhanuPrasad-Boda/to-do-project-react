@@ -54,6 +54,8 @@
 .register-card .btn {
   border-radius: 50px;
   transition: all 0.3s ease;
+  display: flex;
+  justify-content: center;
 }
 
 .register-card .btn:hover {
