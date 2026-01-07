@@ -3,7 +3,7 @@ import { useFormik } from "formik";
 import axios from "../api/axiosConfig";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
-import "../styles/todoregisterStyles.css" // ✅ unique CSS
+import   "../stylestodoregisterStyles.css"
 
 export function ToDoUserRegister() {
   const navigate = useNavigate();
@@ -117,15 +117,11 @@ export function ToDoUserRegister() {
             </button>
           </form>
 
-          <div className="d-flex justify-content-between mt-3">
-           
-            <Link to="/" className="btn btn-outline-secondary btn-sm animate-button">
-              Home
-            </Link>
-             <Link to="/login" className="btn btn-outline-primary btn-sm animate-button">
-              Already have an account? Login
-            </Link>
-          </div>
+<div className="register-links">
+  <Link to="/login">Login</Link>
+  <Link to="/">Home</Link>
+</div>
+
         </div>
       </div>
     </div>
