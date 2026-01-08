@@ -1,7 +1,7 @@
 import { useState } from "react";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
-import "../styles/forgotPassword.css"; // ✅ unique CSS
+import "../styles/forgotPassword.css";
 
 export function ForgotPassword() {
   const [mobile, setMobile] = useState("");
@@ -24,27 +24,27 @@ export function ForgotPassword() {
   };
 
   return (
-    <div className="forgot-page">
-      <div className="forgot-card animate-fade">
-        <h2 className="forgot-title">Forgot Password</h2>
-        <p className="forgot-subtitle">
-          Enter your registered mobile number.  
-          We’ll send a reset link to your email.
+    <div className="forgot-wrapper">
+      <div className="forgot-card">
+        <h2 className="forgot-title">Reset Your Password</h2>
+        <p className="forgot-desc">
+          Enter your registered mobile number to receive a secure reset link.
         </p>
 
         <form onSubmit={handleSubmit}>
-          <label className="forgot-label">Mobile Number</label>
-          <input
-            type="text"
-            placeholder="Enter mobile number"
-            value={mobile}
-            onChange={(e) => setMobile(e.target.value)}
-            className="forgot-input"
-            required
-          />
+          <div className="input-group">
+            <input
+              type="text"
+              value={mobile}
+              onChange={(e) => setMobile(e.target.value)}
+              required
+            />
+            <label>Mobile Number</label>
+            <span className="focus-line"></span>
+          </div>
 
           <button className="forgot-btn" disabled={loading}>
-            {loading ? "Sending..." : "Send Reset Link"}
+            <span>{loading ? "Sending..." : "Send Reset Link"}</span>
           </button>
         </form>
       </div>
