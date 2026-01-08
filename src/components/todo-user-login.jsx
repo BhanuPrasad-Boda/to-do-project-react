@@ -101,7 +101,7 @@ export function ToDoUserLogin() {
         <div className="forgot-section">
           <button
             type="button"
-            className="btn btn-link forgot-btn"
+            className="forgot-btn"
             onClick={() => setShowForgotOptions(!showForgotOptions)}
           >
             Forgot?
