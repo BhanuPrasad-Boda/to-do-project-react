@@ -98,11 +98,43 @@ router.post("/forgot-password", async (req, res) => {
     const resetLink = `${process.env.CLIENT_URL}/reset-password/${token}`;
 
     try {
-      await sendEmail(
-        user.Email,
-        "Reset Password - ToDo App",
-        `<p>Click to reset password:</p><a href="${resetLink}">${resetLink}</a>`
-      );
+    await sendEmail(
+  user.Email,
+  "Reset Password - ToDo App",
+  `
+  <div style="font-family: Arial, sans-serif; padding: 20px;">
+    <h2 style="color:#333;">Reset Your Password</h2>
+    <p>Hello ${user.UserName},</p>
+    <p>You requested to reset your password.</p>
+
+    <a href="${resetLink}"
+       style="
+         display: inline-block;
+         padding: 12px 24px;
+         background-color: #f0ad4e;
+         color: #000;
+         text-decoration: none;
+         border-radius: 30px;
+         font-weight: bold;
+         margin-top: 10px;
+       ">
+       Reset Password
+    </a>
+
+    <p style="margin-top:20px;">
+      This link will expire in <strong>15 minutes</strong>.
+    </p>
+
+    <p>If you did not request this, please ignore this email.</p>
+
+    <p style="margin-top:30px;">
+      Regards,<br/>
+      <strong>To-Do App Team</strong>
+    </p>
+  </div>
+  `
+);
+
       res.json({ message: "Reset link sent to email" });
     } catch (err) {
       console.error("Email sending error:", err);

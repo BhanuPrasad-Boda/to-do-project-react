@@ -104,7 +104,7 @@ export function ToDoUserLogin() {
             className="forgot-btn"
             onClick={() => setShowForgotOptions(!showForgotOptions)}
           >
-            Forgot?
+            Forgot Credentials?
           </button>
 
           {showForgotOptions && (
