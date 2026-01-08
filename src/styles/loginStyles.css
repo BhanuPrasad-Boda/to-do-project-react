@@ -72,12 +72,12 @@
   padding: 0;
   font-size: 0.95rem;
   transition: color 0.3s ease;
-  text-decoration: none;
+ 
 }
 
 .forgot-btn:hover {
   color: #e68900;
-  text-decoration: underline;
+  
 }
 
 .forgot-links {
