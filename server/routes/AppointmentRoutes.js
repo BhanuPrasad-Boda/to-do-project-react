@@ -43,21 +43,17 @@ router.put("/toggle-complete/:id", async (req, res) => {
       return res.status(404).json({ message: "Todo not found" });
     }
 
-    // 🔒 If already completed, do nothing
-    if (todo.completed) {
-      return res.json({
-        message: "Todo already completed",
-        completed: true,
-      });
-    }
+ 
 
     // ✅ Mark as completed (NO toggle)
     todo.completed = !todo.completed;
     await todo.save();
 
     res.json({
-      message: "Todo marked as completed",
-      completed: true,
+      message: todo.completed
+        ? "Todo marked as completed"
+        : "Todo marked as pending",
+      completed: todo.completed,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
