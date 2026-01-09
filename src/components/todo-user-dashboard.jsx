@@ -183,7 +183,7 @@ export function ToDoUserDashBoard() {
                     }`}
                     onClick={() => handleToggleComplete(todo.Appointment_Id)}
                   >
-                    {todo.completed ? "Completed ✅" : "Mark Done"}
+                    {todo.completed ? "Completed ✅" : "Pending ⏳"}
                   </button>
 
                   <Link

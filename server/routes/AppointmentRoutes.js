@@ -52,7 +52,7 @@ router.put("/toggle-complete/:id", async (req, res) => {
     }
 
     // ✅ Mark as completed (NO toggle)
-    todo.completed = true;
+    todo.completed = !todo.completed;
     await todo.save();
 
     res.json({
