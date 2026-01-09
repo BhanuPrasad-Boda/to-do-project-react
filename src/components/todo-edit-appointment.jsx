@@ -12,40 +12,59 @@ export function ToDoEditAppointment() {
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
 
+  // 🔹 LOAD TODO
   useEffect(() => {
-    axios
-      .get(`/todos/single/${id}`)
-      .then((res) => {
+    const fetchTodo = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await axios.get(`/appointments/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
         const todo = res.data;
-        setTitle(todo.Title);
-        setDescription(todo.Description);
-        if (todo.Date) {
-          setDueDate(new Date(todo.Date).toISOString().substring(0, 16));
-        }
-      })
-      .catch(() => toast.error("Failed to load To-Do"));
+        setTitle(todo.Title || "");
+        setDescription(todo.Description || "");
+        setDueDate(todo.Date ? todo.Date.slice(0, 16) : "");
+      } catch (err) {
+        toast.error("Failed to load To-Do");
+      }
+    };
+
+    fetchTodo();
   }, [id]);
 
-  const handleSubmit = (e) => {
+  // 🔹 UPDATE TODO
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    axios
-      .put(`/todos/${id}`, {
-        Title: title.trim(),
-        Description: description.trim(),
-        Date: dueDate ? new Date(dueDate) : null,
-      })
-      .then(() => {
-        toast.success("To-Do updated");
-        navigate("/user-dashboard");
-      })
-      .catch(() => toast.error("Update failed"));
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.put(
+        `/appointments/${id}`,
+        {
+          Title: title.trim(),
+          Description: description.trim(),
+          Date: dueDate ? new Date(dueDate) : null,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      toast.success("To-Do updated");
+      navigate("/user-dashboard");
+    } catch (err) {
+      toast.error("Update failed");
+    }
   };
 
   return (
     <div className="container py-4">
       <div className="card p-4 shadow animate-up">
         <h2>Edit To-Do</h2>
+
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label className="form-label">Title</label>
@@ -65,7 +84,7 @@ export function ToDoEditAppointment() {
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-            ></textarea>
+            />
           </div>
 
           <div className="mb-3">
