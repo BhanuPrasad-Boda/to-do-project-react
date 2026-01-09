@@ -13,26 +13,35 @@ export function ToDoEditAppointment() {
   const [dueDate, setDueDate] = useState("");
 
   // 🔹 LOAD TODO
-  useEffect(() => {
-    const fetchTodo = async () => {
-      try {
-        const token = localStorage.getItem("token");
+useEffect(() => {
+  const token = localStorage.getItem("token");
 
-        const res = await axios.get(`/appointments/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+  if (!token) {
+    toast.error("Please login again");
+    navigate("/login");
+    return;
+  }
 
-        const todo = res.data;
-        setTitle(todo.Title || "");
-        setDescription(todo.Description || "");
-        setDueDate(todo.Date ? todo.Date.slice(0, 16) : "");
-      } catch (err) {
-        toast.error("Failed to load To-Do");
+  axios
+    .get(`/appointments/single/${id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((res) => {
+      const todo = res.data;
+      setTitle(todo.Title);
+      setDescription(todo.Description || "");
+      if (todo.Date) {
+        setDueDate(new Date(todo.Date).toISOString().slice(0, 16));
       }
-    };
+    })
+    .catch((err) => {
+      console.error(err);
+      toast.error("Failed to load To-Do");
+    });
+}, [id, navigate]);
 
-    fetchTodo();
-  }, [id]);
 
   // 🔹 UPDATE TODO
   const handleSubmit = async (e) => {
