@@ -7,7 +7,6 @@ import "../styles/dashboardStyles.css"; // ✅ unique CSS
 export function ToDoUserDashBoard() {
   const [todos, setTodos] = useState([]);
   const navigate = useNavigate();
-
   const userData = JSON.parse(localStorage.getItem("user")) || {};
 
   const formatDateTime = (date) => {
@@ -23,7 +22,7 @@ export function ToDoUserDashBoard() {
     });
   };
 
-  // Fetch user todos
+  // Fetch todos from backend
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!userData.UserId || !token) {
@@ -68,7 +67,6 @@ export function ToDoUserDashBoard() {
                   await axios.delete(`/appointments/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                   });
-
                   setTodos((prev) => prev.filter((t) => t.Appointment_Id !== id));
                   toast.success("To-do deleted");
                 } catch {
@@ -89,16 +87,22 @@ export function ToDoUserDashBoard() {
     );
   };
 
-  // Toggle completed status
+  // Toggle completed status (optimistic UI)
   const handleToggleComplete = async (id) => {
+    // Optimistic update
+    setTodos((prev) =>
+      prev.map((t) =>
+        t.Appointment_Id === id ? { ...t, completed: !t.completed } : t
+      )
+    );
+
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.put(
-        `/appointments/toggle-complete/${id}`,
-        null,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const res = await axios.put(`/appointments/toggle-complete/${id}`, null, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
+      // Ensure DB status is synced
       setTodos((prev) =>
         prev.map((t) =>
           t.Appointment_Id === id ? { ...t, completed: res.data.completed } : t
@@ -108,6 +112,12 @@ export function ToDoUserDashBoard() {
       toast.success(res.data.message);
     } catch (err) {
       toast.error("Failed to update status");
+      // rollback if API fails
+      setTodos((prev) =>
+        prev.map((t) =>
+          t.Appointment_Id === id ? { ...t, completed: !t.completed } : t
+        )
+      );
     }
   };
 
@@ -141,7 +151,7 @@ export function ToDoUserDashBoard() {
           <div className="empty-state animate-fade">No to-dos found 😊</div>
         )}
 
-        {/* TODOS */}
+        {/* TODOS LIST */}
         <div className="row g-4 mt-1">
           {todos.map((todo) => (
             <div
