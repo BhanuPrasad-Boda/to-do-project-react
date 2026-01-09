@@ -32,16 +32,33 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
-// 🔹 TOGGLE COMPLETION
+// 🔹 MARK TODO AS COMPLETED (ONE-WAY)
 router.put("/toggle-complete/:id", async (req, res) => {
   try {
-    const todo = await Appointment.findOne({ Appointment_Id: Number(req.params.id) });
-    if (!todo) return res.status(404).json({ message: "Todo not found" });
+    const todo = await Appointment.findOne({
+      Appointment_Id: Number(req.params.id),
+    });
 
-    todo.completed = !todo.completed; // toggle
+    if (!todo) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
+
+    // 🔒 If already completed, do nothing
+    if (todo.completed) {
+      return res.json({
+        message: "Todo already completed",
+        completed: true,
+      });
+    }
+
+    // ✅ Mark as completed (NO toggle)
+    todo.completed = true;
     await todo.save();
 
-    res.json({ message: `Todo marked as ${todo.completed ? "completed" : "pending"}`, completed: todo.completed });
+    res.json({
+      message: "Todo marked as completed",
+      completed: true,
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

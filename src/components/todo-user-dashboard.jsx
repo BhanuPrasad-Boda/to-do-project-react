@@ -165,6 +165,10 @@ export function ToDoUserDashBoard() {
               >
                 <h5>{todo.Title}</h5>
                 <p>{todo.Description}</p>
+                {/* STATUS */}
+                    {!todo.completed && (
+                      <p className="text-warning fw-bold">⏳ Pending</p>
+                              )}
 
                 <div className="meta">📅 {formatDateTime(todo.Date)}</div>
                 <div className="timestamps">
