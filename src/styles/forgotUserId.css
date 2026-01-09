@@ -1,0 +1,156 @@
+/* 🌿 Page background */
+.userid-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #e6f7f5, #f4fffd);
+  padding: 16px;
+}
+
+/* 💳 Card */
+.userid-card {
+  width: 100%;
+  max-width: 420px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 38px 30px;
+  text-align: center;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* 🚀 Entry animation */
+.slide-in {
+  animation: slideFromLeft 0.9s ease;
+}
+
+@keyframes slideFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 🆔 Icon */
+.userid-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+}
+
+/* 🧾 Headings */
+.userid-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #2c7a7b;
+}
+
+.userid-subtitle {
+  font-size: 0.95rem;
+  color: #5a8f8c;
+  margin: 10px 0 28px;
+}
+
+/* ✍️ Input */
+.userid-input-group {
+  position: relative;
+  margin-bottom: 28px;
+}
+
+.userid-input-group input {
+  width: 100%;
+  padding: 12px 10px;
+  font-size: 1rem;
+  border: none;
+  border-bottom: 2px solid #b2dfdb;
+  outline: none;
+  background: transparent;
+}
+
+.userid-input-group label {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6aa6a1;
+  font-size: 0.95rem;
+  pointer-events: none;
+  transition: 0.3s ease;
+}
+
+.userid-input-group input:focus + label,
+.userid-input-group input:valid + label {
+  top: -8px;
+  font-size: 0.8rem;
+  color: #2c7a7b;
+}
+
+.underline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0%;
+  background: linear-gradient(90deg, #2c7a7b, #38b2ac);
+  transition: width 0.4s ease;
+}
+
+.userid-input-group input:focus ~ .underline {
+  width: 100%;
+}
+
+/* 📩 Button */
+.userid-btn {
+  width: 100%;
+  padding: 13px;
+  border-radius: 30px;
+  border: none;
+  background: linear-gradient(135deg, #2c7a7b, #38b2ac);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.userid-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 28px rgba(44, 122, 123, 0.35);
+}
+
+.userid-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ℹ️ Note */
+.userid-note {
+  margin-top: 18px;
+  font-size: 0.85rem;
+  color: #6b908d;
+}
+
+/* 📱 Mobile */
+@media (max-width: 480px) {
+  .userid-card {
+    padding: 28px 22px;
+  }
+}
