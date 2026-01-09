@@ -2,77 +2,105 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
+import "../styles/addTodo.css"; // ✅ new clean css
 
 export function ToDoAddAppointment() {
   const navigate = useNavigate();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const user = JSON.parse(localStorage.getItem("user"));
     if (!user?.UserId) {
       toast.error("Please login first.");
       return;
     }
 
+    if (!title.trim()) {
+      toast.error("Title is required");
+      return;
+    }
+
     const todoData = {
-      Appointment_Id: Date.now(), // later rename to Todo_Id
+      Appointment_Id: Date.now(), // later rename
       Title: title.trim(),
       Description: description.trim(),
       Date: dueDate ? new Date(dueDate) : null,
       UserId: user.UserId,
+      completed: false, // ✅ important
     };
 
     try {
-      await axios.post("/todos", todoData);
-      toast.success("To-Do added successfully");
+      setLoading(true);
+      await axios.post("/appointments", todoData);
+      toast.success("To-Do added successfully ✅");
       navigate("/user-dashboard");
     } catch (err) {
       toast.error(err.response?.data?.message || "Failed to add To-Do");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="container py-4">
-      <div className="card p-4 shadow animate-up">
-        <h2 className="mb-4">Add To-Do</h2>
+    <div className="add-todo-page">
+      <div className="add-todo-card animate-up">
+        <h2 className="title">Add New To-Do</h2>
+        <p className="subtitle">Plan your task efficiently ✨</p>
+
         <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">Title</label>
+          <div className="form-group">
+            <label>Title *</label>
             <input
               type="text"
-              className="form-control"
+              placeholder="Enter task title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
             />
           </div>
 
-          <div className="mb-3">
-            <label className="form-label">Description</label>
+          <div className="form-group">
+            <label>Description</label>
             <textarea
-              className="form-control"
+              rows="3"
+              placeholder="Optional description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              rows={3}
-            ></textarea>
+            />
           </div>
 
-          <div className="mb-3">
-            <label className="form-label">Due Date (optional)</label>
+          <div className="form-group">
+            <label>Due Date (optional)</label>
             <input
               type="datetime-local"
-              className="form-control"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
             />
           </div>
 
-          <button type="submit" className="btn btn-success w-100">
-            Add To-Do
-          </button>
+          <div className="btn-group">
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={loading}
+            >
+              {loading ? "Saving..." : "Add To-Do"}
+            </button>
+
+            <button
+              type="button"
+              className="btn-secondary"
+              onClick={() => navigate("/user-dashboard")}
+            >
+              Cancel
+            </button>
+          </div>
         </form>
       </div>
     </div>
