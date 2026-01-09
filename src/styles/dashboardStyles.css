@@ -27,7 +27,15 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 25px;
+  gap: 15px;
+}
+.welcome-text h5 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.welcome-action {
+  flex-shrink: 0;
 }
 
 .welcome-card span {
@@ -133,6 +141,13 @@
     flex-direction: column;
     gap: 10px;
     text-align: center;
+  }
+    .welcome-action {
+    width: 100%;
+  }
+
+  .welcome-action .btn {
+    width: 100%;
   }
 }
 

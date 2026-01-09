@@ -138,13 +138,19 @@ export function ToDoUserDashBoard() {
 
         {/* WELCOME */}
         <div className="welcome-card animate-up">
-          <h5>
-            Welcome, <span>{userData.UserName || "User"}</span> 👋
-          </h5>
-          <Link to="/add-appointment" className="btn btn-primary btn-sm">
-            + Add To-Do
-          </Link>
-        </div>
+  <div className="welcome-text">
+    <h5>
+      Welcome, <span>{userData.UserName || "User"}</span> 👋
+    </h5>
+  </div>
+
+  <div className="welcome-action">
+    <Link to="/add-appointment" className="btn btn-primary btn-sm">
+      + Add To-Do
+    </Link>
+  </div>
+</div>
+
 
         {/* EMPTY STATE */}
         {todos.length === 0 && (
