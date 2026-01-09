@@ -135,7 +135,7 @@ router.post("/forgot-password", async (req, res) => {
   `
 );
 
-      res.json({ message: "Reset link sent to email" });
+      res.json({ message: "Reset link sent to email. Please check Inbox or Spam." });
     } catch (err) {
       console.error("Email sending error:", err);
       res.status(500).json({ message: "Failed to send reset email" });
