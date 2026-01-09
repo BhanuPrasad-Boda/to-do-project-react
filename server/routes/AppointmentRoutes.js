@@ -32,6 +32,22 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
+// 🔹 TOGGLE COMPLETION
+router.put("/toggle-complete/:id", async (req, res) => {
+  try {
+    const todo = await Appointment.findOne({ Appointment_Id: Number(req.params.id) });
+    if (!todo) return res.status(404).json({ message: "Todo not found" });
+
+    todo.completed = !todo.completed; // toggle
+    await todo.save();
+
+    res.json({ message: `Todo marked as ${todo.completed ? "completed" : "pending"}`, completed: todo.completed });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 // 🔹 CREATE todo
 router.post("/", async (req, res) => {
   try {

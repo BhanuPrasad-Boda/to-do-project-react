@@ -135,3 +135,11 @@
     text-align: center;
   }
 }
+
+.appointment-card.completed {
+  background-color: #d4edda; /* light green */
+  border: 1px solid #28a745;
+  opacity: 0.9;
+  text-decoration: line-through;
+}
+

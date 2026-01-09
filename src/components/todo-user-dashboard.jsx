@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
-import  "../styles/dashboardStyles.css" // ✅ unique CSS
+import "../styles/dashboardStyles.css"; // ✅ unique CSS
 
 export function ToDoUserDashBoard() {
-  const [appointments, setAppointments] = useState([]);
+  const [todos, setTodos] = useState([]);
   const navigate = useNavigate();
 
   const userData = JSON.parse(localStorage.getItem("user")) || {};
@@ -23,40 +23,42 @@ export function ToDoUserDashBoard() {
     });
   };
 
+  // Fetch user todos
   useEffect(() => {
     const token = localStorage.getItem("token");
-
     if (!userData.UserId || !token) {
       navigate("/login");
       return;
     }
 
-    const fetchAppointments = async () => {
+    const fetchTodos = async () => {
       try {
         const res = await axios.get(`/appointments/${userData.UserId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setAppointments(res.data);
+        setTodos(res.data);
       } catch (err) {
-        toast.error("Failed to load appointments");
+        toast.error("Failed to load todos");
         localStorage.clear();
         navigate("/login");
       }
     };
 
-    fetchAppointments();
+    fetchTodos();
   }, [navigate, userData.UserId]);
 
+  // Sign out
   const handleSignout = () => {
     localStorage.clear();
     navigate("/login");
   };
 
+  // Delete todo
   const handleDelete = (id) => {
     toast(
       ({ closeToast }) => (
         <div>
-          <p className="mb-2">Delete this appointment?</p>
+          <p className="mb-2">Delete this to-do?</p>
           <div className="d-flex justify-content-end gap-2">
             <button
               className="btn btn-danger btn-sm"
@@ -67,11 +69,8 @@ export function ToDoUserDashBoard() {
                     headers: { Authorization: `Bearer ${token}` },
                   });
 
-                  setAppointments((prev) =>
-                    prev.filter((a) => a.Appointment_Id !== id)
-                  );
-
-                  toast.success("Appointment deleted");
+                  setTodos((prev) => prev.filter((t) => t.Appointment_Id !== id));
+                  toast.success("To-do deleted");
                 } catch {
                   toast.error("Delete failed");
                 }
@@ -90,6 +89,28 @@ export function ToDoUserDashBoard() {
     );
   };
 
+  // Toggle completed status
+  const handleToggleComplete = async (id) => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.put(
+        `/appointments/toggle-complete/${id}`,
+        null,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setTodos((prev) =>
+        prev.map((t) =>
+          t.Appointment_Id === id ? { ...t, completed: res.data.completed } : t
+        )
+      );
+
+      toast.success(res.data.message);
+    } catch (err) {
+      toast.error("Failed to update status");
+    }
+  };
+
   return (
     <div className="dashboard-page">
       <div className="container">
@@ -97,7 +118,10 @@ export function ToDoUserDashBoard() {
         {/* HEADER */}
         <div className="dashboard-header animate-down">
           <h2>Dashboard</h2>
-          <button onClick={handleSignout} className="btn btn-outline-danger btn-sm">
+          <button
+            onClick={handleSignout}
+            className="btn btn-outline-danger btn-sm"
+          >
             Sign out
           </button>
         </div>
@@ -108,50 +132,59 @@ export function ToDoUserDashBoard() {
             Welcome, <span>{userData.UserName || "User"}</span> 👋
           </h5>
           <Link to="/add-appointment" className="btn btn-primary btn-sm">
-            + Add Appointment
+            + Add To-Do
           </Link>
         </div>
 
-        {/* EMPTY */}
-        {appointments.length === 0 && (
-          <div className="empty-state animate-fade">
-            No appointments found 😊
-          </div>
+        {/* EMPTY STATE */}
+        {todos.length === 0 && (
+          <div className="empty-state animate-fade">No to-dos found 😊</div>
         )}
 
-        {/* APPOINTMENTS */}
+        {/* TODOS */}
         <div className="row g-4 mt-1">
-          {appointments.map((app) => (
+          {todos.map((todo) => (
             <div
               className="col-12 col-md-6 col-lg-4 animate-card"
-              key={app.Appointment_Id}
+              key={todo.Appointment_Id}
             >
-              <div className="appointment-card">
-                <h5>{app.Title}</h5>
-                <p>{app.Description}</p>
+              <div
+                className={`appointment-card ${
+                  todo.completed ? "completed-card" : ""
+                }`}
+              >
+                <h5>{todo.Title}</h5>
+                <p>{todo.Description}</p>
 
-                <div className="meta">
-                  📅 {formatDateTime(app.Date)}
-                </div>
-
+                <div className="meta">📅 {formatDateTime(todo.Date)}</div>
                 <div className="timestamps">
-                  Created: {formatDateTime(app.createdAt)} <br />
-                  Updated: {formatDateTime(app.updatedAt)}
+                  Created: {formatDateTime(todo.createdAt)} <br />
+                  Updated: {formatDateTime(todo.updatedAt)}
                 </div>
 
-                <div className="actions">
+                <div className="actions d-flex gap-2 flex-wrap">
                   <button
-                    className="btn btn-outline-danger btn-sm"
-                    onClick={() => handleDelete(app.Appointment_Id)}
+                    className={`btn btn-sm ${
+                      todo.completed ? "btn-success" : "btn-outline-secondary"
+                    }`}
+                    onClick={() => handleToggleComplete(todo.Appointment_Id)}
                   >
-                    Delete
+                    {todo.completed ? "Completed ✅" : "Mark Done"}
                   </button>
+
                   <Link
-                    to={`/edit-appointment/${app.Appointment_Id}`}
+                    to={`/edit-appointment/${todo.Appointment_Id}`}
                     className="btn btn-outline-warning btn-sm"
                   >
                     Edit
                   </Link>
+
+                  <button
+                    className="btn btn-outline-danger btn-sm"
+                    onClick={() => handleDelete(todo.Appointment_Id)}
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             </div>
