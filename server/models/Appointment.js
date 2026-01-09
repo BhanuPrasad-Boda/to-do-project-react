@@ -32,7 +32,7 @@ const appointmentSchema = new mongoose.Schema(
     },
 
     // ✅ Core To-Do field
-    Completed: {
+    completed: {
       type: Boolean,
       default: false,
     },
