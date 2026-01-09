@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
 
-export function ToDoAdd() {
+export function ToDoAddAppointment() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");

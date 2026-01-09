@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
 
-export function ToDoEdit() {
+export function ToDoEditAppointment() {
   const { id } = useParams();
   const navigate = useNavigate();
 
