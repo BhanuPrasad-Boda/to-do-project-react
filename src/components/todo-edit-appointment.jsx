@@ -2,95 +2,88 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
-import "../styles/editAppointment.css" // ✅ unique css
 
-export function ToDoEditAppointment() {
+export function ToDoEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [dateTime, setDateTime] = useState("");
+  const [dueDate, setDueDate] = useState("");
 
   useEffect(() => {
     axios
-      .get(`/appointments/single/${id}`)
-      .then((response) => {
-        const appointment = response.data;
-        setTitle(appointment.Title);
-        setDescription(appointment.Description);
-
-        if (appointment.Date) {
-          const dt = new Date(appointment.Date);
-          setDateTime(dt.toISOString().substring(0, 16));
+      .get(`/todos/single/${id}`)
+      .then((res) => {
+        const todo = res.data;
+        setTitle(todo.Title);
+        setDescription(todo.Description);
+        if (todo.Date) {
+          setDueDate(new Date(todo.Date).toISOString().substring(0, 16));
         }
       })
-      .catch(() => toast.error("Failed to load appointment"));
+      .catch(() => toast.error("Failed to load To-Do"));
   }, [id]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!dateTime) {
-      toast.error("Please select date & time");
-      return;
-    }
-
     axios
-      .put(`/appointments/${id}`, {
+      .put(`/todos/${id}`, {
         Title: title.trim(),
         Description: description.trim(),
-        Date: new Date(dateTime),
+        Date: dueDate ? new Date(dueDate) : null,
       })
       .then(() => {
-        toast.success("Appointment updated");
+        toast.success("To-Do updated");
         navigate("/user-dashboard");
       })
       .catch(() => toast.error("Update failed"));
   };
 
   return (
-    <div className="edit-page">
-      <div className="edit-card animate-up">
-        <h2>Edit Appointment</h2>
-
+    <div className="container py-4">
+      <div className="card p-4 shadow animate-up">
+        <h2>Edit To-Do</h2>
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Title</label>
+          <div className="mb-3">
+            <label className="form-label">Title</label>
             <input
               type="text"
+              className="form-control"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
             />
           </div>
 
-          <div className="form-group">
-            <label>Description</label>
+          <div className="mb-3">
+            <label className="form-label">Description</label>
             <textarea
+              className="form-control"
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             ></textarea>
           </div>
 
-          <div className="form-group">
-            <label>Scheduled Date & Time</label>
+          <div className="mb-3">
+            <label className="form-label">Due Date (optional)</label>
             <input
               type="datetime-local"
-              value={dateTime}
-              onChange={(e) => setDateTime(e.target.value)}
-              required
+              className="form-control"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
             />
           </div>
 
-          <div className="btn-group">
-            <button type="submit" className="btn-update">
+          <div className="d-flex gap-2">
+            <button type="submit" className="btn btn-success w-50">
               Update
             </button>
             <button
               type="button"
-              className="btn-cancel"
+              className="btn btn-secondary w-50"
               onClick={() => navigate("/user-dashboard")}
             >
               Cancel

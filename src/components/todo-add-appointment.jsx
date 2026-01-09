@@ -3,90 +3,78 @@ import { useNavigate } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
 
-export function ToDoAddAppointment() {
+export function ToDoAdd() {
   const navigate = useNavigate();
-
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [dateTime, setDateTime] = useState(""); // now stores both date + time
+  const [dueDate, setDueDate] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const user = JSON.parse(localStorage.getItem("user")); // get logged-in user
+    const user = JSON.parse(localStorage.getItem("user"));
     if (!user?.UserId) {
-      toast.error("User not logged in. Please login first.");
+      toast.error("Please login first.");
       return;
     }
 
-    if (!dateTime) {
-      toast.error("Please select a date and time");
-      return;
-    }
-
-    // Convert input value to JS Date object
-    const selectedDate = new Date(dateTime);
-
-    const appointmentData = {
-      Appointment_Id: Date.now(),
+    const todoData = {
+      Appointment_Id: Date.now(), // later rename to Todo_Id
       Title: title.trim(),
       Description: description.trim(),
-      Date: selectedDate, // stores exact datetime selected by user
-      UserId: user.UserId
+      Date: dueDate ? new Date(dueDate) : null,
+      UserId: user.UserId,
     };
 
-    console.log("Sending appointment:", appointmentData);
-
     try {
-      await axios.post("/appointments", appointmentData);
-      toast.success("Appointment added successfully");
+      await axios.post("/todos", todoData);
+      toast.success("To-Do added successfully");
       navigate("/user-dashboard");
-    } catch (error) {
-      console.error("Appointment add error:", error.response?.data || error);
-      toast.error(error.response?.data?.message || "Failed to add appointment");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to add To-Do");
     }
   };
 
   return (
     <div className="container py-4">
-      <h2 className="mb-4">Add Appointment</h2>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label className="form-label">Title</label>
-          <input
-            type="text"
-            className="form-control"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-          />
-        </div>
+      <div className="card p-4 shadow animate-up">
+        <h2 className="mb-4">Add To-Do</h2>
+        <form onSubmit={handleSubmit}>
+          <div className="mb-3">
+            <label className="form-label">Title</label>
+            <input
+              type="text"
+              className="form-control"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              required
+            />
+          </div>
 
-        <div className="mb-3">
-          <label className="form-label">Description</label>
-          <textarea
-            className="form-control"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            rows={3}
-          ></textarea>
-        </div>
+          <div className="mb-3">
+            <label className="form-label">Description</label>
+            <textarea
+              className="form-control"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              rows={3}
+            ></textarea>
+          </div>
 
-        <div className="mb-3">
-          <label className="form-label">Scheduled Date & Time</label>
-          <input
-            type="datetime-local"
-            className="form-control"
-            value={dateTime}
-            onChange={(e) => setDateTime(e.target.value)}
-            required
-          />
-        </div>
+          <div className="mb-3">
+            <label className="form-label">Due Date (optional)</label>
+            <input
+              type="datetime-local"
+              className="form-control"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+            />
+          </div>
 
-        <button type="submit" className="btn btn-primary">
-          Add Appointment
-        </button>
-      </form>
+          <button type="submit" className="btn btn-success w-100">
+            Add To-Do
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

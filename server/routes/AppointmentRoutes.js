@@ -1,55 +1,50 @@
 const express = require("express");
 const router = express.Router();
-const Appointment = require("../models/Appointment");
+const Appointment = require("../models/Appointment"); // We'll later rename to Todo
 
-// 🔹 GET single appointment
+// 🔹 GET single todo
 router.get("/single/:id", async (req, res) => {
   try {
-    const appointment = await Appointment.findOne({
+    const todo = await Appointment.findOne({
       Appointment_Id: Number(req.params.id),
     });
 
-    if (!appointment) {
-      return res.status(404).json({ message: "Appointment not found" });
+    if (!todo) {
+      return res.status(404).json({ message: "Todo not found" });
     }
 
-    res.json(appointment);
+    res.json(todo);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// 🔹 GET all appointments for a user
+// 🔹 GET all todos for a user
 router.get("/:userId", async (req, res) => {
   try {
-    const appointments = await Appointment.find({
+    const todos = await Appointment.find({
       UserId: req.params.userId,
-    }).sort({ Date: -1 });
+    }).sort({ Date: -1, createdAt: -1 }); // sort by due date then creation date
 
-    res.json(appointments);
+    res.json(todos);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// 🔹 CREATE appointment
-// 🔹 CREATE appointment (NO JWT)
+// 🔹 CREATE todo
 router.post("/", async (req, res) => {
   try {
-    console.log("Incoming appointment body:", req.body);
+    const todo = new Appointment(req.body);
+    const savedTodo = await todo.save();
 
-    const appointment = new Appointment(req.body);
-    const savedAppointment = await appointment.save();
-
-    res.status(201).json(savedAppointment);
+    res.status(201).json(savedTodo);
   } catch (err) {
-    console.error("Appointment save error:", err.message);
     res.status(400).json({ error: err.message });
   }
 });
 
-
-// 🔹 UPDATE appointment
+// 🔹 UPDATE todo
 router.put("/:id", async (req, res) => {
   try {
     const updated = await Appointment.findOneAndUpdate(
@@ -64,14 +59,14 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// 🔹 DELETE appointment
+// 🔹 DELETE todo
 router.delete("/:id", async (req, res) => {
   try {
     await Appointment.findOneAndDelete({
       Appointment_Id: Number(req.params.id),
     });
 
-    res.json({ message: "Appointment deleted" });
+    res.json({ message: "Todo deleted" });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

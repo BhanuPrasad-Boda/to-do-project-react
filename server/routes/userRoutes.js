@@ -168,8 +168,7 @@ router.post("/reset-password/:token", async (req, res) => {
     console.error(err);
     res.status(500).json({ message: "Reset failed" });
   }
-  console.log("Token from URL:", req.params.token);
-console.log("Password from body:", req.body.newPassword);
+
 
 });
 
@@ -194,7 +193,7 @@ router.post("/forgot-userid", async (req, res) => {
   `
 );
 
-console.log("📧 Forgot UserID email sent to:", user.Email);
+
 
 
       res.json({
