@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
+import "../styles/editAppointment.css";
 
 export function ToDoEditAppointment() {
   const { id } = useParams();

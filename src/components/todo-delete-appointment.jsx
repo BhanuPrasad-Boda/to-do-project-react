@@ -2,7 +2,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
-import "../styles/deleteTodo.css";
+import "../styles/deleteAppointment.css";
 
 export function ToDoDeleteAppointment() {
   const { id } = useParams();
