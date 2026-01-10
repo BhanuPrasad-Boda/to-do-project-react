@@ -1,10 +1,10 @@
 /* Page background */
 .edit-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8fbff, #ffffff);
+  background: linear-gradient(135deg, #667eea, #764ba2);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   padding: 20px;
 }
 
@@ -13,101 +13,111 @@
   width: 100%;
   max-width: 480px;
   background: #ffffff;
-  padding: 25px;
-  border-radius: 1.5rem;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  animation: slideUp 0.6s ease;
 }
 
-.edit-card h2 {
+/* Heading */
+.edit-title {
   text-align: center;
-  margin-bottom: 20px;
-  font-weight: 800;
-  color: #fd7e14;
+  font-weight: 700;
+  color: #333;
 }
 
-/* Form */
+.edit-subtitle {
+  text-align: center;
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 22px;
+}
+
+/* Form groups */
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 16px;
 }
 
 .form-group label {
+  display: block;
+  font-size: 14px;
   font-weight: 600;
   margin-bottom: 6px;
-  display: block;
+  color: #444;
 }
 
 .form-group input,
 .form-group textarea {
   width: 100%;
   padding: 10px 12px;
-  border-radius: 0.8rem;
-  border: 1px solid #ced4da;
-  outline: none;
-  transition: all 0.3s ease;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  transition: all 0.2s ease;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
-  border-color: #fd7e14;
-  box-shadow: 0 0 0 2px rgba(253,126,20,0.2);
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
 }
 
 /* Buttons */
-.btn-group {
+.btn-row {
   display: flex;
-  gap: 10px;
-  margin-top: 15px;
+  gap: 12px;
+  margin-top: 20px;
 }
 
-.btn-update {
+.btn-primary {
   flex: 1;
-  background: #fd7e14;
-  border: none;
-  color: #fff;
   padding: 10px;
-  border-radius: 0.9rem;
+  background: #667eea;
+  color: #fff;
+  border: none;
+  border-radius: 10px;
   font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #5a6fdc;
+}
+
+.btn-outline {
+  flex: 1;
+  padding: 10px;
+  background: transparent;
+  border: 2px solid #667eea;
+  color: #667eea;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
   transition: all 0.3s ease;
 }
 
-.btn-update:hover {
-  background: #e96b0c;
-  transform: translateY(-2px);
-}
-
-.btn-cancel {
-  flex: 1;
-  background: #6c757d;
-  border: none;
+.btn-outline:hover {
+  background: #667eea;
   color: #fff;
-  padding: 10px;
-  border-radius: 0.9rem;
-  font-weight: 600;
-}
-
-.btn-cancel:hover {
-  background: #5a6268;
 }
 
 /* Animation */
-.animate-up {
-  animation: fadeUp 0.6s ease;
-}
-
-@keyframes fadeUp {
+@keyframes slideUp {
   from {
+    transform: translateY(40px);
     opacity: 0;
-    transform: translateY(30px);
   }
   to {
-    opacity: 1;
     transform: translateY(0);
+    opacity: 1;
   }
 }
 
-/* Mobile */
+/* Mobile optimization */
 @media (max-width: 480px) {
   .edit-card {
-    padding: 20px;
+    padding: 22px;
   }
 }

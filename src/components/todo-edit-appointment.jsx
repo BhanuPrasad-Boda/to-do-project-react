@@ -72,56 +72,57 @@ export function ToDoEditAppointment() {
   };
 
   return (
-    <div className="container py-4">
-      <div className="card p-4 shadow animate-up">
-        <h2>Edit To-Do</h2>
+  <div className="edit-page">
+    <div className="edit-card">
+      <h2 className="edit-title">✏️ Edit To-Do</h2>
+      <p className="edit-subtitle">Update your task details</p>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label className="form-label">Title</label>
-            <input
-              type="text"
-              className="form-control"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              required
-            />
-          </div>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>Title</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Enter task title"
+            required
+          />
+        </div>
 
-          <div className="mb-3">
-            <label className="form-label">Description</label>
-            <textarea
-              className="form-control"
-              rows={3}
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
+        <div className="form-group">
+          <label>Description</label>
+          <textarea
+            rows="3"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Optional description"
+          />
+        </div>
 
-          <div className="mb-3">
-            <label className="form-label">Due Date (optional)</label>
-            <input
-              type="datetime-local"
-              className="form-control"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-            />
-          </div>
+        <div className="form-group">
+          <label>Due Date</label>
+          <input
+            type="datetime-local"
+            value={dueDate}
+            onChange={(e) => setDueDate(e.target.value)}
+          />
+        </div>
 
-          <div className="d-flex gap-2">
-            <button type="submit" className="btn btn-success w-50">
-              Update
-            </button>
-            <button
-              type="button"
-              className="btn btn-secondary w-50"
-              onClick={() => navigate("/user-dashboard")}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
+        <div className="btn-row">
+          <button type="submit" className="btn-primary">
+            Update To-Do
+          </button>
+          <button
+            type="button"
+            className="btn-outline"
+            onClick={() => navigate("/user-dashboard")}
+          >
+            Cancel
+          </button>
+        </div>
+      </form>
     </div>
-  );
+  </div>
+);
+
 }
