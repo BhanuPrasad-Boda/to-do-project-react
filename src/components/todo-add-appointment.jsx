@@ -90,7 +90,7 @@ export function ToDoAddAppointment() {
               className="btn-primary"
               disabled={loading}
             >
-              {loading ? "Saving..." : "Add To-Do"}
+              {loading ? "Saving..." : "Add Task"}
             </button>
 
             <button
