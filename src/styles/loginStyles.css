@@ -111,9 +111,11 @@ body {
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
-  color: #f59e0b;
+  color: white;
   cursor: pointer;
   line-height: 1;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
 }
 
 .forgot-btn:hover {
