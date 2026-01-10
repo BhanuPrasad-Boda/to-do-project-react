@@ -45,7 +45,7 @@ export function ToDoUserLogin() {
         <p className="login-subtitle">Login to manage your tasks</p>
 
         <form onSubmit={formik.handleSubmit}>
-          <div className="mb-3">
+          <div className="mb-2">
             <label className="form-label">User ID</label>
             <input
               type="text"
@@ -57,7 +57,7 @@ export function ToDoUserLogin() {
             />
           </div>
 
-          <div className="mb-3">
+          <div className="mb-2">
   <label className="form-label">Password</label>
   <input
     type="password"
