@@ -5,18 +5,23 @@ export function ToDoIndex() {
   return (
     <div className="todo-index-page">
       <div className="todo-card">
-        <h1 className="todo-title">Welcome to To-Do App</h1>
+        {/* Icon */}
+        <div className="todo-icon">📝</div>
+
+        <h1 className="todo-title">To-Do App</h1>
         <p className="todo-subtitle">
-          Organize your appointments and never miss a schedule.
+          Organize your tasks, track progress, and stay productive every day.
         </p>
+
+        <div className="todo-divider"></div>
 
         <div className="todo-actions">
           <Link to="/register" className="todo-btn primary">
-            New User Register
+            Create Account
           </Link>
 
           <Link to="/login" className="todo-btn secondary">
-            Existing User Login
+            Login to Continue
           </Link>
         </div>
       </div>
