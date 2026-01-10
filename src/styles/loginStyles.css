@@ -152,48 +152,81 @@
   }
 }
 
-/* Polished button container */
+/* ===== Premium Button System ===== */
+
 .polished-links {
-  gap: 10px;
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
 }
 
-/* Base polished button */
+/* Base button */
 .polish-btn {
   flex: 1;
-  text-decoration: none;
-  padding: 10px 14px;
-  border-radius: 999px;
-  font-weight: 600;
+  padding: 11px 16px;
+  border-radius: 12px; /* modern, not pill */
   font-size: 0.9rem;
+  font-weight: 600;
   text-align: center;
-  transition: all 0.3s ease;
-  border: 1px solid transparent;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-/* Home button */
+/* Subtle light sweep on hover */
+.polish-btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+/* Hover animation */
+.polish-btn:hover::after {
+  opacity: 1;
+}
+
+/* Secondary – Home */
 .home-btn {
-  color: #555;
-  background: #f4f4f4;
-  border-color: #ddd;
+  background: #f6f7f9;
+  color: #444;
+  border: 1px solid #e1e4e8;
 }
 
 .home-btn:hover {
-  background: #eaeaea;
-  color: #000;
-  transform: translateY(-2px);
+  background: #eef1f4;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
 }
 
-/* Register button */
+/* Primary – Register */
 .register-btn {
-  color: #ff9800;
-  background: #fff7ec;
-  border-color: #ffd8a8;
+  background: linear-gradient(135deg, #ffb347, #ff9800);
+  color: #fff;
+  border: none;
 }
 
 .register-btn:hover {
-  background: #ff9800;
-  color: #fff;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(255, 152, 0, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(255, 152, 0, 0.35);
 }
 
+/* Click feedback */
+.polish-btn:active {
+  transform: scale(0.97);
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+  .polished-links {
+    flex-direction: column;
+  }
+}
