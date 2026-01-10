@@ -37,7 +37,7 @@ export function ToDoUserDashBoard() {
         });
         setTodos(res.data);
       } catch (err) {
-        toast.error("Failed to load todos");
+        toast.error("Failed to load tasks");
         localStorage.clear();
         navigate("/login");
       }
@@ -57,7 +57,7 @@ export function ToDoUserDashBoard() {
     toast(
       ({ closeToast }) => (
         <div>
-          <p className="mb-2">Delete this to-do?</p>
+          <p className="mb-2">Delete this task?</p>
           <div className="d-flex justify-content-end gap-2">
             <button
               className="btn btn-danger btn-sm"
@@ -146,7 +146,7 @@ export function ToDoUserDashBoard() {
 
   <div className="welcome-action">
     <Link to="/add-appointment" className="btn btn-primary btn-sm">
-      + Add To-Do
+      + Add Task
     </Link>
   </div>
 </div>
@@ -154,7 +154,7 @@ export function ToDoUserDashBoard() {
 
         {/* EMPTY STATE */}
         {todos.length === 0 && (
-          <div className="empty-state animate-fade">No to-dos found 😊</div>
+          <div className="empty-state animate-fade">No tasks found 😊</div>
         )}
 
         {/* TODOS LIST */}

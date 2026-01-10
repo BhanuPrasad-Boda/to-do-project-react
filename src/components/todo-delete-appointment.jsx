@@ -46,10 +46,10 @@ export function ToDoDeleteAppointment() {
   return (
     <div className="delete-page">
       <div className="delete-card animate-scale">
-        <h3>Delete To-Do</h3>
+        <h3>Delete Task</h3>
 
         <p className="warning-text">
-          Are you sure you want to delete this To-Do?
+          Are you sure you want to delete this Task?
         </p>
 
         <div className="info-box">

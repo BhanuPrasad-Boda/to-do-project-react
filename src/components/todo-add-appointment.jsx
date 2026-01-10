@@ -38,10 +38,10 @@ export function ToDoAddAppointment() {
     try {
       setLoading(true);
       await axios.post("/appointments", todoData);
-      toast.success("To-Do added successfully ✅");
+      toast.success("Task added successfully ✅");
       navigate("/user-dashboard");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to add To-Do");
+      toast.error(err.response?.data?.message || "Failed to add task ❌");
     } finally {
       setLoading(false);
     }
@@ -50,7 +50,7 @@ export function ToDoAddAppointment() {
   return (
     <div className="add-todo-page">
       <div className="add-todo-card animate-up">
-        <h2 className="title">Add New To-Do</h2>
+        <h2 className="title">Add New Task</h2>
         <p className="subtitle">Plan your task efficiently ✨</p>
 
         <form onSubmit={handleSubmit}>

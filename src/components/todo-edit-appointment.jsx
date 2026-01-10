@@ -41,7 +41,7 @@ export function ToDoEditAppointment() {
         setDueDate(localTime);
       }
     })
-    .catch(() => toast.error("Failed to load To-Do"));
+    .catch(() => toast.error("Failed to load Task"));
 }, [id, navigate]);
 
 
@@ -64,7 +64,7 @@ export function ToDoEditAppointment() {
         }
       );
 
-      toast.success("To-Do updated");
+      toast.success("Task updated");
       navigate("/user-dashboard");
     } catch (err) {
       toast.error("Update failed");
@@ -74,7 +74,7 @@ export function ToDoEditAppointment() {
   return (
   <div className="edit-page">
     <div className="edit-card">
-      <h2 className="edit-title">✏️ Edit To-Do</h2>
+      <h2 className="edit-title">✏️ Edit Task</h2>
       <p className="edit-subtitle">Update your task details</p>
 
       <form onSubmit={handleSubmit}>
@@ -110,7 +110,7 @@ export function ToDoEditAppointment() {
 
         <div className="btn-row">
           <button type="submit" className="btn-primary">
-            Update To-Do
+            Update Task
           </button>
           <button
             type="button"
