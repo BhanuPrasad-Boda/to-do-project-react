@@ -70,26 +70,7 @@ export function ToDoUserLogin() {
           </div>
 
           {/* 🔽 Forgot section (same place swap) */}
-          <div className="forgot-wrapper">
-            {!showForgotOptions ? (
-              <button
-                type="button"
-                className="forgot-btn"
-                onClick={() => setShowForgotOptions(true)}
-              >
-                Forgot credentials?
-              </button>
-            ) : (
-              <div className="forgot-row animate-forgot">
-                <Link to="/forgot-password" className="forgot-chip">
-                  🔑 Forgot Password
-                </Link>
-                <Link to="/forgot-userid" className="forgot-chip">
-                  🆔 Forgot UserID
-                </Link>
-              </div>
-            )}
-          </div>
+
 
           <button
             type="submit"
