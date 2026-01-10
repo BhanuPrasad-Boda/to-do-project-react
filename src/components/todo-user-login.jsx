@@ -83,7 +83,7 @@ export function ToDoUserLogin() {
     ⬅ Home
   </Link>
   <Link to="/register" className="polish-btn register-btn">
-    ➕ New User
+    register
   </Link>
 </div>
 
