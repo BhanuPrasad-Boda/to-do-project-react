@@ -252,3 +252,19 @@ body {
     font-size: 0.95rem;
   }
 }
+/* 🔥 BOOTSTRAP OVERRIDE – REMOVE EXTRA SPACE */
+.login-card .mb-3 {
+  margin-bottom: 10px !important;
+}
+
+.login-card .form-label {
+  margin-bottom: 3px !important;
+}
+
+.forgot-wrapper,
+.forgot-wrapper * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  line-height: 1.2;
+}
+
