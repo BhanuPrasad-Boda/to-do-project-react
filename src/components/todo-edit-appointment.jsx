@@ -13,7 +13,7 @@ export function ToDoEditAppointment() {
   const [dueDate, setDueDate] = useState("");
 
   // 🔹 LOAD TODO
-useEffect(() => {
+      useEffect(() => {
   const token = localStorage.getItem("token");
 
   if (!token) {
@@ -24,22 +24,24 @@ useEffect(() => {
 
   axios
     .get(`/appointments/single/${id}`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
     })
     .then((res) => {
       const todo = res.data;
       setTitle(todo.Title);
       setDescription(todo.Description || "");
+
       if (todo.Date) {
-        setDueDate(new Date(todo.Date).toISOString().slice(0, 16));
+        const d = new Date(todo.Date);
+        const offset = d.getTimezoneOffset() * 60000;
+        const localTime = new Date(d - offset)
+          .toISOString()
+          .slice(0, 16);
+
+        setDueDate(localTime);
       }
     })
-    .catch((err) => {
-      console.error(err);
-      toast.error("Failed to load To-Do");
-    });
+    .catch(() => toast.error("Failed to load To-Do"));
 }, [id, navigate]);
 
 
