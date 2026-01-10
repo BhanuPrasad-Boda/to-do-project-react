@@ -224,9 +224,4 @@
   transform: scale(0.97);
 }
 
-/* Mobile */
-@media (max-width: 576px) {
-  .polished-links {
-    flex-direction: column;
-  }
-}
+

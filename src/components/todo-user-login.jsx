@@ -42,7 +42,7 @@ export function ToDoUserLogin() {
         <div className="login-icon">🔐</div>
 
         <h2 className="login-title">Welcome Back</h2>
-        <p className="login-subtitle">Login to manage your to-dos</p>
+        <p className="login-subtitle">Login to manage your tasks</p>
 
         <form onSubmit={formik.handleSubmit}>
           <div className="mb-3">
