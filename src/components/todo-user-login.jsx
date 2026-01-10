@@ -78,10 +78,15 @@ export function ToDoUserLogin() {
           </button>
         </form>
 
-        <div className="login-links">
-          <Link to="/">Home</Link>
-          <Link to="/register">New User?</Link>
-        </div>
+        <div className="login-links polished-links">
+  <Link to="/" className="polish-btn home-btn">
+    ⬅ Home
+  </Link>
+  <Link to="/register" className="polish-btn register-btn">
+    ➕ New User
+  </Link>
+</div>
+
 
         <div className="forgot-section">
           <button

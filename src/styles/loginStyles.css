@@ -151,3 +151,49 @@
     font-size: 24px;
   }
 }
+
+/* Polished button container */
+.polished-links {
+  gap: 10px;
+}
+
+/* Base polished button */
+.polish-btn {
+  flex: 1;
+  text-decoration: none;
+  padding: 10px 14px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+}
+
+/* Home button */
+.home-btn {
+  color: #555;
+  background: #f4f4f4;
+  border-color: #ddd;
+}
+
+.home-btn:hover {
+  background: #eaeaea;
+  color: #000;
+  transform: translateY(-2px);
+}
+
+/* Register button */
+.register-btn {
+  color: #ff9800;
+  background: #fff7ec;
+  border-color: #ffd8a8;
+}
+
+.register-btn:hover {
+  background: #ff9800;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(255, 152, 0, 0.3);
+}
+
