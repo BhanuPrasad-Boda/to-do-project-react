@@ -77,19 +77,7 @@ export function ToDoUserLogin() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-
-        <div className="login-links polished-links">
-  <Link to="/" className="polish-btn home-btn">
-    ⬅ Home
-  </Link>
-  <Link to="/register" className="polish-btn register-btn">
-    register
-  </Link>
-</div>
-
-
-        <div className="forgot-section">
-          <button
+        <button
             type="button"
             className="forgot-btn"
             onClick={() => setShowForgotOptions(!showForgotOptions)}
@@ -103,6 +91,21 @@ export function ToDoUserLogin() {
               <Link to="/forgot-userid">Forgot UserID</Link>
             </div>
           )}
+
+        <div className="login-links polished-links">
+  <Link to="/" className="polish-btn home-btn">
+    ⬅ Home
+  </Link>
+  <Link to="/register" className="polish-btn register-btn">
+    register
+  </Link>
+</div>
+
+
+        <div className="forgot-section">
+          
+
+          
         </div>
       </div>
     </div>
