@@ -57,44 +57,43 @@ export function ToDoUserLogin() {
             />
           </div>
 
-          <div className="mb-2">
-  <label className="form-label">Password</label>
-  <input
-    type="password"
-    name="Password"
-    className="form-control login-input"
-    value={formik.values.Password}
-    onChange={formik.handleChange}
-    required
-  />
-</div>
+          <div className="mb-1">
+            <label className="form-label">Password</label>
+            <input
+              type="password"
+              name="Password"
+              className="form-control login-input"
+              value={formik.values.Password}
+              onChange={formik.handleChange}
+              required
+            />
+          </div>
 
-{/* Forgot credentials */}
-<div className="forgot-wrapper">
-  <button
-    type="button"
-    className="forgot-btn"
-    onClick={() => setShowForgotOptions(!showForgotOptions)}
-  >
-    Forgot credentials?
-  </button>
-
-  {showForgotOptions && (
-    <div className="forgot-row animate-forgot">
-      <Link to="/forgot-password" className="forgot-chip">
-        🔑 Forgot Password
-      </Link>
-      <Link to="/forgot-userid" className="forgot-chip">
-        🆔 Forgot UserID
-      </Link>
-    </div>
-  )}
-</div>
-
+          {/* 🔽 Forgot section (same place swap) */}
+          <div className="forgot-wrapper">
+            {!showForgotOptions ? (
+              <button
+                type="button"
+                className="forgot-btn"
+                onClick={() => setShowForgotOptions(true)}
+              >
+                Forgot credentials?
+              </button>
+            ) : (
+              <div className="forgot-row animate-forgot">
+                <Link to="/forgot-password" className="forgot-chip">
+                  🔑 Forgot Password
+                </Link>
+                <Link to="/forgot-userid" className="forgot-chip">
+                  🆔 Forgot UserID
+                </Link>
+              </div>
+            )}
+          </div>
 
           <button
             type="submit"
-            className="login-btn primary"
+            className="login-btn"
             disabled={loading}
           >
             {loading ? "Logging in..." : "Login"}
@@ -102,16 +101,13 @@ export function ToDoUserLogin() {
         </form>
 
         <div className="login-links polished-links">
-  <Link to="/" className="polish-btn home-btn">
-    ⬅ Home
-  </Link>
-  <Link to="/register" className="polish-btn register-btn">
-    register
-  </Link>
-</div>
-
-
-
+          <Link to="/" className="polish-btn home-btn">
+            ⬅ Home
+          </Link>
+          <Link to="/register" className="polish-btn register-btn">
+            Register
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -1,139 +1,225 @@
-/* Page */
+/* ===============================
+   RESET & BASE
+================================ */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", "Segoe UI", sans-serif;
+  background: #f4f6fb;
+  color: #1f2937;
+}
+
+/* ===============================
+   PAGE WRAPPER
+================================ */
 .login-page {
   min-height: 100vh;
-  background: linear-gradient(180deg, #f7f9fc, #eef2f7);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 14px;
 }
 
-/* Card */
+/* ===============================
+   LOGIN CARD
+================================ */
 .login-card {
   width: 100%;
-  max-width: 420px;
+  max-width: 380px;
   background: #ffffff;
-  border-radius: 20px;
-  padding: 40px 30px;
-  box-shadow: 0 14px 35px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e6ebf2;
-  text-align: center;
+  border-radius: 18px;
+  padding: 20px 18px 22px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
 }
 
-/* Icon */
+/* ===============================
+   ICON & HEADINGS
+================================ */
 .login-icon {
-  width: 58px;
-  height: 58px;
-  margin: 0 auto 14px;
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 10px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3182ce, #63b3ed);
-  color: #fff;
-  font-size: 26px;
+  background: #eef2ff;
+  color: #4f46e5;
+  font-size: 1.8rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 6px 16px rgba(49, 130, 206, 0.35);
 }
 
-/* Title */
 .login-title {
-  font-size: 26px;
+  text-align: center;
+  font-size: 1.45rem;
   font-weight: 700;
-  color: #2d3748;
+  margin: 4px 0 2px;
+}
+
+.login-subtitle {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #6b7280;
+  margin-bottom: 14px;
+}
+
+/* ===============================
+   FORM ELEMENTS
+================================ */
+.form-label {
+  font-size: 0.75rem;
+  font-weight: 600;
   margin-bottom: 4px;
 }
 
-/* Subtitle */
-.login-subtitle {
-  font-size: 14px;
-  color: #718096;
-  margin-bottom: 26px;
-}
-
-/* Inputs */
 .login-input {
-  border-radius: 10px;
+  width: 100%;
   padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #d1d5db;
+  font-size: 0.9rem;
+  outline: none;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
 }
 
 .login-input:focus {
-  border-color: #3182ce;
-  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+  border-color: #4f46e5;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
 }
 
-/* Button */
-.login-btn {
-  width: 100%;
-  margin-top: 12px;
-  padding: 12px;
-  border-radius: 30px;
-  font-weight: 600;
-  border: none;
-  background: linear-gradient(135deg, #3182ce, #4299e1);
-  color: #fff;
-  transition: all 0.25s ease;
+/* ===============================
+   FORGOT SECTION
+================================ */
+.forgot-wrapper {
+  margin: 4px 0 6px;
+  padding: 0;
 }
 
-.login-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 18px rgba(49, 130, 206, 0.35);
-}
-
-/* Links */
-.login-links {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 18px;
-}
-
-.login-links a {
-  font-size: 14px;
-  color: #3182ce;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-/* Forgot */
-.forgot-section {
-  margin-top: 18px;
-}
-
+/* Forgot main button */
 .forgot-btn {
   background: none;
   border: none;
-  color: #718096;
-  font-size: 14px;
+  padding: 0;
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #f59e0b;
   cursor: pointer;
+  line-height: 1;
 }
 
 .forgot-btn:hover {
-  color: #2d3748;
+  color: #d97706;
 }
 
-.forgot-links {
-  margin-top: 10px;
-  background: #f7fafc;
-  border-radius: 10px;
-  padding: 10px;
+/* Forgot options */
+.forgot-row {
+  display: flex;
+  gap: 10px;
 }
 
-.forgot-links a {
-  display: block;
-  padding: 6px 0;
-  color: #3182ce;
-  font-size: 14px;
+.forgot-chip {
+  flex: 1;
+  text-align: center;
+  padding: 9px 6px;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
   text-decoration: none;
+  background: #f8fafc;
+  color: #4f46e5;
+  border: 1px solid #e5e7eb;
+  transition: all 0.25s ease;
 }
 
-/* Animations */
+.forgot-chip:hover {
+  background: #eef2ff;
+  transform: translateY(-1px);
+}
+
+/* ===============================
+   LOGIN BUTTON
+================================ */
+.login-btn {
+  width: 100%;
+  padding: 11px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-top: 8px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.login-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.3);
+}
+
+.login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* ===============================
+   FOOTER LINKS
+================================ */
+.login-links {
+  margin-top: 14px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.polish-btn {
+  flex: 1;
+  padding: 9px 0;
+  border-radius: 14px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.home-btn {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.home-btn:hover {
+  background: #e5e7eb;
+}
+
+.register-btn {
+  background: #fff7ed;
+  color: #ea580c;
+}
+
+.register-btn:hover {
+  background: #ffedd5;
+}
+
+/* ===============================
+   ANIMATIONS
+================================ */
 .animate-login {
-  animation: fadeUp 0.6s ease;
+  animation: fadeSlideUp 0.4s ease;
 }
 
-@keyframes fadeUp {
+.animate-forgot {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeSlideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -141,128 +227,28 @@
   }
 }
 
-/* Mobile */
-@media (max-width: 480px) {
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ===============================
+   DESKTOP ENHANCEMENT
+================================ */
+@media (min-width: 768px) {
   .login-card {
-    padding: 34px 22px;
+    padding: 26px 24px 28px;
   }
 
   .login-title {
-    font-size: 24px;
+    font-size: 1.6rem;
+  }
+
+  .login-input {
+    font-size: 0.95rem;
   }
 }
-
-/* ===== Premium Button System ===== */
-
-.polished-links {
-  display: flex;
-  gap: 12px;
-  margin-top: 18px;
-}
-
-/* Base button */
-.polish-btn {
-  flex: 1;
-  padding: 11px 16px;
-  border-radius: 12px; /* modern, not pill */
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-align: center;
-  text-decoration: none;
-  transition: all 0.25s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-/* Subtle light sweep on hover */
-.polish-btn::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    120deg,
-    transparent,
-    rgba(255, 255, 255, 0.6),
-    transparent
-  );
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-/* Hover animation */
-.polish-btn:hover::after {
-  opacity: 1;
-}
-
-/* Secondary – Home */
-.home-btn {
-  background: #f6f7f9;
-  color: #444;
-  border: 1px solid #e1e4e8;
-}
-
-.home-btn:hover {
-  background: #eef1f4;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
-}
-
-/* Primary – Register */
-.register-btn {
-  background: linear-gradient(135deg, #ffb347, #ff9800);
-  color: #fff;
-  border: none;
-}
-
-.register-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 22px rgba(255, 152, 0, 0.35);
-}
-
-/* Click feedback */
-.polish-btn:active {
-  transform: scale(0.97);
-}
-.forgot-wrapper {
-  margin-top: 2px;
-  margin-bottom: 10px;
-}
-.forgot-btn {
-  background: none;
-  border: none;
-  padding: 0;
-  margin: 0;
-  line-height: 1.2;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #ff9800;
-  cursor: pointer;
-}
-
-
-
-.forgot-row {
-  margin-top: 10px;
-  display: flex;
-  gap: 10px;
-  justify-content: space-between;
-}
-.forgot-chip {
-  flex: 1;
-  text-align: center;
-  padding: 10px 8px;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  text-decoration: none;
-  background: #f5f7fa;
-  color: #0d6efd;
-  transition: all 0.25s ease;
-}
-
-.forgot-chip:hover {
-  background: #e9f0ff;
-  transform: translateY(-1px);
-}
-
-
