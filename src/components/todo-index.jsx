@@ -5,7 +5,7 @@ export function ToDoIndex() {
   return (
     <div className="todo-index-page">
       <div className="todo-card">
-        <h1 className="todo-title">To-Do App</h1>
+        <h1 className="todo-title">Welcome to To-Do App</h1>
         <p className="todo-subtitle">
           Organize your appointments and never miss a schedule.
         </p>
