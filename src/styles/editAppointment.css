@@ -1,7 +1,7 @@
-/* Page background */
+/* Page background - light & neutral */
 .edit-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: linear-gradient(180deg, #f7f9fc, #eef2f7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -13,45 +13,47 @@
   width: 100%;
   max-width: 480px;
   background: #ffffff;
-  border-radius: 16px;
-  padding: 28px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-  animation: slideUp 0.6s ease;
+  border-radius: 14px;
+  padding: 26px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e9f0;
+  animation: fadeIn 0.4s ease;
 }
 
-/* Heading */
+/* Title */
 .edit-title {
   text-align: center;
-  font-weight: 700;
-  color: #333;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 4px;
 }
 
 .edit-subtitle {
   text-align: center;
-  font-size: 14px;
-  color: #777;
-  margin-bottom: 22px;
+  font-size: 13px;
+  color: #718096;
+  margin-bottom: 20px;
 }
 
-/* Form groups */
+/* Form */
 .form-group {
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
 
 .form-group label {
-  display: block;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  margin-bottom: 6px;
-  color: #444;
+  color: #4a5568;
+  margin-bottom: 5px;
+  display: block;
 }
 
 .form-group input,
 .form-group textarea {
   width: 100%;
-  padding: 10px 12px;
+  padding: 9px 11px;
   border-radius: 8px;
-  border: 1px solid #ccc;
+  border: 1px solid #cbd5e0;
   font-size: 14px;
   transition: all 0.2s ease;
 }
@@ -59,63 +61,63 @@
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+  border-color: #3182ce;
+  box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.15);
 }
 
 /* Buttons */
 .btn-row {
   display: flex;
-  gap: 12px;
-  margin-top: 20px;
+  gap: 10px;
+  margin-top: 18px;
 }
 
 .btn-primary {
   flex: 1;
-  padding: 10px;
-  background: #667eea;
+  padding: 9px;
+  background: #3182ce;
   color: #fff;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
-  transition: background 0.3s ease;
 }
 
 .btn-primary:hover {
-  background: #5a6fdc;
+  background: #2b6cb0;
 }
 
 .btn-outline {
   flex: 1;
-  padding: 10px;
+  padding: 9px;
   background: transparent;
-  border: 2px solid #667eea;
-  color: #667eea;
-  border-radius: 10px;
+  border: 1.5px solid #3182ce;
+  color: #3182ce;
+  border-radius: 8px;
   font-weight: 600;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
 
 .btn-outline:hover {
-  background: #667eea;
+  background: #3182ce;
   color: #fff;
 }
 
 /* Animation */
-@keyframes slideUp {
+@keyframes fadeIn {
   from {
-    transform: translateY(40px);
     opacity: 0;
+    transform: translateY(15px);
   }
   to {
-    transform: translateY(0);
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
-/* Mobile optimization */
+/* Mobile */
 @media (max-width: 480px) {
   .edit-card {
     padding: 22px;
