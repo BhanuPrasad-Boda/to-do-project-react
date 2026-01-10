@@ -58,16 +58,39 @@ export function ToDoUserLogin() {
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Password</label>
-            <input
-              type="password"
-              name="Password"
-              className="form-control login-input"
-              value={formik.values.Password}
-              onChange={formik.handleChange}
-              required
-            />
-          </div>
+  <label className="form-label">Password</label>
+  <input
+    type="password"
+    name="Password"
+    className="form-control login-input"
+    value={formik.values.Password}
+    onChange={formik.handleChange}
+    required
+  />
+</div>
+
+{/* Forgot credentials */}
+<div className="forgot-wrapper">
+  <button
+    type="button"
+    className="forgot-btn"
+    onClick={() => setShowForgotOptions(!showForgotOptions)}
+  >
+    Forgot credentials?
+  </button>
+
+  {showForgotOptions && (
+    <div className="forgot-row animate-forgot">
+      <Link to="/forgot-password" className="forgot-chip">
+        🔑 Forgot Password
+      </Link>
+      <Link to="/forgot-userid" className="forgot-chip">
+        🆔 Forgot UserID
+      </Link>
+    </div>
+  )}
+</div>
+
 
           <button
             type="submit"
@@ -77,20 +100,6 @@ export function ToDoUserLogin() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-        <button
-            type="button"
-            className="forgot-btn"
-            onClick={() => setShowForgotOptions(!showForgotOptions)}
-          >
-            Forgot credentials?
-          </button>
-
-          {showForgotOptions && (
-            <div className="forgot-links animate-forgot">
-              <Link to="/forgot-password">Forgot Password</Link>
-              <Link to="/forgot-userid">Forgot UserID</Link>
-            </div>
-          )}
 
         <div className="login-links polished-links">
   <Link to="/" className="polish-btn home-btn">
@@ -102,11 +111,7 @@ export function ToDoUserLogin() {
 </div>
 
 
-        <div className="forgot-section">
-          
 
-          
-        </div>
       </div>
     </div>
   );
