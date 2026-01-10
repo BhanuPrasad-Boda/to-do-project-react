@@ -51,8 +51,8 @@ router.put("/toggle-complete/:id", async (req, res) => {
 
     res.json({
       message: todo.completed
-        ? "Todo marked as completed"
-        : "Todo marked as pending",
+        ? "Task marked as completed"
+        : "Task marked as pending",
       completed: todo.completed,
     });
   } catch (err) {

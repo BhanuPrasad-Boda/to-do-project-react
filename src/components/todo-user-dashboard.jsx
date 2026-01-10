@@ -68,7 +68,7 @@ export function ToDoUserDashBoard() {
                     headers: { Authorization: `Bearer ${token}` },
                   });
                   setTodos((prev) => prev.filter((t) => t.Appointment_Id !== id));
-                  toast.success("To-do deleted");
+                  toast.success("Task deleted");
                 } catch {
                   toast.error("Delete failed");
                 }
