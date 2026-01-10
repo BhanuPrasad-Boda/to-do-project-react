@@ -4,7 +4,7 @@ import axios from "../api/axiosConfig";
 import { useNavigate, Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
-import "../styles/loginStyles.css" // ✅ unique CSS
+import "../styles/loginStyles.css";
 
 export function ToDoUserLogin() {
   const [showForgotOptions, setShowForgotOptions] = useState(false);
@@ -18,30 +18,18 @@ export function ToDoUserLogin() {
       setLoading(true);
       try {
         const res = await axios.post("/users/login", values);
-
         const { UserId, UserName, Email, token } = res.data;
 
-        if (!token) {
-          toast.error("Login failed. Token missing.");
-          return;
-        }
-
-        // decode token
         const decoded = jwtDecode(token);
         localStorage.setItem("tokenExpiry", decoded.exp * 1000);
-
-        // store user
-        localStorage.setItem(
-          "user",
-          JSON.stringify({ UserId, UserName, Email })
-        );
+        localStorage.setItem("user", JSON.stringify({ UserId, UserName, Email }));
         localStorage.setItem("userid", UserId);
         localStorage.setItem("token", token);
 
         toast.success(`Welcome back, ${UserName} 👋`);
         navigate("/user-dashboard");
       } catch (err) {
-        toast.error(err.response?.data?.message || "Invalid UserId or Password");
+        toast.error(err.response?.data?.message || "Invalid credentials");
       } finally {
         setLoading(false);
       }
@@ -51,7 +39,10 @@ export function ToDoUserLogin() {
   return (
     <div className="login-page">
       <div className="login-card animate-login">
-        <h2 className="login-title">User Login</h2>
+        <div className="login-icon">🔐</div>
+
+        <h2 className="login-title">Welcome Back</h2>
+        <p className="login-subtitle">Login to manage your to-dos</p>
 
         <form onSubmit={formik.handleSubmit}>
           <div className="mb-3">
@@ -80,31 +71,25 @@ export function ToDoUserLogin() {
 
           <button
             type="submit"
-            className="btn btn-warning w-100 rounded-pill login-btn"
+            className="login-btn primary"
             disabled={loading}
           >
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        {/* Links */}
         <div className="login-links">
-          <Link to="/" className="btn btn-outline-secondary btn-sm">
-            Home
-          </Link>
-          <Link to="/register" className="btn btn-outline-primary btn-sm">
-            New User Register
-          </Link>
+          <Link to="/">Home</Link>
+          <Link to="/register">New User?</Link>
         </div>
 
-        {/* Forgot Section */}
         <div className="forgot-section">
           <button
             type="button"
             className="forgot-btn"
             onClick={() => setShowForgotOptions(!showForgotOptions)}
           >
-            Forgot Credentials?
+            Forgot credentials?
           </button>
 
           {showForgotOptions && (
