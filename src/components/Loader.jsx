@@ -1,6 +1,8 @@
 const Loader = ({ message }) => {
   return (
-      <span class="loader"></span>
+      <div className="d-flex justify-content-center align-items-center">
+        <span class="loader"></span>
+      </div>
   );
 };
 
