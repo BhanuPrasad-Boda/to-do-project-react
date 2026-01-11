@@ -1,9 +1,6 @@
 const Loader = ({ message }) => {
   return (
-    <div className="loader-container">
-      <div className="spinner"></div>
-      <p>{message}</p>
-    </div>
+      <span class="loader"></span>
   );
 };
 
