@@ -19,29 +19,6 @@ code {
 
 
 
-* {
-  border: 0;
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-:root {
-  font-size: calc(16px + (24 - 16)*(100vw - 320px)/ (1280 - 320));
-}
-
-body, .preloader {
-  display: flex;
-}
-
-body {
-  background: #000;
-  color: #3df1f1;
-  font: 1em Dosis, sans-serif;
-  height: 100vh;
-  line-height: 1.5;
-  perspective: 40em;
-}
 
 .preloader {
   animation: tiltSpin 8s linear infinite;
