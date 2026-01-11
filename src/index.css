@@ -186,6 +186,40 @@ code {
     transform: rotateY(1turn);
   }
 }
+/* 📱 Mobile */
+@media (max-width: 480px) {
+  :root {
+    --ring-depth: 4.5rem;
+  }
+
+  .preloader {
+    width: 65vw;
+    height: 65vw;
+  }
+
+  .preloader__ring {
+    font-size: 1.4em;
+    height: 2.2rem;
+    width: 1.1rem;
+  }
+}
+
+/* 📱 Tablet */
+@media (min-width: 481px) and (max-width: 768px) {
+  :root {
+    --ring-depth: 5.5rem;
+  }
+
+  .preloader {
+    width: 55vw;
+    height: 55vw;
+  }
+
+  .preloader__ring {
+    font-size: 1.7em;
+  }
+}
+
 
 
 
