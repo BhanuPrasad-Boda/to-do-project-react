@@ -1,7 +1,9 @@
 import '../styles/Loader.css';
-export default function Loader() {
 
+const Loader = ({ message }) => {
   return (
-    <span className="loader"></span>
+    <span class="loader"></span>
   );
-}
+};
+
+export default Loader;
