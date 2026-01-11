@@ -9,7 +9,7 @@ import { ToDoAddAppointment } from './components/todo-add-appointment';
 import { ToDoEditAppointment } from './components/todo-edit-appointment';
 import { ToDoDeleteAppointment } from './components/todo-delete-appointment';
 import { useEffect, useState } from "react";
-import Loader from "./components/Loader";
+import { Loader } from "./components/Loader";
 
 // New Components
 import { ForgotPassword } from './components/ForgotPassword';
