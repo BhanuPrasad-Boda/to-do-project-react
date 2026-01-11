@@ -1,6 +1,7 @@
 const Loader = ({ message }) => {
   return (
-      <div class="preloader">
+    <div className="loader">
+          <div class="preloader">
   <div class="preloader__ring">
     <div class="preloader__sector">L</div>
     <div class="preloader__sector">o</div>
@@ -66,6 +67,7 @@ const Loader = ({ message }) => {
     <div class="preloader__sector"></div>
   </div>
 </div>
+    </div>
   );
 };
 
