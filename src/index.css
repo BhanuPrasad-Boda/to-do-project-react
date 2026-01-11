@@ -22,12 +22,13 @@ code {
 
 .preloader {
   animation: tiltSpin 8s linear infinite;
-  flex-direction: column;
+  display: flex;
   justify-content: center;
   align-items: center;
   margin: auto;
   width: 17em;
   height: 17em;
+  background-color: black;
 }
 .preloader, .preloader__ring {
   transform-style: preserve-3d;
@@ -41,6 +42,7 @@ code {
   position: relative;
   height: 3rem;
   width: 1.5rem;
+  color: white;
 }
 .preloader__ring:nth-child(even) {
   animation-direction: reverse;
@@ -53,6 +55,7 @@ code {
   text-align: center;
   text-transform: uppercase;
   transform: translateZ(7rem);
+  color: white;
 }
 .preloader__sector, .preloader__sector:empty:before {
   display: inline-block;
