@@ -1,3 +1,5 @@
+import '../styles/Loader.css';
+
 const Loader = ({ message }) => {
   return (
     <div className="loader">
