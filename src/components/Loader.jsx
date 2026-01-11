@@ -1,8 +1,9 @@
-import '../styles/Loader.css';
-
 const Loader = ({ message }) => {
   return (
-    <span class="loader"></span>
+    <div className="loader-container">
+      <div className="spinner"></div>
+      <p>{message}</p>
+    </div>
   );
 };
 
