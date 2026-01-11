@@ -81,12 +81,13 @@ export function ToDoUserLogin() {
     </button>
   ) : (
     <div className="forgot-row">
-      <Link to="/forgot-password" className="forgot-chip">
-        🔑 Password
-      </Link>
-      <Link to="/forgot-userid" className="forgot-chip">
+            <Link to="/forgot-userid" className="forgot-chip">
         🆔 UserID
-      </Link>
+             </Link>
+            <Link to="/forgot-password" className="forgot-chip">
+        🔑 Password
+            </Link>
+
     </div>
   )}
 </div>

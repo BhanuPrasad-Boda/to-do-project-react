@@ -1,10 +1,7 @@
-const Loader = ({ message }) => {
-  return (
-    <div className="loader-container">
-      <div className="spinner"></div>
-      <p>{message}</p>
-    </div>
-  );
-};
+import '../styles/Loader.css';
+export function Loader() {
 
-export default Loader;
+  return (
+    <span className="loader"></span>
+  );
+}
