@@ -1,5 +1,5 @@
 import '../styles/Loader.css';
-export function Loader() {
+export default function Loader() {
 
   return (
     <span className="loader"></span>
