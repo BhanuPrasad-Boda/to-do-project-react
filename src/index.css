@@ -25,8 +25,8 @@ code {
   align-items: center;
   width: 100vw;
   height: 100vh;
-  background-color: linear-gradient(45deg, #ff004c, #0900ff, #00ff6a, #ffdd00, #ff004c, #0900ff, #00ff6a, #ffdd00);
-  color: white;
+  background: linear-gradient(135deg, #c4c1ff, #c2fff4 , #fdffc8);
+  color: #1000c0;
 }
 .preloader {
   animation: tiltSpin 8s linear infinite;
