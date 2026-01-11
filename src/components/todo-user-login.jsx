@@ -82,10 +82,10 @@ export function ToDoUserLogin() {
   ) : (
     <div className="forgot-row">
       <Link to="/forgot-password" className="forgot-chip">
-        🔑 Forgot Password
+        🔑 Password
       </Link>
       <Link to="/forgot-userid" className="forgot-chip">
-        🆔 Forgot UserID
+        🆔 UserID
       </Link>
     </div>
   )}
