@@ -50,7 +50,7 @@ code {
     height: 60%;
     background: linear-gradient(to bottom, #f79577 30%, #0000 31%);
     background-size: 100% 16px;
-    animation: writeDown 2s ease-out infinite;
+    animation: writeDown 10s ease-out infinite;
  }
 
  @keyframes writeDown {
