@@ -291,4 +291,45 @@ body {
   /* 🔥 ADD THIS */
   background: linear-gradient(180deg, #f7f9fc, #eef2f7);
 }
+/* ===== Forgot Credentials Area ===== */
+
+.forgot-container {
+  margin-top: 10px;
+}
+
+/* Secondary button (same size as login) */
+.login-btn.secondary {
+  background: #f1f5f9;
+  color: #334155;
+}
+
+.login-btn.secondary:hover {
+  background: #e2e8f0;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Forgot options row */
+.forgot-row {
+  display: flex;
+  gap: 10px;
+}
+
+/* Chips */
+.forgot-chip {
+  flex: 1;
+  text-align: center;
+  padding: 12px;
+  border-radius: 30px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  background: #eef2ff;
+  color: #1d4ed8;
+  transition: all 0.25s ease;
+}
+
+.forgot-chip:hover {
+  background: #e0e7ff;
+  transform: translateY(-1px);
+}
 

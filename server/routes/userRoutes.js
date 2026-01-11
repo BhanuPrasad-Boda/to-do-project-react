@@ -125,7 +125,7 @@ router.post("/forgot-password", async (req, res) => {
       This link will expire in <strong>15 minutes</strong>.
     </p>
 
-    <p>If you did not request this, please ignore this email.</p>
+    <p>If you did not request this, please secure your account.</p>
 
     <p style="margin-top:30px;">
       Regards,<br/>
@@ -188,7 +188,7 @@ router.post("/forgot-userid", async (req, res) => {
     <p>Hello,</p>
     <p>You requested your User ID.</p>
     <p><strong>User ID:</strong> ${user.UserId}</p>
-    <p>If this wasn't you, please ignore this email.</p>
+    <p>If this wasn't you, please secure your account.</p>
     <p>ToDo App Team</p>
   `
 );
