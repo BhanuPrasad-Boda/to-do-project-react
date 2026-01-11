@@ -26,7 +26,7 @@ code {
   width: 100vw;
   height: 100vh;
   
-  color: linegradient(45deg, #ff004c, #0900ff, #00ff6a, #ffdd00, #ff004c, #0900ff, #00ff6a, #ffdd00);
+  color: linear-gradient(45deg, #ff004c, #0900ff, #00ff6a, #ffdd00, #ff004c, #0900ff, #00ff6a, #ffdd00);
 }
 .preloader {
   animation: tiltSpin 8s linear infinite;
