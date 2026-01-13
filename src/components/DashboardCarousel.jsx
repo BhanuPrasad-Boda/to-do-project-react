@@ -3,18 +3,19 @@ import "../styles/dashboardCarousel.css";
 
 const slides = [
   {
-    title: "👋 Welcome Back",
-    desc: "Stay focused and complete your tasks on time",
+    title: "📝 Your To-Do Companion",
+    desc: "A simple and powerful app to manage tasks, appointments, and daily goals without stress.",
   },
   {
-    title: "📋 Manage Appointments",
-    desc: "Edit, reschedule or complete your tasks easily",
+    title: "⚡ Powerful Features",
+    desc: "Create, update, delete tasks, track appointments, get reminders, and stay organized effortlessly.",
   },
   {
-    title: "⏰ Stay Organized",
-    desc: "Never miss an important schedule again",
+    title: "🔄 Stay in Sync",
+    desc: "Access your tasks anytime. Designed to work smoothly across devices and future sync support.",
   },
 ];
+
 
 export function DashboardCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -56,33 +57,35 @@ export function DashboardCarousel() {
   };
 
   return (
-    <div
-      className="carousel-wrapper"
-      onTouchStart={handleTouchStart}
-      onTouchEnd={handleTouchEnd}
-    >
-      {slides.map((slide, index) => (
-        <div
-          key={index}
-          className={`carousel-slide ${
-            index === activeIndex ? "active" : ""
-          }`}
-        >
-          <h3>{slide.title}</h3>
-          <p>{slide.desc}</p>
-        </div>
-      ))}
-
-      {/* Dots */}
-      <div className="carousel-dots">
-        {slides.map((_, index) => (
-          <span
-            key={index}
-            className={`dot ${index === activeIndex ? "active" : ""}`}
-            onClick={() => setActiveIndex(index)}
-          />
-        ))}
+     <div
+  className="carousel-wrapper"
+  onTouchStart={handleTouchStart}
+  onTouchEnd={handleTouchEnd}
+>
+  <div className="carousel-inner">
+    {slides.map((slide, index) => (
+      <div
+        key={index}
+        className={`carousel-slide ${
+          index === activeIndex ? "active" : ""
+        }`}
+      >
+        <h3>{slide.title}</h3>
+        <p>{slide.desc}</p>
       </div>
-    </div>
+    ))}
+  </div>
+
+  <div className="carousel-dots">
+    {slides.map((_, index) => (
+      <span
+        key={index}
+        className={`dot ${index === activeIndex ? "active" : ""}`}
+        onClick={() => setActiveIndex(index)}
+      />
+    ))}
+  </div>
+</div>
+
   );
 }
