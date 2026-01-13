@@ -52,7 +52,7 @@
     bottom: 14px;
     left: 18px;
   display: flex;
-  
+  justify-content: center;
   gap: 6px;
   margin-top: 5px;
 }
