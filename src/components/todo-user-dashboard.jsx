@@ -136,7 +136,7 @@ export function ToDoUserDashBoard() {
             Sign out
           </button>
         </div>
-         <DashboardCarousel />
+         
 
         {/* WELCOME */}
         <div className="welcome-card animate-up">
@@ -145,6 +145,7 @@ export function ToDoUserDashBoard() {
       Welcome, <span>{userData.UserName || "User"}</span> 👋
     </h5>
   </div>
+  <DashboardCarousel />
 
   <div className="welcome-action">
     <Link to="/add-appointment" className="btn btn-primary btn-sm">
