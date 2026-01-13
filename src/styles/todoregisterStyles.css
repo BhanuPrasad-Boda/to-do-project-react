@@ -8,6 +8,39 @@
   background: linear-gradient(135deg, #fef9f0, #fff5f7);
   padding: 20px;
 }
+/* Password strength border colors */
+.register-input.weak {
+  border-color: #dc2626;
+}
+
+.register-input.medium {
+  border-color: #f59e0b;
+}
+
+.register-input.strong {
+  border-color: #16a34a;
+}
+
+/* Strength text */
+.strength-text {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.strength-text.weak {
+  color: #dc2626;
+}
+
+.strength-text.medium {
+  color: #f59e0b;
+}
+
+.strength-text.strong {
+  color: #16a34a;
+}
+
 
 /* Card */
 .register-card {
@@ -126,4 +159,39 @@
     width: 100%;
     text-align: center;
   }
+}
+.register-input {
+  border-radius: 10px;
+}
+
+/* Strength colors */
+.register-input.weak {
+  border-color: #dc2626;
+}
+
+.register-input.medium {
+  border-color: #f59e0b;
+}
+
+.register-input.strong {
+  border-color: #16a34a;
+}
+
+/* Message */
+.strength-text {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.strength-text.weak {
+  color: #dc2626;
+}
+
+.strength-text.medium {
+  color: #f59e0b;
+}
+
+.strength-text.strong {
+  color: #16a34a;
 }

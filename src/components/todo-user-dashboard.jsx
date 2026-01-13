@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
 import "../styles/dashboardStyles.css"; // ✅ unique CSS
+import { DashboardCarousel } from "../components/DashboardCarousel";
 
 export function ToDoUserDashBoard() {
   const [todos, setTodos] = useState([]);
@@ -135,6 +136,7 @@ export function ToDoUserDashBoard() {
             Sign out
           </button>
         </div>
+         <DashboardCarousel />
 
         {/* WELCOME */}
         <div className="welcome-card animate-up">
