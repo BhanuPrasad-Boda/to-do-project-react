@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "../styles/dashboardCarousel.css";
 
 const slides = [
@@ -18,17 +18,49 @@ const slides = [
 
 export function DashboardCarousel() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const touchStartX = useRef(null);
 
+  /* Auto slide */
   useEffect(() => {
     const timer = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % slides.length);
-    }, 3000);
-
+      nextSlide();
+    }, 4000);
     return () => clearInterval(timer);
-  }, []);
+  }, [activeIndex]);
+
+  const nextSlide = () => {
+    setActiveIndex((prev) => (prev + 1) % slides.length);
+  };
+
+  const prevSlide = () => {
+    setActiveIndex((prev) =>
+      prev === 0 ? slides.length - 1 : prev - 1
+    );
+  };
+
+  /* Touch handlers */
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e) => {
+    if (!touchStartX.current) return;
+
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX.current - touchEndX;
+
+    if (diff > 50) nextSlide();       // swipe left
+    if (diff < -50) prevSlide();      // swipe right
+
+    touchStartX.current = null;
+  };
 
   return (
-    <div className="carousel-wrapper">
+    <div
+      className="carousel-wrapper"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       {slides.map((slide, index) => (
         <div
           key={index}
@@ -41,12 +73,12 @@ export function DashboardCarousel() {
         </div>
       ))}
 
-      {/* Indicators */}
+      {/* Dots */}
       <div className="carousel-dots">
         {slides.map((_, index) => (
           <span
             key={index}
-            className={index === activeIndex ? "dot active" : "dot"}
+            className={`dot ${index === activeIndex ? "active" : ""}`}
             onClick={() => setActiveIndex(index)}
           />
         ))}
