@@ -24,7 +24,7 @@
   display: flex;                 /* ✅ CENTER CONTENT */
   flex-direction: column;
   justify-content: center;
-  text-align: left;
+  text-align: center;
   
 }
 .carousel-slide.active {
@@ -53,6 +53,7 @@
     left: 18px;
   display: flex;
   justify-content: center;
+  align-items: center;
   gap: 6px;
   margin-top: 5px;
 }
