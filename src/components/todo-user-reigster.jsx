@@ -4,47 +4,9 @@ import axios from "../api/axiosConfig";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import "../styles/todoregisterStyles.css";
-import { useState } from "react";
 
-
-
-
-  
 export function ToDoUserRegister() {
   const navigate = useNavigate();
-  
-  const [passwordStrength, setPasswordStrength] = useState("");
-const [passwordMessage, setPasswordMessage] = useState("");
-
-      const checkPasswordStrength = (password) => {
-  if (password.length === 0) {
-    setPasswordStrength("");
-    setPasswordMessage("");
-    return;
-  }
-
-  if (password.length < 6) {
-    setPasswordStrength("weak");
-    setPasswordMessage("Minimum 6 characters required");
-    return;
-  }
-
-  if (!/[A-Za-z]/.test(password)) {
-    setPasswordStrength("weak");
-    setPasswordMessage("Include at least one letter");
-    return;
-  }
-
-  if (!/[0-9]/.test(password)) {
-    setPasswordStrength("medium");
-    setPasswordMessage("Add at least one number for stronger password");
-    return;
-  }
-
-  setPasswordStrength("strong");
-  setPasswordMessage("Strong password");
-};
-
 
   const formik = useFormik({
     initialValues: {
@@ -102,30 +64,18 @@ const [passwordMessage, setPasswordMessage] = useState("");
             />
           </div>
 
-        <div className="mb-2 text-start">
-  <label className="form-label">Password</label>
-
-  <input
-    type="password"
-    name="Password"
-    className={`form-control register-input ${passwordStrength}`}
-    value={formik.values.Password}
-    placeholder="Enter your password"
-    onChange={(e) => {
-      formik.handleChange(e);
-      checkPasswordStrength(e.target.value);
-    }}
-    required
-  />
-
-  {passwordMessage && (
-    <small className={`strength-text ${passwordStrength}`}>
-      {passwordMessage}
-    </small>
-  )}
-</div>
-
-
+          <div className="mb-3 text-start">
+            <label className="form-label">Password</label>
+            <input
+              type="password"
+              name="Password"
+              className="form-control"
+              placeholder="Enter password"
+              onChange={formik.handleChange}
+              value={formik.values.Password}
+              required
+            />
+          </div>
 
           <div className="mb-3 text-start">
             <label className="form-label">Email</label>
