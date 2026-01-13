@@ -3,18 +3,19 @@ import "../styles/dashboardCarousel.css";
 
 const slides = [
   {
-    title: "📝 Your To-Do Companion",
-    desc: "A simple and powerful app to manage tasks, appointments, and daily goals without stress.",
+    title: "Organize Your Day",
+    desc: "Plan tasks and appointments effortlessly with a clean and focused workflow.",
   },
   {
-    title: "⚡ Powerful Features",
-    desc: "Create, update, delete tasks, track appointments, get reminders, and stay organized effortlessly.",
+    title: "Everything in One Place",
+    desc: "Manage to-dos, track progress, and stay productive without distractions.",
   },
   {
-    title: "🔄 Stay in Sync",
-    desc: "Access your tasks anytime. Designed to work smoothly across devices and future sync support.",
+    title: "Designed for Simplicity",
+    desc: "A minimal experience that helps you focus on what truly matters.",
   },
 ];
+
 
 
 export function DashboardCarousel() {
