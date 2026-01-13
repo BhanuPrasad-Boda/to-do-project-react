@@ -145,7 +145,7 @@ export function ToDoUserDashBoard() {
       Welcome, <span>{userData.UserName || "User"}</span> 👋
     </h5>
   </div>
-  <DashboardCarousel />
+  
 
   <div className="welcome-action">
     <Link to="/add-appointment" className="btn btn-primary btn-sm">
@@ -153,6 +153,7 @@ export function ToDoUserDashBoard() {
     </Link>
   </div>
 </div>
+    <DashboardCarousel />
 
 
         {/* EMPTY STATE */}
