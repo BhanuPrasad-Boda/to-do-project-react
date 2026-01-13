@@ -23,7 +23,7 @@
   transform: translateX(20px);
   transition: opacity 0.4s ease, transform 0.4s ease;
   display: flex;                 /* ✅ CENTER CONTENT */
-  justify-content: center;
+  flex-direction: column;
   justify-content: center;
   text-align: center;
   
