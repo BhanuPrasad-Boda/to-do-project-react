@@ -6,7 +6,7 @@
   padding: 16px;
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  position: relative;
+  
 }
 /* Inner wrapper keeps height stable */
 .carousel-inner {
