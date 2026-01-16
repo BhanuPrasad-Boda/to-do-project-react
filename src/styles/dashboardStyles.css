@@ -157,4 +157,45 @@
   opacity: 0.9;
   text-decoration: line-through;
 }
+/* USER HEADER BOX */
+.dashboard-user-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* PREMIUM CIRCLE AVATAR */
+.dashboard-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+
+  background: white;
+  padding: 2px;
+
+  border: 2px solid #6366f1;
+
+  box-shadow: 
+    0 4px 10px rgba(0,0,0,0.15),
+    0 0 0 4px rgba(99,102,241,0.12);
+
+  transition: all 0.3s ease;
+}
+
+/* Hover premium effect */
+.dashboard-avatar:hover {
+  transform: scale(1.08) rotate(2deg);
+  box-shadow: 
+    0 6px 14px rgba(0,0,0,0.2),
+    0 0 0 5px rgba(99,102,241,0.18);
+}
+
+/* Align signout button nicely */
+.dashboard-user-box .btn {
+  border-radius: 30px;
+  padding: 6px 14px;
+  font-weight: 600;
+}
+
 
