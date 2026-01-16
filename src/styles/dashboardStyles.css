@@ -22,20 +22,27 @@
 .welcome-card {
   background: #ffffff;
   border-radius: 1.2rem;
-  padding: 18px 22px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  padding: 16px 20px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+
   display: flex;
-  justify-content: space-between;
-  
-  gap: 15px;
+  align-items: center;
+  justify-content: space-between; /* ✅ LEFT + RIGHT */
+
+  width: 100%;
 }
+
+/* Welcome text */
 .welcome-text h5 {
   margin: 0;
   font-weight: 600;
+  white-space: nowrap; /* ✅ Prevent breaking */
 }
 
+/* Button container */
 .welcome-action {
-  flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
 .welcome-card span {
@@ -137,11 +144,11 @@
 
 /* Mobile */
 @media (max-width: 576px) {
-  .welcome-card {
-   display: flex;
-   justify-content: space-between;
-    gap: 10px;
-    text-align: center;
+ .welcome-card {
+    padding: 14px 16px;
+  }
+  .welcome-text h5 {
+    font-size: 0.95rem;
   }
     .welcome-action {
     width: 100%;
