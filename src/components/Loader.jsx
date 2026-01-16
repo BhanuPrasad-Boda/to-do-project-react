@@ -29,9 +29,9 @@ const Loader = ({ show }) => {
         <div className="glow-ring"></div>
 
         <div className="brand">
-          <span className="dot"></span>
-          <span className="dot"></span>
-          <span className="dot"></span>
+          <span className="dots"></span>
+          <span className="dots"></span>
+          <span className="dots"></span>
         </div>
 
         <div className="progress-track">
