@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
-import "../styles/dashboardStyles.css"; // ✅ unique CSS
+import "../styles/dashboardStyles.css";
 import { DashboardCarousel } from "../components/DashboardCarousel";
 
 export function ToDoUserDashBoard() {
   const [todos, setTodos] = useState([]);
   const navigate = useNavigate();
+
   const userData = JSON.parse(localStorage.getItem("user")) || {};
 
   const formatDateTime = (date) => {
@@ -23,9 +24,10 @@ export function ToDoUserDashBoard() {
     });
   };
 
-  // Fetch todos from backend
+  // Fetch todos
   useEffect(() => {
     const token = localStorage.getItem("token");
+
     if (!userData.UserId || !token) {
       navigate("/login");
       return;
@@ -68,7 +70,9 @@ export function ToDoUserDashBoard() {
                   await axios.delete(`/appointments/${id}`, {
                     headers: { Authorization: `Bearer ${token}` },
                   });
-                  setTodos((prev) => prev.filter((t) => t.Appointment_Id !== id));
+                  setTodos((prev) =>
+                    prev.filter((t) => t.Appointment_Id !== id)
+                  );
                   toast.success("Task deleted");
                 } catch {
                   toast.error("Delete failed");
@@ -88,9 +92,8 @@ export function ToDoUserDashBoard() {
     );
   };
 
-  // Toggle completed status (optimistic UI)
+  // Toggle complete
   const handleToggleComplete = async (id) => {
-    // Optimistic update
     setTodos((prev) =>
       prev.map((t) =>
         t.Appointment_Id === id ? { ...t, completed: !t.completed } : t
@@ -103,17 +106,19 @@ export function ToDoUserDashBoard() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      // Ensure DB status is synced
       setTodos((prev) =>
         prev.map((t) =>
-          t.Appointment_Id === id ? { ...t, completed: res.data.completed } : t
+          t.Appointment_Id === id
+            ? { ...t, completed: res.data.completed }
+            : t
         )
       );
 
       toast.success(res.data.message);
-    } catch (err) {
+    } catch {
       toast.error("Failed to update status");
-      // rollback if API fails
+
+      // rollback
       setTodos((prev) =>
         prev.map((t) =>
           t.Appointment_Id === id ? { ...t, completed: !t.completed } : t
@@ -128,40 +133,56 @@ export function ToDoUserDashBoard() {
 
         {/* HEADER */}
         <div className="dashboard-header animate-down">
+
+          {/* LEFT TITLE */}
           <h2>Dashboard</h2>
-          <button
-            onClick={handleSignout}
-            className="btn btn-outline-danger btn-sm"
-          >
-            Sign out
-          </button>
+
+          {/* RIGHT USER BOX */}
+          <div className="dashboard-user-box">
+
+            <img
+              src={userData.Avatar}
+              alt="avatar"
+              className="dashboard-avatar"
+              onError={(e) => {
+                e.target.src = "/default-avatar.png";
+              }}
+            />
+
+            <button
+              onClick={handleSignout}
+              className="btn btn-outline-danger btn-sm"
+            >
+              Sign out
+            </button>
+
+          </div>
+
         </div>
-         
 
         {/* WELCOME */}
         <div className="welcome-card animate-up">
-  <div className="welcome-text">
-    <h5>
-      Welcome, <span>{userData.UserName || "User"}</span> 👋
-    </h5>
-  </div>
-  
+          <div className="welcome-text">
+            <h5>
+              Welcome, <span>{userData.UserName || "User"}</span> 👋
+            </h5>
+          </div>
 
-  <div className="welcome-action">
-    <Link to="/add-appointment" className="btn btn-primary btn-sm">
-      + Add Task
-    </Link>
-  </div>
-</div>
-    <DashboardCarousel />
+          <div className="welcome-action">
+            <Link to="/add-appointment" className="btn btn-primary btn-sm">
+              + Add Task
+            </Link>
+          </div>
+        </div>
 
+        <DashboardCarousel />
 
-        {/* EMPTY STATE */}
+        {/* EMPTY */}
         {todos.length === 0 && (
           <div className="empty-state animate-fade">No tasks found 😊</div>
         )}
 
-        {/* TODOS LIST */}
+        {/* TODOS */}
         <div className="row g-4 mt-1">
           {todos.map((todo) => (
             <div
@@ -174,30 +195,39 @@ export function ToDoUserDashBoard() {
                 }`}
               >
                 <h5>{todo.Title}</h5>
-                 {/* STATUS */}
-                    
+
                 <p>{todo.Description}</p>
+
                 {!todo.completed && (
-                      <p className="text-primary fw-bold">⏳ Pending</p>
-                              )}
-                               {todo.completed && (
-                      <p className="text-primary fw-bold"> &nbsp;</p>
-                              )}
+                  <p className="text-primary fw-bold">⏳ Pending</p>
+                )}
+
+                {todo.completed && (
+                  <p className="text-primary fw-bold">&nbsp;</p>
+                )}
 
                 <div className="meta">📅 {formatDateTime(todo.Date)}</div>
+
                 <div className="timestamps">
                   Created: {formatDateTime(todo.createdAt)} <br />
                   Updated: {formatDateTime(todo.updatedAt)}
                 </div>
 
                 <div className="actions d-flex gap-2 flex-wrap">
+
                   <button
                     className={`btn btn-sm ${
-                      todo.completed ? "btn-success" : "btn-outline-secondary"
+                      todo.completed
+                        ? "btn-success"
+                        : "btn-outline-secondary"
                     }`}
-                    onClick={() => handleToggleComplete(todo.Appointment_Id)}
+                    onClick={() =>
+                      handleToggleComplete(todo.Appointment_Id)
+                    }
                   >
-                    {todo.completed ? "Completed ✅" : "mark as Done ✔️"}
+                    {todo.completed
+                      ? "Completed ✅"
+                      : "mark as Done ✔️"}
                   </button>
 
                   <Link
@@ -209,10 +239,13 @@ export function ToDoUserDashBoard() {
 
                   <button
                     className="btn btn-outline-danger btn-sm"
-                    onClick={() => handleDelete(todo.Appointment_Id)}
+                    onClick={() =>
+                      handleDelete(todo.Appointment_Id)
+                    }
                   >
                     Delete
                   </button>
+
                 </div>
               </div>
             </div>
