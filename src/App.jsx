@@ -19,36 +19,28 @@ import { ResetPassword } from './components/ResetPassword';
 function App() {
 
     const [loading, setLoading] = useState(true);
-  const [firstVisit, setFirstVisit] = useState(false);
+  
 
-  useEffect(() => {
-    const warmed = localStorage.getItem("serverWarmed");
-
-    if (!warmed) {
-      setFirstVisit(true);
-    }
-
-    fetch("https://to-do-project-react-backend.onrender.com/api/health")
-      .finally(() => {
-        localStorage.setItem("serverWarmed", "true");
-        setLoading(false);
-      });
+    useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
   }, []);
 
-  if (loading) {
-    return (
-      <Loader
-        message={
-          firstVisit
-            ? "Starting server… First load may take a few seconds ⏳"
-            : "Loading…"
-        }
-      />
-    );
-  }
+
 
   return (
-    <div className="App bg-image">
+
+
+
+ <>
+      <Loader show={loading} />
+
+      {!loading && (
+        <>
+  
+          {/* App content */}
+              <div className="App bg-image">
         <section>
           <BrowserRouter>
                 <Routes>
@@ -68,6 +60,9 @@ function App() {
           </BrowserRouter>      
         </section>
     </div>
+        </>
+      )}
+    </>
   );
 }
 

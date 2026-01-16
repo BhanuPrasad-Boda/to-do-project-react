@@ -18,11 +18,11 @@ export function ToDoUserLogin() {
       setLoading(true);
       try {
         const res = await axios.post("/users/login", values);
-        const { UserId, UserName, Email, token } = res.data;
+        const { UserId, UserName, Email, Avatar, token } = res.data;
 
         const decoded = jwtDecode(token);
         localStorage.setItem("tokenExpiry", decoded.exp * 1000);
-        localStorage.setItem("user", JSON.stringify({ UserId, UserName, Email }));
+        localStorage.setItem("user", JSON.stringify({ UserId, UserName, Email, Avatar }));
         localStorage.setItem("userid", UserId);
         localStorage.setItem("token", token);
 

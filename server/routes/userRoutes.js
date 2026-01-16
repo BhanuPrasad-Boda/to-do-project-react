@@ -75,6 +75,7 @@ router.post("/register", async (req, res) => {
       UserId: user.UserId,
       UserName: user.UserName,
       Email: user.Email,
+      Avatar: user.Avatar,
       token
     });
   } catch (err) {

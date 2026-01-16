@@ -18,7 +18,14 @@ const userSchema = new mongoose.Schema({
       validator: v => v.trim() !== "",
       message: "Mobile cannot be empty"
     }
+  },
+  Avatar: {
+  type: String,
+  default: function () {
+    return `https://api.dicebear.com/7.x/identicon/svg?seed=${this.UserId}`;
   }
+}
+
 });
 
 

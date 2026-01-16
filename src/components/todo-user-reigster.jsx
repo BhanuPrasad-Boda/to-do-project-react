@@ -8,6 +8,21 @@ import "../styles/todoregisterStyles.css";
 export function ToDoUserRegister() {
   const navigate = useNavigate();
 
+  // ================= PASSWORD VALIDATION FUNCTION =================
+  const validatePassword = (password) => {
+    const hasLetter = /[A-Za-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasLength = password.length >= 6;
+
+    return {
+      hasLetter,
+      hasNumber,
+      hasLength,
+      isValid: hasLetter && hasNumber && hasLength,
+    };
+  };
+
+  // ================= FORMIK =================
   const formik = useFormik({
     initialValues: {
       UserId: "",
@@ -16,7 +31,16 @@ export function ToDoUserRegister() {
       Email: "",
       Mobile: "",
     },
+
     onSubmit: (values) => {
+      const passCheck = validatePassword(values.Password);
+
+      // Block submit if password invalid
+      if (!passCheck.isValid) {
+        toast.error("Password must be minimum 6 characters with letters & numbers");
+        return;
+      }
+
       axios
         .post("/users/register", values)
         .then((res) => {
@@ -32,12 +56,17 @@ export function ToDoUserRegister() {
     },
   });
 
+  // ================= PASSWORD STATUS =================
+  const passwordStatus = validatePassword(formik.values.Password);
+
   return (
     <div className="register-page">
       <div className="register-card">
         <h3>User Registration</h3>
 
         <form onSubmit={formik.handleSubmit}>
+
+          {/* USER ID */}
           <div className="mb-3 text-start">
             <label className="form-label">User ID</label>
             <input
@@ -51,6 +80,7 @@ export function ToDoUserRegister() {
             />
           </div>
 
+          {/* USER NAME */}
           <div className="mb-3 text-start">
             <label className="form-label">User Name</label>
             <input
@@ -64,19 +94,43 @@ export function ToDoUserRegister() {
             />
           </div>
 
+          {/* PASSWORD */}
           <div className="mb-3 text-start">
             <label className="form-label">Password</label>
+
             <input
               type="password"
               name="Password"
-              className="form-control"
-              placeholder="Enter password"
+              className={`form-control register-input ${
+                passwordStatus.isValid
+                  ? "password-valid"
+                  : formik.values.Password
+                  ? "password-warning"
+                  : ""
+              }`}
+              placeholder="Min 6 chars, letters & numbers"
               onChange={formik.handleChange}
               value={formik.values.Password}
               required
             />
+
+            {/* RULES DISPLAY */}
+            <div className="password-rules">
+              <span className={passwordStatus.hasLength ? "ok" : "err"}>
+                • Minimum 6 characters
+              </span>
+
+              <span className={passwordStatus.hasLetter ? "ok" : "err"}>
+                • At least one alphabet
+              </span>
+
+              <span className={passwordStatus.hasNumber ? "ok" : "err"}>
+                • At least one number
+              </span>
+            </div>
           </div>
 
+          {/* EMAIL */}
           <div className="mb-3 text-start">
             <label className="form-label">Email</label>
             <input
@@ -90,6 +144,7 @@ export function ToDoUserRegister() {
             />
           </div>
 
+          {/* MOBILE */}
           <div className="mb-3 text-start">
             <label className="form-label">Mobile</label>
             <input
@@ -103,11 +158,13 @@ export function ToDoUserRegister() {
             />
           </div>
 
+          {/* SUBMIT BUTTON */}
           <button type="submit" className="btn btn-success w-100">
             Register
           </button>
         </form>
 
+        {/* LINKS */}
         <div className="register-links">
           <Link to="/">Home</Link>
           <Link to="/login">Already have account? Login</Link>
