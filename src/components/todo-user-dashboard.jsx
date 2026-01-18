@@ -4,17 +4,19 @@ import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
 import "../styles/dashboardStyles.css";
 import { DashboardCarousel } from "../components/DashboardCarousel";
+import imageCompression from "browser-image-compression";
 
 export function ToDoUserDashBoard() {
 
   const navigate = useNavigate();
 
   const [todos, setTodos] = useState([]);
-
+  const token = localStorage.getItem("token");
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
   const BACKEND_URL = "https://to-do-project-react-backend.onrender.com";
+  const [uploading, setUploading] = useState(false);
 
    const [userData, setUserData] = useState(() => {
   const savedUser = localStorage.getItem("user");
@@ -190,56 +192,56 @@ export function ToDoUserDashBoard() {
 
 
   // ================= SAVE AVATAR =================
-    const saveAvatar = async () => {
+      const handleAvatarUpload = async () => {
   if (!selectedFile) {
     toast.error("Please select an image");
     return;
   }
 
   try {
+    setUploading(true);
+
+    // ✅ Get token
     const token = localStorage.getItem("token");
 
+    // ✅ Compress image before upload
+    const compressedFile = await imageCompression(selectedFile, {
+      maxSizeMB: 0.4,        // target size under 400KB
+      maxWidthOrHeight: 800,
+      useWebWorker: true,
+    });
+
+    // ✅ Prepare form data
     const formData = new FormData();
-    formData.append("avatar", selectedFile);
+    formData.append("avatar", compressedFile);
 
-    const res = await axios.put(
-      "https://to-do-project-react-backend.onrender.com/api/users/upload-avatar",
-      formData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
+    // ✅ Upload request
+    const res = await axios.put("/users/upload-avatar", formData, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+      },
+    });
 
-    // ✅ UPDATE REACT STATE (MOST IMPORTANT)
-    setUserData((prev) => ({
-      ...prev,
-      Avatar: res.data.Avatar,
-    }));
-
-    // ✅ UPDATE LOCAL STORAGE (for persistence)
+    // ✅ Update UI + localStorage instantly
     const updatedUser = {
       ...userData,
-      Avatar: res.data.Avatar,
+      Avatar: res.data.avatar,
     };
 
     localStorage.setItem("user", JSON.stringify(updatedUser));
+    setUserData(updatedUser);
 
-    toast.success("Avatar updated");
-
-    setShowAvatarModal(false);
-    setPreview(null);
-    setSelectedFile(null);
+    toast.success("Avatar updated successfully ✅");
 
   } catch (err) {
     console.error(err);
-    toast.error("Avatar update failed");
+    toast.error("Avatar update failed ❌");
+
+  } finally {
+    setUploading(false);
   }
 };
-
-
 
   
 
@@ -329,11 +331,13 @@ export function ToDoUserDashBoard() {
         </button>
 
         <button
-          className="btn btn-primary btn-sm"
-          onClick={saveAvatar}
-        >
-          Save
-        </button>
+  onClick={handleAvatarUpload}
+  disabled={uploading}
+  className="save-btn"
+>
+  {uploading ? "Uploading..." : "Save"}
+</button>
+
       </div>
     </div>
   </div>
