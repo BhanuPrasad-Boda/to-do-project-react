@@ -17,6 +17,7 @@ export function ToDoUserDashBoard() {
   const [preview, setPreview] = useState(null);
   const BACKEND_URL = "https://to-do-project-react-backend.onrender.com";
   const [uploading, setUploading] = useState(false);
+  const [loadingTasks, setLoadingTasks] = useState(true);
 
    const [userData, setUserData] = useState(() => {
   const savedUser = localStorage.getItem("user");
@@ -41,31 +42,34 @@ export function ToDoUserDashBoard() {
 
   // ================= FETCH TODOS =================
 
-  useEffect(() => {
+   useEffect(() => {
+  const token = localStorage.getItem("token");
 
-    const token = localStorage.getItem("token");
+  if (!userData.UserId || !token) {
+    navigate("/login");
+    return;
+  }
 
-    if (!userData.UserId || !token) {
+  const fetchTodos = async () => {
+    setLoadingTasks(true); // start loading
+
+    try {
+      const res = await axios.get(`/appointments/${userData.UserId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setTodos(res.data);
+    } catch (err) {
+      toast.error("Failed to load tasks");
+      localStorage.clear();
       navigate("/login");
-      return;
+    } finally {
+      setLoadingTasks(false); // stop loading
     }
+  };
 
-    const fetchTodos = async () => {
-      try {
-        const res = await axios.get(`/appointments/${userData.UserId}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setTodos(res.data);
-      } catch (err) {
-        toast.error("Failed to load tasks");
-        localStorage.clear();
-        navigate("/login");
-      }
-    };
+  fetchTodos();
+}, [navigate, userData.UserId]);
 
-    fetchTodos();
-
-  }, [navigate, userData.UserId]);
 
   // ================= SIGN OUT =================
 
@@ -234,6 +238,10 @@ export function ToDoUserDashBoard() {
 
     toast.success("Avatar updated successfully ✅");
 
+        setShowAvatarModal(false);
+    setPreview(null);
+    setSelectedFile(null);
+
   } catch (err) {
     console.error(err);
     toast.error("Avatar update failed ❌");
@@ -376,73 +384,52 @@ export function ToDoUserDashBoard() {
         )}
 
         {/* TODOS */}
-        <div className="row g-4 mt-1">
-
-          {todos.map((todo) => (
-
-            <div
-              key={todo.Appointment_Id}
-              className="col-12 col-md-6 col-lg-4 animate-card"
+            {/* TASKS SECTION */}
+<div className="row g-4 mt-1">
+  {loadingTasks ? (
+    <div className="empty-state animate-fade">Loading your tasks... ⏳</div>
+  ) : todos.length === 0 ? (
+    <div className="empty-state animate-fade">No tasks found 😊</div>
+  ) : (
+    todos.map((todo) => (
+      <div
+        key={todo.Appointment_Id}
+        className="col-12 col-md-6 col-lg-4 animate-card"
+      >
+        <div className={`appointment-card ${todo.completed ? "completed-card" : ""}`}>
+          <h5>{todo.Title}</h5>
+          <p>{todo.Description}</p>
+          <div className="meta">📅 {formatDateTime(todo.Date)}</div>
+          <div className="timestamps">
+            Created: {formatDateTime(todo.createdAt)} <br />
+            Updated: {formatDateTime(todo.updatedAt)}
+          </div>
+          <div className="actions d-flex gap-2 flex-wrap">
+            <button
+              className={`btn btn-sm ${todo.completed ? "btn-success" : "btn-outline-secondary"}`}
+              onClick={() => handleToggleComplete(todo.Appointment_Id)}
             >
-
-              <div
-                className={`appointment-card ${
-                  todo.completed ? "completed-card" : ""
-                }`}
-              >
-
-                <h5>{todo.Title}</h5>
-
-                <p>{todo.Description}</p>
-
-                <div className="meta">
-                  📅 {formatDateTime(todo.Date)}
-                </div>
-
-                <div className="timestamps">
-                  Created: {formatDateTime(todo.createdAt)} <br />
-                  Updated: {formatDateTime(todo.updatedAt)}
-                </div>
-
-                <div className="actions d-flex gap-2 flex-wrap">
-
-                  <button
-                    className={`btn btn-sm ${
-                      todo.completed
-                        ? "btn-success"
-                        : "btn-outline-secondary"
-                    }`}
-                    onClick={() =>
-                      handleToggleComplete(todo.Appointment_Id)
-                    }
-                  >
-                    {todo.completed ? "Completed ✅" : "Mark Done ✔️"}
-                  </button>
-
-                  <Link
-                    to={`/edit-appointment/${todo.Appointment_Id}`}
-                    className="btn btn-outline-warning btn-sm"
-                  >
-                    Edit
-                  </Link>
-
-                  <button
-                    className="btn btn-outline-danger btn-sm"
-                    onClick={() =>
-                      handleDelete(todo.Appointment_Id)
-                    }
-                  >
-                    Delete
-                  </button>
-
-                </div>
-
-              </div>
-
-            </div>
-          ))}
-
+              {todo.completed ? "Completed ✅" : "Mark Done ✔️"}
+            </button>
+            <Link
+              to={`/edit-appointment/${todo.Appointment_Id}`}
+              className="btn btn-outline-warning btn-sm"
+            >
+              Edit
+            </Link>
+            <button
+              className="btn btn-outline-danger btn-sm"
+              onClick={() => handleDelete(todo.Appointment_Id)}
+            >
+              Delete
+            </button>
+          </div>
         </div>
+      </div>
+    ))
+  )}
+</div>
+
 
       </div>
 

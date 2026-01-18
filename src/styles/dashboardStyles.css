@@ -164,6 +164,16 @@
   align-items: center;
   gap: 8px;
 }
+.save-btn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.save-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
 
 /* PREMIUM CIRCLE AVATAR */
 .dashboard-avatar {
