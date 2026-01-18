@@ -3,6 +3,10 @@ const router = express.Router();
 const User = require("../models/User");
 const sendEmail = require("../utils/sendEmail");
 const jwt = require("jsonwebtoken");
+const authMiddleware = require("../middleware/authmiddleware");
+const uploadAvatar = require("../middleware/uploadAvatar");
+
+
 
 
 const bcrypt = require("bcryptjs");
@@ -211,5 +215,49 @@ router.post("/forgot-userid", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
+
+router.put("/update-avatar", authMiddleware, async (req, res) => {
+
+  const { avatar } = req.body;
+
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    { Avatar: avatar },
+    { new: true }
+  );
+
+  res.json({
+    Avatar: user.Avatar
+  });
+
+});
+
+router.put(
+  "/upload-avatar",
+  authMiddleware,
+  uploadAvatar.single("avatar"),
+  async (req, res) => {
+    try {
+      const avatarPath = `/uploads/avatars/${req.file.filename}`;
+
+      const user = await User.findByIdAndUpdate(
+        req.user.id,
+        { Avatar: avatarPath },
+        { new: true }
+      );
+
+      res.json({
+        message: "Avatar updated",
+        avatar: avatarPath,
+      });
+    } catch (err) {
+      res.status(500).json({ message: "Upload failed" });
+    }
+  }
+);
+
+
 
 module.exports = router;

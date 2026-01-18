@@ -228,20 +228,27 @@
 
   animation: scaleIn 0.25s ease;
 }
-.avatar-preview {
-  margin: 15px 0;
+  .avatar-preview {
   display: flex;
   justify-content: center;
+  margin: 15px 0;
 }
 
-.avatar-preview img {
-  width: 90px;
-  height: 90px;
+.avatar-preview-img {
+  width: 110px;
+  height: 110px;
 
   border-radius: 50%;
   object-fit: cover;
 
-  border: 3px solid #6366f1;
+  border: 3px solid #e5e7eb;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+
+  transition: transform 0.3s ease;
+}
+
+.avatar-preview-img:hover {
+  transform: scale(1.05);
 }
 .avatar-actions {
   display: flex;

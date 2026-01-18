@@ -177,36 +177,53 @@ export function ToDoUserDashBoard() {
 
   // ================= SAVE AVATAR =================
 
-  const saveAvatar = () => {
+    const saveAvatar = async () => {
 
-    if (!selectedFile) {
-      toast.error("Please select an image");
-      return;
-    }
+  if (!selectedFile) {
+    toast.error("Please select an image");
+    return;
+  }
 
-    const reader = new FileReader();
+  try {
+    const token = localStorage.getItem("token");
 
-    reader.onloadend = () => {
+    const formData = new FormData();
+    formData.append("avatar", selectedFile);
 
-      const updatedUser = {
-        ...userData,
-        Avatar: reader.result,   // base64 image
-      };
+    const res = await axios.put(
+      "/users/update-avatar",
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
 
-      localStorage.setItem("user", JSON.stringify(updatedUser));
-
-      toast.success("Avatar updated successfully");
-
-      setShowAvatarModal(false);
-      setPreview(null);
-      setSelectedFile(null);
-
-      window.location.reload(); // refresh UI
-
+    const updatedUser = {
+      ...userData,
+      Avatar: res.data.Avatar,
     };
 
-    reader.readAsDataURL(selectedFile);
-  };
+    localStorage.setItem("user", JSON.stringify(updatedUser));
+
+    toast.success("Avatar updated successfully");
+
+    setShowAvatarModal(false);
+    setPreview(null);
+    setSelectedFile(null);
+
+    window.location.reload();
+
+  } catch (err) {
+    console.error(err);
+    toast.error("Avatar update failed");
+  }
+};
+
+
+  
 
   // ================= JSX =================
 
@@ -262,11 +279,14 @@ export function ToDoUserDashBoard() {
 
               <div className="avatar-preview">
 
-                {preview && (
-                  <img src={preview} alt="preview" />
-                )}
+  <img
+    src={preview || userData.Avatar || "/default-avatar.png"}
+    alt="avatar preview"
+    className="avatar-preview-img"
+  />
 
-              </div>
+</div>
+
 
               <div className="avatar-actions">
 
