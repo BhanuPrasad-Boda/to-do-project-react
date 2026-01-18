@@ -14,6 +14,7 @@ export function ToDoUserDashBoard() {
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
+  const BACKEND_URL = "https://to-do-project-react-backend.onrender.com";
 
   const userData = JSON.parse(localStorage.getItem("user")) || {};
 
@@ -248,17 +249,17 @@ export function ToDoUserDashBoard() {
 
           <div className="dashboard-user-box">
 
-              <img
-  src={userData?.Avatar || "/default-avatar.png"}
-  alt="avatar"
+            <img
+  src={
+    userData.Avatar
+      ? `${BACKEND_URL}${userData.Avatar}`
+      : "/default-avatar.png"
+  }
   className="dashboard-avatar"
-  onError={(e) => {
-    e.target.onerror = null;  // ❌ prevent infinite loop
-    e.target.src = "/default-avatar.png";
-  }}
+  alt="avatar"
   onClick={() => setShowAvatarModal(true)}
-  style={{ cursor: "pointer" }}
 />
+
 
 
 
@@ -285,22 +286,26 @@ export function ToDoUserDashBoard() {
         onChange={handleAvatarSelect}
       />
 
-      <div className="avatar-preview">
-        {/* Show preview if user selected a new file, otherwise show current avatar */}
-        {preview ? (
-          <img
-            src={preview}
-            alt="avatar preview"
-            className="avatar-preview-img"
-          />
-        ) : (
-          <img
-            src={userData.Avatar || "/default-avatar.png"}
-            alt="avatar preview"
-            className="avatar-preview-img"
-          />
-        )}
-      </div>
+<div className="avatar-preview">
+  {preview ? (
+    <img
+      src={preview}
+      alt="avatar preview"
+      className="avatar-preview-img"
+    />
+  ) : (
+    <img
+      src={
+        userData.Avatar
+          ? `${BACKEND_URL}${userData.Avatar}`
+          : "/default-avatar.png"
+      }
+      alt="avatar preview"
+      className="avatar-preview-img"
+    />
+  )}
+</div>
+
 
       <div className="avatar-actions">
         <button
