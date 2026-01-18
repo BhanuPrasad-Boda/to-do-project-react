@@ -11,7 +11,7 @@ export function ToDoUserDashBoard() {
   const navigate = useNavigate();
 
   const [todos, setTodos] = useState([]);
-  const token = localStorage.getItem("token");
+ 
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
