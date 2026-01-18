@@ -248,14 +248,18 @@ export function ToDoUserDashBoard() {
 
           <div className="dashboard-user-box">
 
-          <img
-  src={userData.Avatar || "/default-avatar.png"} // use preview first
+              <img
+  src={userData?.Avatar || "/default-avatar.png"}
   alt="avatar"
   className="dashboard-avatar"
-  onError={(e) => { e.target.src = "/default-avatar.png"; }}
+  onError={(e) => {
+    e.target.onerror = null;  // ❌ prevent infinite loop
+    e.target.src = "/default-avatar.png";
+  }}
   onClick={() => setShowAvatarModal(true)}
   style={{ cursor: "pointer" }}
 />
+
 
 
             <button
