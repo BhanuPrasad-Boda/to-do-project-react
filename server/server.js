@@ -22,7 +22,8 @@ const app = express();
 app.use(express.json());
 app.use(cors({
   origin: "https://to-do-project-react-one.vercel.app",
-  credentials: false,
+  credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
 }));
   app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 

@@ -59,9 +59,10 @@ const getAvatarUrl = (avatar) => {
   }
 
   const fetchTodos = async () => {
-    setLoadingTasks(true); // start loading
+   
 
     try {
+       setLoadingTasks(true); // start loading
       const res = await axios.get(`/appointments/${userData.UserId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -194,11 +195,14 @@ const getAvatarUrl = (avatar) => {
     toast.error("Please select an image file");
     return;
   }
+   if (preview) {
+    URL.revokeObjectURL(preview);
+  }
 
-  setSelectedFile(file);
+  
 
   const previewURL = URL.createObjectURL(file);
-
+  setSelectedFile(file);
   setPreview(previewURL);
 };
 
@@ -245,8 +249,10 @@ const getAvatarUrl = (avatar) => {
     setUserData(updatedUser);
 
     toast.success("Avatar updated successfully ✅");
-
-        setShowAvatarModal(false);
+    if (preview) {
+    URL.revokeObjectURL(preview);
+    }
+    setShowAvatarModal(false);
     setPreview(null);
     setSelectedFile(null);
 
