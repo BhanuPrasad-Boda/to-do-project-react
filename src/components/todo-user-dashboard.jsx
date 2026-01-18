@@ -249,7 +249,7 @@ export function ToDoUserDashBoard() {
           <div className="dashboard-user-box">
 
           <img
-  src={preview || userData.Avatar || "/default-avatar.png"} // use preview first
+  src={userData.Avatar || "/default-avatar.png"} // use preview first
   alt="avatar"
   className="dashboard-avatar"
   onError={(e) => { e.target.src = "/default-avatar.png"; }}
@@ -270,53 +270,57 @@ export function ToDoUserDashBoard() {
         </div>
 
         {/* AVATAR MODAL */}
-        {showAvatarModal && (
+{showAvatarModal && (
+  <div className="avatar-modal-overlay">
+    <div className="avatar-modal">
+      <h5>Change Avatar</h5>
 
-          <div className="avatar-modal-overlay">
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handleAvatarSelect}
+      />
 
-            <div className="avatar-modal">
-
-              <h5>Change Avatar</h5>
-
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleAvatarSelect}
-              />
-
-              <div className="avatar-preview">
-
-  <img
-    src={preview || userData.Avatar || "/default-avatar.png"}
-    alt="avatar preview"
-    className="avatar-preview-img"
-  />
-
-</div>
-
-
-              <div className="avatar-actions">
-
-                <button
-                  className="btn btn-secondary btn-sm"
-                  onClick={() => setShowAvatarModal(false)}
-                >
-                  Cancel
-                </button>
-
-                <button
-                  className="btn btn-primary btn-sm"
-                  onClick={saveAvatar}
-                >
-                  Save
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
+      <div className="avatar-preview">
+        {/* Show preview if user selected a new file, otherwise show current avatar */}
+        {preview ? (
+          <img
+            src={preview}
+            alt="avatar preview"
+            className="avatar-preview-img"
+          />
+        ) : (
+          <img
+            src={userData.Avatar || "/default-avatar.png"}
+            alt="avatar preview"
+            className="avatar-preview-img"
+          />
         )}
+      </div>
+
+      <div className="avatar-actions">
+        <button
+          className="btn btn-secondary btn-sm"
+          onClick={() => {
+            setShowAvatarModal(false);
+            setPreview(null);       // reset preview if modal closed
+            setSelectedFile(null);  // clear file selection
+          }}
+        >
+          Cancel
+        </button>
+
+        <button
+          className="btn btn-primary btn-sm"
+          onClick={saveAvatar}
+        >
+          Save
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
 
         {/* WELCOME CARD */}
         <div className="welcome-card animate-up">
