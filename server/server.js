@@ -41,7 +41,7 @@ app.use((req, res, next) => {
 });
 
 
-
+  app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 
 
