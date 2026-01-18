@@ -217,15 +217,22 @@ router.post("/forgot-userid", async (req, res) => {
 });
 
 
-
-
-
 router.put(
   "/upload-avatar",
   authMiddleware,
   uploadAvatar.single("avatar"),
   async (req, res) => {
+
     try {
+
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
       const avatarPath = `/uploads/avatars/${req.file.filename}`;
 
       const user = await User.findByIdAndUpdate(
@@ -236,13 +243,16 @@ router.put(
 
       res.json({
         message: "Avatar updated",
-        Avatar: avatarPath,
+        Avatar: user.Avatar
       });
+
     } catch (err) {
+      console.error("Avatar Upload Error:", err);
       res.status(500).json({ message: "Upload failed" });
     }
   }
 );
+
 
 
 
