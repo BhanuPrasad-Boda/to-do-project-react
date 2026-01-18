@@ -72,7 +72,7 @@ router.post("/register", async (req, res) => {
         Email: user.Email
       },
       process.env.JWT_SECRET,
-      { expiresIn: "2m" } // token valid for 2 minutes
+      { expiresIn: "1h" } // token valid for 1 hour
     );
 
     res.json({
