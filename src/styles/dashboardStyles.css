@@ -169,6 +169,7 @@
   border-radius: 8px;
   cursor: pointer;
   background-color: #bdffbd;
+  border: none;
 }
 
 .save-btn:disabled {

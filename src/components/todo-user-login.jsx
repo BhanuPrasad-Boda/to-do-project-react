@@ -22,6 +22,16 @@ export function ToDoUserLogin() {
 
         const decoded = jwtDecode(token);
         localStorage.setItem("tokenExpiry", decoded.exp * 1000);
+        const userData = {
+  UserId,
+  UserName,
+  Email,
+  Avatar: Avatar || null   // important fallback
+};
+
+localStorage.setItem("user", JSON.stringify(userData));
+
+
         localStorage.setItem("user", JSON.stringify({ UserId, UserName, Email, Avatar }));
         localStorage.setItem("userid", UserId);
         localStorage.setItem("token", token);

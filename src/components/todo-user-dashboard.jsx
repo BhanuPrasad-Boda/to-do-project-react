@@ -25,6 +25,14 @@ export function ToDoUserDashBoard() {
 });
 
 
+const getAvatarUrl = (avatar) => {
+  if (!avatar) return "/default-avatar.png";
+
+  if (avatar.startsWith("http")) return avatar;
+
+  return BACKEND_URL + avatar;
+};
+
   // ================= DATE FORMAT =================
 
   const formatDateTime = (date) => {
@@ -269,11 +277,7 @@ export function ToDoUserDashBoard() {
           <div className="dashboard-user-box">
 
             <img
-  src={
-    userData.Avatar
-      ? `${BACKEND_URL}${userData.Avatar}?t=${Date.now()}`
-      : "/default-avatar.png"
-  }
+  src={getAvatarUrl(userData.Avatar)}
   className="dashboard-avatar"
   alt="avatar"
   onClick={() => setShowAvatarModal(true)}
@@ -306,29 +310,22 @@ export function ToDoUserDashBoard() {
       />
 
 <div className="avatar-preview">
-  {preview ? (
-    <img
-      src={preview}
-      alt="avatar preview"
-      className="avatar-preview-img"
-    />
-  ) : (
-    <img
-      src={
-        userData.Avatar
-          ? `${BACKEND_URL}${userData.Avatar}?t=${Date.now()}`
-          : "/default-avatar.png"
-      }
-      alt="avatar preview"
-      className="avatar-preview-img"
-    />
-  )}
+          <img
+  src={
+    preview
+      ? preview
+      : getAvatarUrl(userData.Avatar)
+  }
+  alt="avatar preview"
+  className="avatar-preview-img"
+/>
+
 </div>
 
 
       <div className="avatar-actions">
         <button
-          className="btn btn-warning btn-sm"
+          className="btn btn-outline-warning btn-sm"
           onClick={() => {
             setShowAvatarModal(false);
             setPreview(null);       // reset preview if modal closed
