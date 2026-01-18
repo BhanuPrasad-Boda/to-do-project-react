@@ -16,7 +16,11 @@ export function ToDoUserDashBoard() {
   const [preview, setPreview] = useState(null);
   const BACKEND_URL = "https://to-do-project-react-backend.onrender.com";
 
-  const userData = JSON.parse(localStorage.getItem("user")) || {};
+   const [userData, setUserData] = useState(() => {
+  const savedUser = localStorage.getItem("user");
+  return savedUser ? JSON.parse(savedUser) : {};
+});
+
 
   // ================= DATE FORMAT =================
 
@@ -186,8 +190,7 @@ export function ToDoUserDashBoard() {
 
 
   // ================= SAVE AVATAR =================
-
-   const saveAvatar = async () => {
+    const saveAvatar = async () => {
   if (!selectedFile) {
     toast.error("Please select an image");
     return;
@@ -210,10 +213,16 @@ export function ToDoUserDashBoard() {
       }
     );
 
-    // Update localStorage immediately
+    // ✅ UPDATE REACT STATE (MOST IMPORTANT)
+    setUserData((prev) => ({
+      ...prev,
+      Avatar: res.data.avatar,
+    }));
+
+    // ✅ UPDATE LOCAL STORAGE (for persistence)
     const updatedUser = {
       ...userData,
-      Avatar: res.data.avatar, // make sure backend returns the updated avatar path
+      Avatar: res.data.avatar,
     };
 
     localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -224,12 +233,12 @@ export function ToDoUserDashBoard() {
     setPreview(null);
     setSelectedFile(null);
 
-    // no need for full page reload now
   } catch (err) {
     console.error(err);
     toast.error("Avatar update failed");
   }
 };
+
 
 
   
