@@ -3,11 +3,18 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const path = require("path");
+const fs = require("fs");
 require("dotenv").config();
 
 console.log("SENDGRID KEY EXISTS:", !!process.env.SENDGRID_API_KEY);
 console.log("SENDGRID KEY PREFIX:", process.env.SENDGRID_API_KEY?.slice(0, 10));
 console.log("EMAIL_FROM:", process.env.EMAIL_FROM);
+
+const avatarDir = path.join(__dirname, "uploads/avatars");
+
+if (!fs.existsSync(avatarDir)) {
+  fs.mkdirSync(avatarDir, { recursive: true });
+}
 
 
 const sendEmail = require("./utils/sendEmail");
