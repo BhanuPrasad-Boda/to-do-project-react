@@ -162,7 +162,7 @@
 .dashboard-user-box {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
 /* PREMIUM CIRCLE AVATAR */
@@ -171,7 +171,7 @@
   height: 44px;
   border-radius: 50%;
   object-fit: cover;
-
+  margin-right: 10px;
   background: white;
   padding: 2px;
 

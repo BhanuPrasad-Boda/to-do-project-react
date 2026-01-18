@@ -164,21 +164,29 @@ export function ToDoUserDashBoard() {
   };
 
   // ================= AVATAR SELECT =================
-
   const handleAvatarSelect = (e) => {
 
-    const file = e.target.files[0];
+  const file = e.target.files[0];
 
-    if (!file) return;
+  if (!file) return;
 
-    setSelectedFile(file);
-    setPreview(URL.createObjectURL(file));
-  };
+  // File type validation
+  if (!file.type.startsWith("image/")) {
+    toast.error("Please select an image file");
+    return;
+  }
+
+  setSelectedFile(file);
+
+  const previewURL = URL.createObjectURL(file);
+
+  setPreview(previewURL);
+};
+
 
   // ================= SAVE AVATAR =================
 
-    const saveAvatar = async () => {
-
+   const saveAvatar = async () => {
   if (!selectedFile) {
     toast.error("Please select an image");
     return;
@@ -191,31 +199,31 @@ export function ToDoUserDashBoard() {
     formData.append("avatar", selectedFile);
 
     const res = await axios.put(
-      "/users/upload-avatar",
+      "https://to-do-project-react-backend.onrender.com/api/users/upload-avatar",
       formData,
       {
         headers: {
           Authorization: `Bearer ${token}`,
-          
+          "Content-Type": "multipart/form-data",
         },
       }
     );
 
+    // Update localStorage immediately
     const updatedUser = {
       ...userData,
-      Avatar: res.data.Avatar,
+      Avatar: res.data.avatar, // make sure backend returns the updated avatar path
     };
 
     localStorage.setItem("user", JSON.stringify(updatedUser));
 
-    toast.success("Avatar updated successfully");
+    toast.success("Avatar updated");
 
     setShowAvatarModal(false);
     setPreview(null);
     setSelectedFile(null);
 
-    window.location.reload();
-
+    // no need for full page reload now
   } catch (err) {
     console.error(err);
     toast.error("Avatar update failed");
@@ -240,16 +248,15 @@ export function ToDoUserDashBoard() {
 
           <div className="dashboard-user-box">
 
-            <img
-              src={userData.Avatar}
-              alt="avatar"
-              className="dashboard-avatar"
-              onError={(e) => {
-                e.target.src = "/default-avatar.png";
-              }}
-              onClick={() => setShowAvatarModal(true)}
-              style={{ cursor: "pointer" }}
-            />
+          <img
+  src={preview || userData.Avatar || "/default-avatar.png"} // use preview first
+  alt="avatar"
+  className="dashboard-avatar"
+  onError={(e) => { e.target.src = "/default-avatar.png"; }}
+  onClick={() => setShowAvatarModal(true)}
+  style={{ cursor: "pointer" }}
+/>
+
 
             <button
               onClick={handleSignout}
