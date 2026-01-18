@@ -168,10 +168,11 @@
   padding: 10px 16px;
   border-radius: 8px;
   cursor: pointer;
+  background-color: #bdffbd;
 }
 
 .save-btn:disabled {
-  opacity: 0.7;
+  background: #cccccc;
   cursor: not-allowed;
 }
 

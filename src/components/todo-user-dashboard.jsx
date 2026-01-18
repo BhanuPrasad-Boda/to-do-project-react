@@ -328,7 +328,7 @@ export function ToDoUserDashBoard() {
 
       <div className="avatar-actions">
         <button
-          className="btn btn-secondary btn-sm"
+          className="btn btn-warning btn-sm"
           onClick={() => {
             setShowAvatarModal(false);
             setPreview(null);       // reset preview if modal closed
@@ -377,11 +377,7 @@ export function ToDoUserDashBoard() {
         <DashboardCarousel />
 
         {/* EMPTY STATE */}
-        {todos.length === 0 && (
-          <div className="empty-state animate-fade">
-            No tasks found 😊
-          </div>
-        )}
+
 
         {/* TODOS */}
             {/* TASKS SECTION */}
