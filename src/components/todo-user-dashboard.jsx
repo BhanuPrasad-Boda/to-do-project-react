@@ -226,7 +226,7 @@ export function ToDoUserDashBoard() {
     // ✅ Update UI + localStorage instantly
     const updatedUser = {
       ...userData,
-      Avatar: res.data.avatar,
+      Avatar: res.data.Avatar,
     };
 
     localStorage.setItem("user", JSON.stringify(updatedUser));
