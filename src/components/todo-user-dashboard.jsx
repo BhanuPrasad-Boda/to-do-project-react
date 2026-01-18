@@ -216,13 +216,13 @@ export function ToDoUserDashBoard() {
     // ✅ UPDATE REACT STATE (MOST IMPORTANT)
     setUserData((prev) => ({
       ...prev,
-      Avatar: res.data.avatar,
+      Avatar: res.data.Avatar,
     }));
 
     // ✅ UPDATE LOCAL STORAGE (for persistence)
     const updatedUser = {
       ...userData,
-      Avatar: res.data.avatar,
+      Avatar: res.data.Avatar,
     };
 
     localStorage.setItem("user", JSON.stringify(updatedUser));
@@ -261,7 +261,7 @@ export function ToDoUserDashBoard() {
             <img
   src={
     userData.Avatar
-      ? `${BACKEND_URL}${userData.Avatar}`
+      ? `${BACKEND_URL}${userData.Avatar}?t=${Date.now()}`
       : "/default-avatar.png"
   }
   className="dashboard-avatar"
@@ -306,7 +306,7 @@ export function ToDoUserDashBoard() {
     <img
       src={
         userData.Avatar
-          ? `${BACKEND_URL}${userData.Avatar}`
+          ? `${BACKEND_URL}${userData.Avatar}?t=${Date.now()}`
           : "/default-avatar.png"
       }
       alt="avatar preview"

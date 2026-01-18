@@ -24,6 +24,7 @@ app.use(cors({
   origin: "https://to-do-project-react-one.vercel.app",
   credentials: false,
 }));
+  app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // VERY IMPORTANT
 app.use((req, res, next) => {
@@ -38,7 +39,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/uploads", express.static("uploads"));
+
 
 
 
