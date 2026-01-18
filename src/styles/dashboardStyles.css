@@ -145,19 +145,11 @@
 
 /* Mobile */
 @media (max-width: 576px) {
- .welcome-card {
-    padding: 14px 16px;
-  }
+
   .welcome-text h5 {
     font-size: 0.95rem;
   }
-    .welcome-action {
-    width: 100%;
-  }
 
-  .welcome-action .btn {
-    width: 100%;
-  }
 }
 
 .appointment-card.completed {
