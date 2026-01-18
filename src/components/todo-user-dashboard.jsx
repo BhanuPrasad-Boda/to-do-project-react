@@ -294,15 +294,24 @@ export function ToDoUserDashBoard() {
         {/* WELCOME CARD */}
         <div className="welcome-card animate-up">
 
-          <h5>
-            Welcome, <span>{userData.UserName || "User"}</span> 👋
-          </h5>
+  <div className="welcome-row">
 
-          <Link to="/add-appointment" className="btn btn-primary btn-sm">
-            + Add Task
-          </Link>
+    <div className="welcome-text">
+      <h5>
+        Welcome, <span>{userData.UserName || "User"}</span> 👋
+      </h5>
+    </div>
 
-        </div>
+    <div className="welcome-action">
+      <Link to="/add-appointment" className="btn btn-primary btn-sm">
+        + Add Task
+      </Link>
+    </div>
+
+  </div>
+
+</div>
+
 
         <DashboardCarousel />
 
