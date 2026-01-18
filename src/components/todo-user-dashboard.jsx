@@ -191,7 +191,7 @@ export function ToDoUserDashBoard() {
     formData.append("avatar", selectedFile);
 
     const res = await axios.put(
-      "/users/update-avatar",
+      "/users/upload-avatar",
       formData,
       {
         headers: {
