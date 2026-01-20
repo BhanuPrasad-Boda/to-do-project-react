@@ -6,6 +6,8 @@ const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middleware/authMiddleware");
 const uploadAvatar = require("../middleware/uploadAvatar");
 
+const upload = require("../config/cloudinary");
+
 
 
 
@@ -217,38 +219,34 @@ router.post("/forgot-userid", async (req, res) => {
 });
 
 
-router.put(
+  router.put(
   "/upload-avatar",
   authMiddleware,
-  uploadAvatar.single("avatar"),
+  upload.single("avatar"),
   async (req, res) => {
-
     try {
-
-      if (!req.user || !req.user.id) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
 
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      const avatarPath = `/uploads/avatars/${req.file.filename}`;
+      // Cloudinary gives secure URL
+      const avatarUrl = req.file.path;
 
-      const user = await User.findByIdAndUpdate(
+      const updatedUser = await User.findByIdAndUpdate(
         req.user.id,
-        { Avatar: avatarPath },
+        { Avatar: avatarUrl },
         { new: true }
       );
 
-      res.json({
-        message: "Avatar updated",
-        Avatar: user.Avatar
+      res.status(200).json({
+        message: "Avatar updated successfully",
+        avatar: avatarUrl,
       });
 
-    } catch (err) {
-      console.error("Avatar Upload Error:", err);
-      res.status(500).json({ message: "Upload failed" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Avatar upload failed" });
     }
   }
 );

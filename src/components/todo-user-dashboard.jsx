@@ -208,7 +208,8 @@ const getAvatarUrl = (avatar) => {
 
 
   // ================= SAVE AVATAR =================
-      const handleAvatarUpload = async () => {
+           const handleAvatarUpload = async () => {
+
   if (!selectedFile) {
     toast.error("Please select an image");
     return;
@@ -217,53 +218,62 @@ const getAvatarUrl = (avatar) => {
   try {
     setUploading(true);
 
-    // ✅ Get token
     const token = localStorage.getItem("token");
 
-    // ✅ Compress image before upload
-    const compressedFile = await imageCompression(selectedFile, {
-      maxSizeMB: 0.4,        // target size under 400KB
-      maxWidthOrHeight: 800,
-      useWebWorker: true,
-    });
-
-    // ✅ Prepare form data
     const formData = new FormData();
-    formData.append("avatar", compressedFile);
+    const compressedFile = await imageCompression(selectedFile, {
+  maxSizeMB: 0.4,      // 400KB
+  maxWidthOrHeight: 600,
+  useWebWorker: true,
+});
 
-    // ✅ Upload request
-    const res = await axios.put("/users/upload-avatar", formData, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-      },
-    });
+formData.append("avatar", compressedFile);
 
-    // ✅ Update UI + localStorage instantly
+
+    const res = await axios.put(
+      "https://to-do-project-react-backend.onrender.com/api/users/upload-avatar",
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    const avatarUrl = res.data.avatar;
+
+    // ✅ Update React state immediately
+    setUserData((prev) => ({
+      ...prev,
+      Avatar: avatarUrl,
+    }));
+
+    // ✅ Update localStorage
     const updatedUser = {
       ...userData,
-      Avatar: res.data.Avatar,
+      Avatar: avatarUrl,
     };
 
     localStorage.setItem("user", JSON.stringify(updatedUser));
-    setUserData(updatedUser);
 
     toast.success("Avatar updated successfully ✅");
-    if (preview) {
-    URL.revokeObjectURL(preview);
-    }
+
+    // ✅ Close modal automatically
     setShowAvatarModal(false);
+
+    // ✅ Reset
     setPreview(null);
     setSelectedFile(null);
 
-  } catch (err) {
-    console.error(err);
-    toast.error("Avatar update failed ❌");
+  } catch (error) {
+    console.error(error);
+    toast.error("Avatar upload failed ❌");
 
   } finally {
     setUploading(false);
   }
 };
+
 
   
 
@@ -283,9 +293,9 @@ const getAvatarUrl = (avatar) => {
           <div className="dashboard-user-box">
 
             <img
-  src={getAvatarUrl(userData.Avatar)}
-  className="dashboard-avatar"
+      src={userData?.Avatar || "/default-avatar.png"}
   alt="avatar"
+  className="dashboard-avatar"
   onClick={() => setShowAvatarModal(true)}
 />
 
@@ -313,17 +323,13 @@ const getAvatarUrl = (avatar) => {
         type="file"
         accept="image/*"
         onChange={handleAvatarSelect}
-      />
+      />must
 
 <div className="avatar-preview">
           <img
-  src={
-    preview
-      ? preview
-      : getAvatarUrl(userData.Avatar)
-  }
-  alt="avatar preview"
+            src={preview || userData?.Avatar || "/default-avatar.png"}
   className="avatar-preview-img"
+  alt="preview"
 />
 
 </div>
