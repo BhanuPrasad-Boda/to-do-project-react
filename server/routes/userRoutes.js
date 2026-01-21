@@ -219,39 +219,42 @@ router.post("/forgot-userid", async (req, res) => {
 });
 
 
- router.put(
+    router.put(
   "/upload-avatar",
   authMiddleware,
-  upload.single("avatar"),
+  (req, res, next) => {
+    upload.single("avatar")(req, res, function (err) {
+      if (err) {
+        console.error("MULTER ERROR:", err);
+        return res.status(500).json({
+          message: "Multer / Cloudinary error",
+          error: err.message,
+        });
+      }
+      next();
+    });
+  },
   async (req, res) => {
     try {
+      console.log("FILE:", req.file);
 
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      // Cloudinary secure URL
       const avatarUrl = req.file.path;
-
-      // ✅ SAVE INTO DATABASE
-      const user = await User.findByIdAndUpdate(
-        req.user.id,
-        { Avatar: avatarUrl },
-        { new: true }
-      );
 
       res.status(200).json({
         message: "Avatar updated successfully",
-        avatar: user.Avatar,
+        avatar: avatarUrl,
       });
 
     } catch (error) {
-      console.error("Avatar Upload Error:", error);
+      console.error("UPLOAD ROUTE ERROR:", error);
       res.status(500).json({ message: "Avatar upload failed" });
     }
   }
 );
-
 
 
 
