@@ -15,7 +15,7 @@ export function ToDoUserDashBoard() {
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
-  const BACKEND_URL = "https://to-do-project-react-backend.onrender.com";
+
   const [uploading, setUploading] = useState(false);
   const [loadingTasks, setLoadingTasks] = useState(true);
 
