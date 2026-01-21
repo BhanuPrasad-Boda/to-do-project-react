@@ -92,15 +92,15 @@ export function ResetPassword() {
           </div>
                     <div className="password-rules">
 
-              <span className={passwordStatus.hasLength ? "okk" : "er"}>
+              <span className={passwordStatus.hasLength ? "ok" : "err"}>
                 • Minimum 6 characters
               </span>
 
-              <span className={passwordStatus.hasLetter ? "okk" : "er"}>
+              <span className={passwordStatus.hasLetter ? "ok" : "err"}>
                 • At least one alphabet
               </span>
 
-              <span className={passwordStatus.hasNumber ? "okk" : "er"}>
+              <span className={passwordStatus.hasNumber ? "ok" : "err"}>
                 • At least one number
               </span>
 
