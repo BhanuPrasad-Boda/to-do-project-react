@@ -1,7 +1,6 @@
-
-
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const multer = require("multer");
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -12,15 +11,16 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary,
   params: {
-    folder: "todo-app-avatars", // Cloudinary folder name
-    allowed_formats: ["jpg", "png", "jpeg", "webp"],
+    folder: "todo-app-avatars",
+    format: async (req, file) => "png", // auto convert to png
+    public_id: (req, file) => Date.now(),
     transformation: [
-      { width: 300, height: 300, crop: "fill" }, // resize = faster load
-      { quality: "auto" } // optimize size
+      { width: 300, height: 300, crop: "fill" },
+      { quality: "auto" }
     ],
   },
 });
 
-const upload = require("multer")({ storage });
+const upload = multer({ storage });
 
 module.exports = upload;
