@@ -103,9 +103,9 @@ export function ToDoUserRegister() {
               name="Password"
               className={`form-control register-input ${
                 passwordStatus.isValid
-                  ? "password-valid"
+                  ? "passwords-valid"
                   : formik.values.Password
-                  ? "password-warning"
+                  ? "passwords-warning"
                   : ""
               }`}
               placeholder="Min 6 chars, letters & numbers"
@@ -116,15 +116,15 @@ export function ToDoUserRegister() {
 
             {/* RULES DISPLAY */}
             <div className="password-rules">
-              <span className={passwordStatus.hasLength ? "ok" : "err"}>
+              <span className={passwordStatus.hasLength ? "okk" : "er"}>
                 • Minimum 6 characters
               </span>
 
-              <span className={passwordStatus.hasLetter ? "ok" : "err"}>
+              <span className={passwordStatus.hasLetter ? "okk" : "er"}>
                 • At least one alphabet
               </span>
 
-              <span className={passwordStatus.hasNumber ? "ok" : "err"}>
+              <span className={passwordStatus.hasNumber ? "okk" : "er"}>
                 • At least one number
               </span>
             </div>

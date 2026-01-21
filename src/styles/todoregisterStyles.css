@@ -195,11 +195,12 @@
 .strength-text.strong {
   color: #16a34a;
 }
-.password-valid {
+
+.passwords-valid {
   border: 2px solid #22c55e !important;
 }
 
-.password-warning {
+.passwords-warning {
   border: 2px solid #f59e0b !important;
 }
 
@@ -211,10 +212,10 @@
   gap: 2px;
 }
 
-.password-rules .ok {
+.password-rules .okk {
   color: #16a34a;
 }
 
-.password-rules .err {
+.password-rules .er {
   color: #dc2626;
 }
