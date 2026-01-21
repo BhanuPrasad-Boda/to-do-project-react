@@ -175,7 +175,19 @@
 .save-btn:disabled {
   background: #cccccc;
   cursor: not-allowed;
+}.task-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+.task-desc {
+  overflow: hidden;
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
 
 /* PREMIUM CIRCLE AVATAR */
 .dashboard-avatar {

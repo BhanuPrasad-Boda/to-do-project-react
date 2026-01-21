@@ -18,6 +18,7 @@ export function ToDoUserDashBoard() {
 
   const [uploading, setUploading] = useState(false);
   const [loadingTasks, setLoadingTasks] = useState(true);
+  const tokenExpiry = localStorage.getItem("tokenExpiry");
 
    const [userData, setUserData] = useState(() => {
   const savedUser = localStorage.getItem("user");
@@ -43,33 +44,63 @@ export function ToDoUserDashBoard() {
 
   // ================= FETCH TODOS =================
 
-   useEffect(() => {
+       useEffect(() => {
   const token = localStorage.getItem("token");
+  const tokenExpiry = localStorage.getItem("tokenExpiry");
 
+  // 🚫 If no login data → go to login
   if (!userData.UserId || !token) {
     navigate("/login");
     return;
   }
 
-  const fetchTodos = async () => {
-   
+  // 🚫 If token already expired → logout
+  if (tokenExpiry && Date.now() > tokenExpiry) {
+    toast.error("Session expired. Please login again.");
 
+    localStorage.clear();
+    navigate("/login");
+    return;
+  }
+
+  // ✅ Fetch todos
+  const fetchTodos = async () => {
     try {
-       setLoadingTasks(true); // start loading
+      setLoadingTasks(true);
+
       const res = await axios.get(`/appointments/${userData.UserId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       setTodos(res.data);
+
     } catch (err) {
-      toast.error("Failed to load tasks");
+      toast.error("Session expired. Please login again.");
+
       localStorage.clear();
       navigate("/login");
+
     } finally {
-      setLoadingTasks(false); // stop loading
+      setLoadingTasks(false);
     }
   };
 
   fetchTodos();
+
+  // ✅ Auto logout when token expires WHILE USER IS ON DASHBOARD
+  const interval = setInterval(() => {
+    const expiry = localStorage.getItem("tokenExpiry");
+
+    if (expiry && Date.now() > expiry) {
+      toast.error("Session expired. Please login again.");
+
+      localStorage.clear();
+      navigate("/login");
+    }
+  }, 3000);
+
+  return () => clearInterval(interval);
+
 }, [navigate, userData.UserId]);
 
 
@@ -395,8 +426,8 @@ formData.append("avatar", compressedFile);
         className="col-12 col-md-6 col-lg-4 animate-card"
       >
         <div className={`appointment-card ${todo.completed ? "completed-card" : ""}`}>
-          <h5>{todo.Title}</h5>
-          <p>{todo.Description}</p>
+          <h5 className="task-title">{todo.Title}</h5>
+          <p className="task-desc">{todo.Description}</p>
           <div className="meta">📅 {formatDateTime(todo.Date)}</div>
           <div className="timestamps">
             Created: {formatDateTime(todo.createdAt)} <br />
