@@ -25,13 +25,6 @@ export function ToDoUserDashBoard() {
 });
 
 
-const getAvatarUrl = (avatar) => {
-  if (!avatar) return "/default-avatar.png";
-
-  if (avatar.startsWith("http")) return avatar;
-
-  return BACKEND_URL + avatar;
-};
 
   // ================= DATE FORMAT =================
 
