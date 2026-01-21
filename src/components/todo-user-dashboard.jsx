@@ -18,7 +18,7 @@ export function ToDoUserDashBoard() {
 
   const [uploading, setUploading] = useState(false);
   const [loadingTasks, setLoadingTasks] = useState(true);
-  const tokenExpiry = localStorage.getItem("tokenExpiry");
+  
 
    const [userData, setUserData] = useState(() => {
   const savedUser = localStorage.getItem("user");
