@@ -87,7 +87,10 @@ export function ResetPassword() {
             <span className="focus-bar"></span>
 
             {/* RULES DISPLAY */}
-            <div className="password-rules">
+  
+
+          </div>
+                    <div className="password-rules">
 
               <span className={passwordStatus.hasLength ? "ok" : "err"}>
                 • Minimum 6 characters
@@ -102,8 +105,6 @@ export function ResetPassword() {
               </span>
 
             </div>
-
-          </div>
 
           <button
             type="submit"
