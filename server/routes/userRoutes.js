@@ -219,10 +219,10 @@ router.post("/forgot-userid", async (req, res) => {
 });
 
 
-  router.put(
+ router.put(
   "/upload-avatar",
   authMiddleware,
-  uploadAvatar.single("avatar"),
+  upload.single("avatar"),
   async (req, res) => {
     try {
 
@@ -230,26 +230,23 @@ router.post("/forgot-userid", async (req, res) => {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      const cloudinary = require("../config/cloudinary");
+      // Cloudinary secure URL
+      const avatarUrl = req.file.path;
 
-      const result = await cloudinary.uploader.upload(req.file.path, {
-        folder: "todo-app/avatars",
-        resource_type: "image",
-      });
-
+      // ✅ SAVE INTO DATABASE
       const user = await User.findByIdAndUpdate(
         req.user.id,
-        { Avatar: result.secure_url },
+        { Avatar: avatarUrl },
         { new: true }
       );
 
-      res.json({
-        message: "Avatar updated",
-        avatar: user.Avatar
+      res.status(200).json({
+        message: "Avatar updated successfully",
+        avatar: user.Avatar,
       });
 
     } catch (error) {
-      console.error("Cloudinary Upload Error:", error);
+      console.error("Avatar Upload Error:", error);
       res.status(500).json({ message: "Avatar upload failed" });
     }
   }
