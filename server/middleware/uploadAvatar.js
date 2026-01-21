@@ -1,30 +1,24 @@
 const multer = require("multer");
-const path = require("path");
+
 const storage = multer.diskStorage({
-  destination: "uploads/avatars",
+  destination: "uploads",
   filename: (req, file, cb) => {
-     const ext = path.extname(file.originalname); // .jpg .png
-  cb(null, Date.now() + ext);
+    cb(null, Date.now() + "-" + file.originalname);
   },
 });
 
 const fileFilter = (req, file, cb) => {
-  if (
-    file.mimetype === "image/jpeg" ||
-    file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg" ||
-    file.mimetype === "image/webp"
-  ) {
+  if (file.mimetype.startsWith("image/")) {
     cb(null, true);
   } else {
-    cb(new Error("Only image files allowed"), false);
+    cb(new Error("Only images allowed"), false);
   }
 };
 
 const uploadAvatar = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB limit
+  limits: { fileSize: 2 * 1024 * 1024 },
 });
 
 module.exports = uploadAvatar;

@@ -4,7 +4,7 @@ const User = require("../models/User");
 const sendEmail = require("../utils/sendEmail");
 const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middleware/authMiddleware");
-const uploadAvatar = require("../middleware/uploadAvatar");
+
 
 const upload = require("../config/cloudinary");
 
@@ -222,7 +222,7 @@ router.post("/forgot-userid", async (req, res) => {
   router.put(
   "/upload-avatar",
   authMiddleware,
-  upload.single("avatar"),
+  uploadAvatar.single("avatar"),
   async (req, res) => {
     try {
 
@@ -230,26 +230,31 @@ router.post("/forgot-userid", async (req, res) => {
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      // Cloudinary gives secure URL
-      const avatarUrl = req.file.path;
+      const cloudinary = require("../config/cloudinary");
 
-      const updatedUser = await User.findByIdAndUpdate(
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "todo-app/avatars",
+        resource_type: "image",
+      });
+
+      const user = await User.findByIdAndUpdate(
         req.user.id,
-        { Avatar: avatarUrl },
+        { Avatar: result.secure_url },
         { new: true }
       );
 
-      res.status(200).json({
-        message: "Avatar updated successfully",
-        avatar: avatarUrl,
+      res.json({
+        message: "Avatar updated",
+        avatar: user.Avatar
       });
 
     } catch (error) {
-      console.error(error);
+      console.error("Cloudinary Upload Error:", error);
       res.status(500).json({ message: "Avatar upload failed" });
     }
   }
 );
+
 
 
 
