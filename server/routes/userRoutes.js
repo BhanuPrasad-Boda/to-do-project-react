@@ -219,24 +219,12 @@ router.post("/forgot-userid", async (req, res) => {
 });
 
 
-    router.put(
+  router.put(
   "/upload-avatar",
   authMiddleware,
-  (req, res, next) => {
-    upload.single("avatar")(req, res, function (err) {
-      if (err) {
-        console.error("MULTER ERROR:", err);
-        return res.status(500).json({
-          message: "Multer / Cloudinary error",
-          error: err.message,
-        });
-      }
-      next();
-    });
-  },
+  upload.single("avatar"),
   async (req, res) => {
     try {
-      console.log("FILE:", req.file);
 
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
@@ -244,18 +232,31 @@ router.post("/forgot-userid", async (req, res) => {
 
       const avatarUrl = req.file.path;
 
+      // ✅ Get logged in user id from token
+      const userId = req.user.UserId;
+
+      // ✅ Update avatar in database
+      const updatedUser = await User.findOneAndUpdate(
+        { UserId: userId },
+        { Avatar: avatarUrl },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
       res.status(200).json({
         message: "Avatar updated successfully",
         avatar: avatarUrl,
       });
 
     } catch (error) {
-      console.error("UPLOAD ROUTE ERROR:", error);
+      console.error("Avatar Upload Error:", error);
       res.status(500).json({ message: "Avatar upload failed" });
     }
   }
 );
-
 
 
 
