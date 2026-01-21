@@ -10,31 +10,28 @@ export function ResetPassword() {
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ Password rules (same standard as register)
+  // ================= SAME PASSWORD VALIDATION AS REGISTER =================
   const validatePassword = (password) => {
-    const minLength = password.length >= 8;
-    const hasUpper = /[A-Z]/.test(password);
-    const hasLower = /[a-z]/.test(password);
+    const hasLetter = /[A-Za-z]/.test(password);
     const hasNumber = /[0-9]/.test(password);
-    const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    const hasLength = password.length >= 6;
 
-    if (!minLength) return "Password must be at least 8 characters";
-    if (!hasUpper) return "Password must contain at least one uppercase letter";
-    if (!hasLower) return "Password must contain at least one lowercase letter";
-    if (!hasNumber) return "Password must contain at least one number";
-    if (!hasSpecial) return "Password must contain at least one special character";
-
-    return null;
+    return {
+      hasLetter,
+      hasNumber,
+      hasLength,
+      isValid: hasLetter && hasNumber && hasLength,
+    };
   };
 
+  const passwordStatus = validatePassword(newPassword);
+
+  // ================= SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ Validate password before API call
-    const error = validatePassword(newPassword);
-
-    if (error) {
-      toast.error(error);
+    if (!passwordStatus.isValid) {
+      toast.error("Password must be minimum 6 characters with letters & numbers");
       return;
     }
 
@@ -51,6 +48,7 @@ export function ResetPassword() {
 
     } catch (err) {
       toast.error(err.response?.data?.message || "Server error");
+
     } finally {
       setLoading(false);
     }
@@ -59,6 +57,7 @@ export function ResetPassword() {
   return (
     <div className="reset-page">
       <div className="reset-card animate-card">
+
         <h2 className="reset-title">Reset Password</h2>
 
         <p className="reset-subtitle">
@@ -67,15 +66,43 @@ export function ResetPassword() {
 
         <form onSubmit={handleSubmit}>
 
+          {/* PASSWORD FIELD */}
           <div className="reset-input-group">
+
             <input
               type="password"
+              className={`reset-input ${
+                passwordStatus.isValid
+                  ? "password-valid"
+                  : newPassword
+                  ? "password-warning"
+                  : ""
+              }`}
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
             />
+
             <label>New Password</label>
             <span className="focus-bar"></span>
+
+            {/* RULES DISPLAY */}
+            <div className="password-rules">
+
+              <span className={passwordStatus.hasLength ? "ok" : "err"}>
+                • Minimum 6 characters
+              </span>
+
+              <span className={passwordStatus.hasLetter ? "ok" : "err"}>
+                • At least one alphabet
+              </span>
+
+              <span className={passwordStatus.hasNumber ? "ok" : "err"}>
+                • At least one number
+              </span>
+
+            </div>
+
           </div>
 
           <button
@@ -87,16 +114,6 @@ export function ResetPassword() {
           </button>
 
         </form>
-
-        {/* ✅ Password rules UI info */}
-        <p className="reset-info">
-          Password must contain:
-          <br />• Minimum <strong>8 characters</strong>
-          <br />• <strong>Uppercase</strong> letter
-          <br />• <strong>Lowercase</strong> letter
-          <br />• <strong>Number</strong>
-          <br />• <strong>Special character</strong>
-        </p>
 
       </div>
     </div>
