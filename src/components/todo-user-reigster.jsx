@@ -115,19 +115,7 @@ export function ToDoUserRegister() {
             />
 
             {/* RULES DISPLAY */}
-            <div className="password-rules">
-              <span className={passwordStatus.hasLength ? "okk" : "er"}>
-                • Minimum 6 characters
-              </span>
 
-              <span className={passwordStatus.hasLetter ? "okk" : "er"}>
-                • At least one alphabet
-              </span>
-
-              <span className={passwordStatus.hasNumber ? "okk" : "er"}>
-                • At least one number
-              </span>
-            </div>
           </div>
 
           {/* EMAIL */}
