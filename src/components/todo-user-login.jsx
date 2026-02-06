@@ -51,7 +51,7 @@ localStorage.setItem("user", JSON.stringify(userData));
       <div className="login-card animate-login">
         <div className="login-icon">🔐</div>
 
-        <h2 className="login-title">Welcome Back</h2>
+        <h2 className="login-title">Welcome!</h2>
         <p className="login-subtitle">Login to manage your tasks</p>
 
         <form onSubmit={formik.handleSubmit}>
