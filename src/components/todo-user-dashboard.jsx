@@ -347,7 +347,7 @@ formData.append("avatar", compressedFile);
         type="file"
         accept="image/*"
         onChange={handleAvatarSelect}
-      />must
+      />
 
 <div className="avatar-preview">
           <img
