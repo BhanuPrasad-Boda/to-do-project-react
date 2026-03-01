@@ -36,7 +36,7 @@ localStorage.setItem("user", JSON.stringify(userData));
         localStorage.setItem("userid", UserId);
         localStorage.setItem("token", token);
 
-        toast.success(`Welcome ! ${UserName} 👋`);
+        toast.success(`Welcome! ${UserName} 👋`);
         navigate("/user-dashboard");
       } catch (err) {
         toast.error(err.response?.data?.message || "Invalid credentials");
