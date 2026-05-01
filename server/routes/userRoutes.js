@@ -174,9 +174,15 @@ router.post("/forgot-userid", async (req, res) => {
     res.json({
       message: "User ID sent to registered email. Please check Inbox or Spam.",
     });
-  } catch {
-    res.status(500).json({ message: "Server error" });
-  }
+  } catch (error) {
+  console.error("forgot-userid error:", error);
+
+  res.status(500).json({
+    message: "Server error",
+    error: error.message,
+    stack: error.stack
+  });
+}
 });
 
 // ===================== UPLOAD AVATAR =====================
