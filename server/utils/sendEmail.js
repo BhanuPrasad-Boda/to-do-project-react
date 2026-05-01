@@ -1,33 +1,32 @@
 // server/utils/sendEmail.js
-const sgMail = require("@sendgrid/mail");
+const { Resend } = require("resend");
 
 // ================= SET API KEY =================
-if (!process.env.SENDGRID_API_KEY) {
-  throw new Error("SENDGRID_API_KEY is missing in environment variables");
+if (!process.env.RESEND_API_KEY) {
+  throw new Error("RESEND_API_KEY is missing in environment variables");
 }
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // ================= EMAIL SENDER =================
 const sendEmail = async (to, subject, html) => {
-  const msg = {
-    to,
-    from: {
-      name: "To-Do App",
-      email: process.env.EMAIL_FROM, // must be verified in SendGrid
-    },
-    subject,
-    html,
-  };
-
   try {
-    await sgMail.send(msg);
+    const response = await resend.emails.send({
+      from: process.env.EMAIL_FROM || "onboarding@resend.dev",
+      to,
+      subject,
+      html,
+    });
+
+    console.log("Email sent:", response);
+
     return true;
   } catch (error) {
     console.error(
-      "SendGrid Error:",
-      error?.response?.body || error.message
+      "Resend Error:",
+      error.message || error
     );
+
     return false;
   }
 };
