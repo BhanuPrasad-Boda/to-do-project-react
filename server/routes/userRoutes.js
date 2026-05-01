@@ -108,7 +108,7 @@ router.post("/forgot-password", async (req, res) => {
         </a>
 
         <p>This link expires in 15 minutes.</p>
-        <p>If you did not request a password reset, please ignore this email.</p>
+        <p>If you did not request a password reset, please secure your account.</p>
         <p>ToDo App Team</p>
       </div>
       `
@@ -159,7 +159,7 @@ router.post("/forgot-userid", async (req, res) => {
       user.Email,
       "Account Recovery - ToDo App",
       `
-      <p>Hello,</p>
+      <p>Hello, ${user.UserName}</p>
       <p>Your User ID:</p>
       <strong>${user.UserId}</strong>
       <p>If this wasn't you, please secure your account immediately.</p>
