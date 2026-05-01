@@ -414,7 +414,7 @@ formData.append("avatar", compressedFile);
 
         {/* TODOS */}
             {/* TASKS SECTION */}
-<div className="row g-4 mt-1 ">
+<div className="row g-4 m-1 ">
   {loadingTasks ? (
     <div className="empty-state animate-fade">Loading your tasks... ⏳</div>
   ) : todos.length === 0 ? (
