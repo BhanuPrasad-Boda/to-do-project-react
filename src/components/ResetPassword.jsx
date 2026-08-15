@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
 import { AuthLayout } from "./AuthLayout";
@@ -82,6 +82,9 @@ export function ResetPassword() {
             {loading ? "Resetting..." : "Reset password"}
           </button>
         </form>
+        <Link to="/login" className="btn btn-outline-secondary w-100 mt-3">
+          Back to login
+        </Link>
       </div>
     </AuthLayout>
   );

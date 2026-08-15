@@ -184,9 +184,11 @@ export function ForgotPassword() {
           </div>
         )}
 
-        <div className="mt-3 text-center">
-          <Link to="/login" className="small text-primary">Back to login</Link>
-        </div>
+        {step !== "done" && (
+          <Link to="/login" className="btn btn-outline-secondary w-100 mt-3">
+            Back to login
+          </Link>
+        )}
       </div>
     </AuthLayout>
   );

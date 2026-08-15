@@ -90,7 +90,7 @@ export function AuthOtpPanel({
         Verify
       </button>
       {onBack ? (
-        <button type="button" className="btn btn-link mt-2" onClick={onBack} disabled={loading}>
+        <button type="button" className="btn btn-outline-secondary w-100 mt-3" onClick={onBack} disabled={loading}>
           Back
         </button>
       ) : null}

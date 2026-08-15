@@ -205,7 +205,7 @@ export function ToDoUserRegister() {
           <Link to="/" className="text-decoration-none text-muted small hover-primary">
             <i className="bi bi-house me-1"></i> Home
           </Link>
-          <Link to="/login" className="text-decoration-none text-primary small fw-semibold">
+          <Link to="/login" className="btn btn-sm btn-outline-secondary">
             Login Instead
           </Link>
         </div>

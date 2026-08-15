@@ -54,7 +54,9 @@ export function ForgotUserId() {
         <p className="userid-note">
           Use the mobile number linked to your account
         </p>
-        <Link to="/login" className="small text-primary">Back to login</Link>
+        <Link to="/login" className="btn btn-outline-secondary w-100 mt-3">
+          Back to login
+        </Link>
       </div>
     </AuthLayout>
   );
