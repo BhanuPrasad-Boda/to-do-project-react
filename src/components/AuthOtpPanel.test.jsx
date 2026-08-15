@@ -20,3 +20,27 @@ test("auto-verifies after the sixth digit without a button click", () => {
   });
   expect(onVerify).toHaveBeenCalledTimes(1);
 });
+
+test("clears the OTP boxes after a wrong code", () => {
+  const onOtpChange = jest.fn();
+  const { rerender } = render(
+    <AuthOtpPanel
+      maskedEmail="a***@mail.com"
+      otp="111111"
+      onOtpChange={onOtpChange}
+      onVerify={() => {}}
+    />
+  );
+
+  rerender(
+    <AuthOtpPanel
+      maskedEmail="a***@mail.com"
+      otp="111111"
+      error="Invalid verification code. Please try again."
+      onOtpChange={onOtpChange}
+      onVerify={() => {}}
+    />
+  );
+
+  expect(onOtpChange).toHaveBeenCalledWith("");
+});

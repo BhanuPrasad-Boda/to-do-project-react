@@ -8,6 +8,24 @@ function emailLooksReady(env = process.env) {
   return type === "sendgrid" || type === "resend";
 }
 
+function isLanHostname(hostname) {
+  if (!hostname) return false;
+  if (hostname === "localhost" || hostname === "127.0.0.1") return true;
+  if (/^192\.168\.\d{1,3}\.\d{1,3}$/.test(hostname)) return true;
+  if (/^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(hostname)) return true;
+  return /^172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}$/.test(hostname);
+}
+
+function isLanDevOrigin(origin) {
+  try {
+    const url = new URL(origin);
+    const port = url.port || (url.protocol === "https:" ? "443" : "80");
+    return isLanHostname(url.hostname) && (port === "3000" || port === "3001");
+  } catch {
+    return false;
+  }
+}
+
 function getAllowedOrigins(env = process.env) {
   const fromEnv = [env.CLIENT_URL, env.ADDITIONAL_ORIGINS]
     .filter(Boolean)
@@ -63,4 +81,4 @@ function assertEnv(env = process.env) {
   return result;
 }
 
-module.exports = { emailLooksReady, getAllowedOrigins, validateEnv, assertEnv };
+module.exports = { emailLooksReady, getAllowedOrigins, isLanDevOrigin, validateEnv, assertEnv };

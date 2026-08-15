@@ -96,6 +96,7 @@ export function ToDoUserRegister() {
       navigate("/user-dashboard");
     } catch (err) {
       const message = apiErrorMessage(err);
+      setOtp("");
       setOtpError(message);
       toast.error(message);
     } finally {
@@ -186,7 +187,10 @@ export function ToDoUserRegister() {
             title="Verify your email"
             maskedEmail={maskedEmail}
             otp={otp}
-            onOtpChange={setOtp}
+            onOtpChange={(value) => {
+              setOtp(value);
+              if (value) setOtpError("");
+            }}
             error={otpError}
             cooldown={cooldown}
             loading={loading}

@@ -35,10 +35,6 @@ export function ToDoIndex() {
           </div>
         </div>
         <div className="glass-panel-glow landing-preview">
-          <div className="landing-preview-bar">
-            <span>Today</span>
-            <span>3 open</span>
-          </div>
           <div className="landing-task">
             <span className="landing-dot is-warn" />
             <div>

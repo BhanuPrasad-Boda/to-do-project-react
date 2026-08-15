@@ -2,6 +2,8 @@ import { useEffect, useRef } from "react";
 import { OtpInput } from "./OtpInput";
 import { visibleDevCode } from "../utils/canShowDevOtp";
 
+const RETRY_WAIT_MS = 1600;
+
 export function AuthOtpPanel({
   title = "Verify your email",
   maskedEmail,
@@ -17,23 +19,35 @@ export function AuthOtpPanel({
 }) {
   const submitted = useRef("");
   const onVerifyRef = useRef(onVerify);
+  const onOtpChangeRef = useRef(onOtpChange);
+  const lastError = useRef("");
+  const lockedUntil = useRef(0);
   const shownCode = visibleDevCode(devCode);
   onVerifyRef.current = onVerify;
+  onOtpChangeRef.current = onOtpChange;
 
   useEffect(() => {
-    if (error) submitted.current = "";
-  }, [error]);
+    if (error && error !== lastError.current) {
+      submitted.current = "";
+      lockedUntil.current = Date.now() + RETRY_WAIT_MS;
+      if (otp) onOtpChangeRef.current?.("");
+    }
+    lastError.current = error || "";
+  }, [error, otp]);
 
   useEffect(() => {
     if (otp.length !== 6 || loading || submitted.current === otp) return undefined;
-    submitted.current = otp;
-    const timer = window.setTimeout(() => onVerifyRef.current?.(), 180);
+    const wait = Math.max(180, lockedUntil.current - Date.now());
+    const timer = window.setTimeout(() => {
+      submitted.current = otp;
+      onVerifyRef.current?.();
+    }, wait);
     return () => window.clearTimeout(timer);
   }, [otp, loading]);
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (otp.length !== 6 || loading) return;
+    if (otp.length !== 6 || loading || Date.now() < lockedUntil.current) return;
     submitted.current = otp;
     onVerifyRef.current?.();
   };
@@ -55,7 +69,11 @@ export function AuthOtpPanel({
       )}
       <OtpInput value={otp} onChange={onOtpChange} disabled={loading} error={Boolean(error)} />
       <p className="otp-auto-hint text-secondary small mt-3 mb-0">
-        {loading ? "Verifying your code…" : "Verifies automatically after the 6th digit."}
+        {loading
+          ? "Verifying your code…"
+          : error
+            ? "Boxes cleared. Enter the code again."
+            : "Verifies automatically after the 6th digit."}
       </p>
       {error && <p className="text-danger small mt-2">{error}</p>}
       <p className="otp-resend text-secondary small mt-3 mb-0">

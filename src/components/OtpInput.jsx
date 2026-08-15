@@ -9,8 +9,11 @@ export function OtpInput({ value, onChange, disabled, error }) {
   const prevFilled = useRef(0);
 
   useEffect(() => {
-    refs.current[0]?.focus();
-  }, []);
+    if (!value) {
+      setFocusIndex(0);
+      refs.current[0]?.focus();
+    }
+  }, [value]);
 
   useEffect(() => {
     if (filledCount > prevFilled.current) {

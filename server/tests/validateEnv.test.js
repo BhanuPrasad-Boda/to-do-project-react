@@ -1,6 +1,6 @@
 const { describe, it } = require("node:test");
 const assert = require("node:assert/strict");
-const { emailLooksReady, getAllowedOrigins, validateEnv } = require("../utils/validateEnv");
+const { emailLooksReady, getAllowedOrigins, isLanDevOrigin, validateEnv } = require("../utils/validateEnv");
 
 describe("production environment checks", () => {
   it("blocks a production boot without secrets or a live client URL", () => {
@@ -86,5 +86,10 @@ describe("production environment checks", () => {
     });
     assert.deepEqual(origins, ["https://app.example.com"]);
     assert.equal(origins.some((item) => item.includes("localhost")), false);
+  });
+
+  it("allows a phone on the same Wi-Fi during local development", () => {
+    assert.equal(isLanDevOrigin("http://192.168.1.24:3000"), true);
+    assert.equal(isLanDevOrigin("https://to-do-project-react-one.vercel.app"), false);
   });
 });

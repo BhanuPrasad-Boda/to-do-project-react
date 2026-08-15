@@ -13,7 +13,7 @@ const cookieParser = require("./middleware/cookieParser");
 const { rateLimit, clientKey } = require("./middleware/rateLimiter");
 const { startScheduler } = require("./jobs/scheduler");
 const { runScheduledJobs } = require("./services/automationEngine");
-const { assertEnv, getAllowedOrigins } = require("./utils/validateEnv");
+const { assertEnv, getAllowedOrigins, isLanDevOrigin } = require("./utils/validateEnv");
 const { isEmailReady } = require("./utils/sendEmail");
 
 const app = express();
@@ -45,6 +45,7 @@ app.use(
   cors({
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+      if (!isProd && isLanDevOrigin(origin)) return callback(null, true);
       return callback(null, false);
     },
     credentials: true,

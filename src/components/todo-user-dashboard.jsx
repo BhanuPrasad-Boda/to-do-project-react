@@ -453,6 +453,9 @@ export function ToDoUserDashBoard() {
           </div>
           <div className="d-flex align-items-center gap-2">
             <ThemeToggle />
+            <button type="button" className="icon-btn" onClick={handleSignout} aria-label="Sign out">
+              <i className="bi bi-box-arrow-right"></i>
+            </button>
             <img src={userData?.Avatar || "/default-avatar.png"} alt="" className="mobile-avatar" onClick={() => setShowAvatarModal(true)} />
           </div>
         </div>
@@ -741,10 +744,15 @@ export function ToDoUserDashBoard() {
             </div>
           )}
           {view === "settings" && (
+            <>
             <NotificationSettings
               preferences={userData.notificationPreferences}
               onSaved={(next) => setUserData((prev) => ({ ...prev, notificationPreferences: next }))}
             />
+            <button type="button" onClick={handleSignout} className="signout-btn d-lg-none mt-3 w-100">
+              <i className="bi bi-box-arrow-right me-1"></i> Sign out
+            </button>
+            </>
           )}
         </div>
       </main>

@@ -86,6 +86,7 @@ export function ForgotPassword() {
       toast.success("Code verified. Choose a new password.");
     } catch (err) {
       const message = apiErrorMessage(err);
+      setOtp("");
       setOtpError(message);
       toast.error(message);
     } finally {
@@ -143,7 +144,10 @@ export function ForgotPassword() {
             title="Verify OTP"
             maskedEmail={maskedEmail}
             otp={otp}
-            onOtpChange={setOtp}
+            onOtpChange={(value) => {
+              setOtp(value);
+              if (value) setOtpError("");
+            }}
             error={otpError}
             cooldown={cooldown}
             loading={loading}
