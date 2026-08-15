@@ -53,7 +53,7 @@
 /* Floating Action Button (FAB) */
 .mobile-fab {
   position: fixed;
-  bottom: calc(76px + env(safe-area-inset-bottom));
+  bottom: calc(20px + env(safe-area-inset-bottom));
   right: 16px;
   width: 56px;
   height: 56px;

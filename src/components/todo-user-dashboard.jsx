@@ -11,7 +11,7 @@ import { DashboardControls } from "./DashboardControls";
 import { ThemeToggle } from "./ThemeToggle";
 import { NotificationCenter } from "./NotificationCenter";
 import { NotificationSettings } from "./NotificationSettings";
-import { BottomNav } from "./BottomNav";
+import { MobileTabBar } from "./MobileTabBar";
 import { DailyPlanning } from "./DailyPlanning";
 import { OverduePrompt } from "./OverduePrompt";
 import { NotificationPermissionBanner } from "./NotificationPermissionBanner";
@@ -453,9 +453,6 @@ export function ToDoUserDashBoard() {
           </div>
           <div className="d-flex align-items-center gap-2">
             <ThemeToggle />
-            <button type="button" className="icon-btn" onClick={handleSignout} aria-label="Sign out">
-              <i className="bi bi-box-arrow-right"></i>
-            </button>
             <img src={userData?.Avatar || "/default-avatar.png"} alt="" className="mobile-avatar" onClick={() => setShowAvatarModal(true)} />
           </div>
         </div>
@@ -782,10 +779,7 @@ export function ToDoUserDashBoard() {
         onClose={() => setOverdueTask(null)}
       />
 
-      <Link to="/add-appointment" className="mobile-fab mobile-fab-raised d-lg-none" data-guide="guide-add-task" aria-label="Add task">
-        <i className="bi bi-plus-lg fs-4"></i>
-      </Link>
-      <BottomNav view={view} setView={setView} unread={unread} />
+      <MobileTabBar view={view} setView={setView} unread={unread} />
     </div>
   );
 }
