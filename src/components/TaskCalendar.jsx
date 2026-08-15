@@ -124,7 +124,7 @@ export function TaskCalendar({ tasks = [], onToggleComplete }) {
               type="button"
               role="gridcell"
               aria-label={label}
-              aria-pressed={selected}
+              aria-selected={selected}
               className={[
                 "cal-day",
                 cell.outside ? "is-outside" : "",

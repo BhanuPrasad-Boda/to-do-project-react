@@ -4,7 +4,12 @@ import axios, { apiErrorMessage } from "../api/axiosConfig";
 import { useNavigate, Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
+import { saveAuthSession } from "../utils/authSession";
 import "../styles/loginStyles.css";
+
+function loginErrorMessage(error) {
+  return apiErrorMessage(error, "Invalid credentials");
+}
 
 export function ToDoUserLogin() {
   const [showForgotOptions, setShowForgotOptions] = useState(false);
@@ -22,14 +27,12 @@ export function ToDoUserLogin() {
 
         const decoded = jwtDecode(token);
         localStorage.setItem("tokenExpiry", decoded.exp * 1000);
-        localStorage.setItem("user", JSON.stringify({ UserId, UserName, Email, Avatar }));
-        localStorage.setItem("userid", UserId);
-        localStorage.setItem("token", token);
+        saveAuthSession({ UserId, UserName, Email, Avatar, token });
 
         toast.success(`Welcome! ${UserName} 👋`);
         navigate("/user-dashboard");
       } catch (err) {
-        toast.error(apiErrorMessage(err, "Invalid credentials"));
+        toast.error(loginErrorMessage(err));
       } finally {
         setLoading(false);
       }

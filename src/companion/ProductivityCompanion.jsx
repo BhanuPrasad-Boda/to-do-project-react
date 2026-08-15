@@ -59,6 +59,8 @@ export default function ProductivityCompanion() {
   const location = useLocation();
   const navigate = useNavigate();
   const { snapshot, event, clearEvent, getActions, tourNonce, account, setOnboarding, requestTour } = useCompanion();
+  const accountLoaded = account.loaded;
+  const onboardingStatus = account.onboardingStatus;
   const [panelOpen, setPanelOpen] = useState(false);
   const [message, setMessage] = useState(null);
   const [tick, setTick] = useState(0);
@@ -236,20 +238,20 @@ export default function ProductivityCompanion() {
   }, [hidden, panelOpen, touring]);
 
   useEffect(() => {
-    if (hidden || !account.loaded || autoStarted.current) return;
+    if (hidden || !accountLoaded || autoStarted.current) return;
     if (!location.pathname.includes("user-dashboard")) return;
-    if (shouldOfferResume(account.onboardingStatus, account.currentTourStep)) {
+    if (shouldOfferResume(onboardingStatus, account.currentTourStep)) {
       autoStarted.current = true;
       setResumePrompt(true);
       return;
     }
-    if (shouldAutoStartTour(account.onboardingStatus, false)) {
+    if (shouldAutoStartTour(onboardingStatus, false)) {
       autoStarted.current = true;
       replayRef.current = false;
       saveAccountOnboarding(ONBOARDING.IN_PROGRESS, 0);
       setTourIndex(0);
     }
-  }, [hidden, account, location.pathname, saveAccountOnboarding]);
+  }, [hidden, account, accountLoaded, onboardingStatus, location.pathname, saveAccountOnboarding]);
 
   useEffect(() => {
     if (!tourNonce) return;
@@ -314,12 +316,12 @@ export default function ProductivityCompanion() {
 
   useEffect(() => {
     if (hidden || panelOpen || touring || resumePrompt || visibleRef.current) return;
-    if (!account.loaded) return;
-    if (!isAssistantMode(account.onboardingStatus) && !replayRef.current) return;
+    if (!accountLoaded) return;
+    if (!isAssistantMode(onboardingStatus) && !replayRef.current) return;
     const memory = {
       ...loadCompanionMemory(),
-      onboardingCompleted: account.onboardingStatus === ONBOARDING.COMPLETED,
-      onboardingSkipped: account.onboardingStatus === ONBOARDING.SKIPPED,
+      onboardingCompleted: onboardingStatus === ONBOARDING.COMPLETED,
+      onboardingSkipped: onboardingStatus === ONBOARDING.SKIPPED,
     };
     const eventName = event?.name || null;
     const skipCooldown = eventName === "completed" || eventName === "created";
@@ -332,7 +334,7 @@ export default function ProductivityCompanion() {
     if (!next) return;
     setMessage(next);
     markShown(next.id);
-  }, [ctx, event, hidden, panelOpen, touring, resumePrompt, account.onboardingStatus, clearEvent]);
+  }, [ctx, event, hidden, panelOpen, touring, resumePrompt, accountLoaded, onboardingStatus, clearEvent]);
 
   const endTour = useCallback(
     (skipped) => {
