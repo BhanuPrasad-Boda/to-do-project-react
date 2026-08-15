@@ -1,10 +1,11 @@
+const { getProvider } = require("./sendEmail");
+
 function emailLooksReady(env = process.env) {
   const from = env.EMAIL_FROM || "";
-  const sendgrid = env.SENDGRID_API_KEY || "";
-  const resend = env.RESEND_API_KEY || "";
-  if (resend.startsWith("re_") && from) return true;
-  if (sendgrid.startsWith("SG.") && from && !/resend\.dev/i.test(from)) return true;
-  return false;
+  const { type } = getProvider(env);
+  if (!from || type === "none") return false;
+  if (type === "sendgrid" && /resend\.dev/i.test(from)) return false;
+  return type === "sendgrid" || type === "resend";
 }
 
 function getAllowedOrigins(env = process.env) {

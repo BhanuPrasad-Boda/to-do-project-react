@@ -39,6 +39,15 @@ describe("OTP delivery policy", () => {
     assert.equal(payload.devCode, undefined);
   });
 
+  it("explains when SendGrid has not verified the from address", () => {
+    const payload = buildOtpClientPayload(
+      { ...result, emailError: "sendgrid_sender_unverified" },
+      { NODE_ENV: "production" }
+    );
+    assert.equal(payload.ok, false);
+    assert.match(payload.message, /Single Sender/);
+  });
+
   it("explains when Resend can only email the account owner", () => {
     const payload = buildOtpClientPayload(
       { ...result, emailError: "resend_own_email_only" },

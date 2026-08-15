@@ -35,12 +35,35 @@ describe("production environment checks", () => {
     );
   });
 
-  it("treats Resend as ready even if a leftover SendGrid key is present", () => {
+  it("prefers SendGrid when both keys exist, so a Resend from-address is not ready", () => {
     assert.equal(
       emailLooksReady({
         SENDGRID_API_KEY: "SG.xxxxx",
         RESEND_API_KEY: "re_xxxxx",
         EMAIL_FROM: "onboarding@resend.dev",
+      }),
+      false
+    );
+  });
+
+  it("keeps Resend when EMAIL_PROVIDER is resend", () => {
+    assert.equal(
+      emailLooksReady({
+        EMAIL_PROVIDER: "resend",
+        SENDGRID_API_KEY: "SG.xxxxx",
+        RESEND_API_KEY: "re_xxxxx",
+        EMAIL_FROM: "onboarding@resend.dev",
+      }),
+      true
+    );
+  });
+
+  it("treats SendGrid plus a Gmail from-address as ready", () => {
+    assert.equal(
+      emailLooksReady({
+        EMAIL_PROVIDER: "sendgrid",
+        SENDGRID_API_KEY: "SG.xxxxx",
+        EMAIL_FROM: "TaskFlow <you@gmail.com>",
       }),
       true
     );

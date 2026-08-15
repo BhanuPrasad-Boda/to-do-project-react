@@ -32,13 +32,17 @@ function buildOtpClientPayload(result, env = process.env) {
     };
   }
 
-  const testingOnly = result.emailError === "resend_own_email_only";
+  const messages = {
+    resend_own_email_only:
+      "Resend can only email the address on your Resend account until you verify a domain. Register with that email, or add a domain at resend.com/domains.",
+    sendgrid_sender_unverified:
+      "SendGrid rejected the sender. Verify that Gmail (or other address) as a Single Sender, then set EMAIL_FROM to the same address.",
+    sendgrid_quota: "SendGrid sending limit reached. Try again later or upgrade the SendGrid plan.",
+  };
   return {
     ok: false,
     status: 503,
-    message: testingOnly
-      ? "Resend can only email the address on your Resend account until you verify a domain. Register with that email, or add a domain at resend.com/domains."
-      : "Unable to send verification email. Please try again later.",
+    message: messages[result.emailError] || "Unable to send verification email. Please try again later.",
   };
 }
 

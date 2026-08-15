@@ -1,10 +1,19 @@
 const { Resend } = require("resend");
 
-function getProvider() {
-  const sendgrid = process.env.SENDGRID_API_KEY || "";
-  const resendKey = process.env.RESEND_API_KEY || "";
-  if (resendKey.startsWith("re_")) return { type: "resend", key: resendKey };
+function getProvider(env = process.env) {
+  const forced = String(env.EMAIL_PROVIDER || "").trim().toLowerCase();
+  const sendgrid = env.SENDGRID_API_KEY || "";
+  const resendKey = env.RESEND_API_KEY || "";
+
+  if (forced === "sendgrid") {
+    return sendgrid ? { type: "sendgrid", key: sendgrid } : { type: "none", key: "" };
+  }
+  if (forced === "resend") {
+    return resendKey ? { type: "resend", key: resendKey } : { type: "none", key: "" };
+  }
+
   if (sendgrid.startsWith("SG.")) return { type: "sendgrid", key: sendgrid };
+  if (resendKey.startsWith("re_")) return { type: "resend", key: resendKey };
   if (resendKey.startsWith("SG.")) return { type: "sendgrid", key: resendKey };
   if (sendgrid) return { type: "sendgrid", key: sendgrid };
   if (resendKey) return { type: "resend", key: resendKey };
@@ -72,11 +81,20 @@ const sendEmail = async (to, subject, html) => {
     }
     return true;
   } catch (error) {
-    lastEmailError = "email_exception";
+    lastEmailError = type === "sendgrid" ? sendgridErrorCode(error) : "email_exception";
     console.error("Email delivery failed");
     return false;
   }
 };
+
+function sendgridErrorCode(error) {
+  const text = JSON.stringify(error?.response?.body || error?.message || "");
+  if (/verified Sender Identity|from address does not match|does not match a verified Sender/i.test(text)) {
+    return "sendgrid_sender_unverified";
+  }
+  if (/maximum credits|exceeded the allowable/i.test(text)) return "sendgrid_quota";
+  return "sendgrid_rejected";
+}
 
 function isEmailReady() {
   const { type } = getProvider();
@@ -91,3 +109,5 @@ module.exports.isEmailConfigured = () => getProvider().type !== "none";
 module.exports.isEmailReady = isEmailReady;
 module.exports.resendAccepted = resendAccepted;
 module.exports.getLastEmailError = getLastEmailError;
+module.exports.getProvider = getProvider;
+module.exports.sendgridErrorCode = sendgridErrorCode;
