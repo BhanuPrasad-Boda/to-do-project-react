@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const bcrypt = require("bcryptjs");
 const OtpVerification = require("../models/OtpVerification");
 const { sendOtpCodeEmail, sendPasswordResetOtpEmail } = require("./emailService");
+const { getLastEmailError } = require("../utils/sendEmail");
 const { maskEmail } = require("../utils/html");
 const { allow } = require("../middleware/rateLimiter");
 const { isOtpDevMode } = require("../utils/otpDelivery");
@@ -118,6 +119,7 @@ async function requestOtp({
   return {
     delivered,
     otp: devMode ? otp : undefined,
+    emailError: delivered ? undefined : getLastEmailError(),
     maskedEmail: maskEmail(normalized),
     expiresInSeconds: Math.floor(OTP_EXPIRY_MS / 1000),
     resendCooldownSeconds: Math.floor(RESEND_COOLDOWN_MS / 1000),

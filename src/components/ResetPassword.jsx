@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
+import { AuthLayout } from "./AuthLayout";
 import "../styles/resetPassword.css";
 
 export function ResetPassword() {
@@ -55,54 +56,33 @@ export function ResetPassword() {
   };
 
   return (
-    <div className="reset-page">
-      <div className="reset-card animate-card">
-
-        <h2 className="reset-title">Reset Password</h2>
-
+    <AuthLayout>
+      <div className="reset-card glass-panel-glow auth-card">
+        <h2 className="reset-title">Reset password</h2>
         <p className="reset-subtitle">
-          Create a strong new password to secure your account
+          Use at least 6 characters with letters and numbers
         </p>
-
         <form onSubmit={handleSubmit}>
-
-          {/* PASSWORD FIELD */}
-          <div className="reset-input-group">
-
+          <div className="floating-label-group">
             <input
               type="password"
-              className={`reset-input ${
-                passwordStatus.isValid
-                  ? "password-valid"
-                  : newPassword
-                  ? "password-warning"
-                  : ""
-              }`}
+              className="floating-input"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
               required
+              placeholder="New password"
+              autoComplete="new-password"
             />
-
-            <label>New Password</label>
-            <span className="focus-bar"></span>
-
-            {/* RULES DISPLAY */}
-  
-
+            <label className="floating-label">New password</label>
           </div>
-
-
-          <button
-            type="submit"
-            className="reset-btn"
-            disabled={loading}
-          >
-            {loading ? "Resetting..." : "Reset Password"}
+          {newPassword && !passwordStatus.isValid && (
+            <p className="text-warning small">Must include letters and numbers.</p>
+          )}
+          <button type="submit" className="btn btn-premium w-100" disabled={loading}>
+            {loading ? "Resetting..." : "Reset password"}
           </button>
-
         </form>
-
       </div>
-    </div>
+    </AuthLayout>
   );
 }

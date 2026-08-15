@@ -5,7 +5,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #fef9f0, #fff5f7);
+  background: var(--bg-primary);
   padding: 20px;
 }
 /* Password strength border colors */
@@ -58,7 +58,7 @@
 
 /* Title */
 .register-card h3 {
-  color: #ff6f61;
+  color: var(--text-primary);
   font-weight: 700;
   margin-bottom: 1.4rem;
   letter-spacing: 0.4px;

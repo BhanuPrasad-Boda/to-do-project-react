@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
+import { AuthLayout } from "./AuthLayout";
 import "../styles/editAppointment.css";
 
 export function ToDoEditAppointment() {
@@ -68,12 +69,16 @@ export function ToDoEditAppointment() {
   };
 
   if (loading) {
-    return <div className="edit-page d-flex min-vh-100 align-items-center justify-content-center">Loading...</div>;
+    return (
+      <AuthLayout>
+        <p className="text-secondary mb-0">Loading...</p>
+      </AuthLayout>
+    );
   }
 
   return (
-    <div className="edit-page auth-shell" style={{ background: "var(--bg-primary)" }}>
-      <div className="glass-panel-glow auth-card animate-slide-up my-4">
+    <AuthLayout>
+      <div className="glass-panel-glow auth-card animate-slide-up">
         <div className="text-center mb-4">
           <h2 className="fw-bold mb-1">Edit Task</h2>
           <p className="text-secondary small">Update your task details</p>
@@ -143,6 +148,6 @@ export function ToDoEditAppointment() {
           </div>
         </form>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

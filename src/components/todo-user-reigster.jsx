@@ -7,6 +7,8 @@ import "../styles/todoregisterStyles.css";
 import "../styles/appExtras.css";
 import { AuthOtpPanel } from "./AuthOtpPanel";
 import { saveAuthSession } from "../utils/authSession";
+import { AuthLayout } from "./AuthLayout";
+import { AuthWaitCover } from "./AuthWaiter";
 
 export function ToDoUserRegister() {
   const navigate = useNavigate();
@@ -72,8 +74,7 @@ export function ToDoUserRegister() {
 
   const passwordStatus = validatePassword(formik.values.Password);
 
-  const handleVerify = async (event) => {
-    event.preventDefault();
+  const handleVerify = async () => {
     if (otp.length !== 6) {
       setOtpError("Enter the 6-digit verification code.");
       return;
@@ -120,19 +121,13 @@ export function ToDoUserRegister() {
   };
 
   return (
-    <div className="auth-shell position-relative" style={{ background: "var(--bg-primary)" }}>
-      <div className="position-absolute top-0 start-0 w-100 h-100" style={{ zIndex: 0, opacity: 0.5, overflow: "clip", pointerEvents: "none" }}>
-        <div className="position-absolute bg-success rounded-circle blur-circle" style={{ width: "400px", height: "400px", top: "-50px", left: "-50px", filter: "blur(70px)" }}></div>
-        <div className="position-absolute bg-primary rounded-circle blur-circle" style={{ width: "300px", height: "300px", bottom: "10%", right: "5%", filter: "blur(70px)" }}></div>
-      </div>
-
-      <div className="glass-panel-glow auth-card animate-slide-up position-relative my-4" style={{ zIndex: 1 }}>
+    <AuthLayout>
+      <div className="glass-panel-glow auth-card animate-slide-up">
         {step === "form" ? (
-          <>
+          <AuthWaitCover active={loading} kind="send">
             <div className="text-center mb-4">
-              <div className="display-4 mb-2 animate-fade-in">👤</div>
-              <h3 className="fw-bold mb-1">Create Account</h3>
-              <p className="text-secondary small">Join us and start organizing your tasks</p>
+              <h3 className="fw-bold mb-1">Create your account</h3>
+              <p className="text-secondary small mb-0">We’ll email a 6-digit code to verify you</p>
             </div>
 
             <form onSubmit={formik.handleSubmit} className="d-flex flex-column gap-3">
@@ -182,10 +177,10 @@ export function ToDoUserRegister() {
               </div>
 
               <button type="submit" className="btn btn-premium w-100 mt-3" disabled={loading}>
-                {loading ? "Sending code..." : "Create Account"}
+                {loading ? "Working…" : "Create Account"}
               </button>
             </form>
-          </>
+          </AuthWaitCover>
         ) : (
           <AuthOtpPanel
             title="Verify your email"
@@ -196,8 +191,7 @@ export function ToDoUserRegister() {
             cooldown={cooldown}
             loading={loading}
             devCode={devCode}
-            verifyLabel="Verify Email"
-            onVerify={() => handleVerify({ preventDefault() {} })}
+            onVerify={handleVerify}
             onResend={handleResend}
             onBack={() => setStep("form")}
           />
@@ -212,6 +206,6 @@ export function ToDoUserRegister() {
           </Link>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

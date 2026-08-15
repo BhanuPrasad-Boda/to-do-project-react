@@ -3,14 +3,15 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #f4f8ff, #eef2ff);
+  background: var(--bg-primary);
   padding: 16px;
 }
 
 .add-todo-card {
   width: 100%;
   max-width: 420px;
-  background: #fff;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
@@ -24,7 +25,7 @@
 .subtitle {
   text-align: center;
   font-size: 14px;
-  color: #666;
+  color: var(--text-secondary);
   margin-bottom: 20px;
 }
 

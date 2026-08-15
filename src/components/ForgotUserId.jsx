@@ -1,6 +1,8 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
+import { AuthLayout } from "./AuthLayout";
 import "../styles/forgotUserId.css";
 
 export function ForgotUserId() {
@@ -23,40 +25,37 @@ export function ForgotUserId() {
   };
 
   return (
-    <div className="userid-page">
-      <div className="userid-card slide-in">
-        <div className="userid-icon">🆔</div>
-
+    <AuthLayout>
+      <div className="userid-card glass-panel-glow auth-card">
         <h2 className="userid-title">Forgot User ID?</h2>
         <p className="userid-subtitle">
           We’ll send your User ID to your registered email
         </p>
 
         <form onSubmit={handleSubmit}>
-          <div className="userid-input-group">
+          <div className="floating-label-group">
             <input
+              className="floating-input"
               type="text"
               value={mobile}
               onChange={(e) => setMobile(e.target.value)}
               required
+              placeholder="Mobile"
+              autoComplete="tel"
             />
-            <label>Registered Mobile Number</label>
-            <span className="underline"></span>
+            <label className="floating-label">Registered mobile number</label>
           </div>
 
-          <button
-            type="submit"
-            className="userid-btn"
-            disabled={loading}
-          >
+          <button type="submit" className="btn btn-premium w-100" disabled={loading}>
             {loading ? "Sending..." : "Send User ID"}
           </button>
         </form>
 
         <p className="userid-note">
-          Make sure this mobile number is linked to your account
+          Use the mobile number linked to your account
         </p>
+        <Link to="/login" className="small text-primary">Back to login</Link>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

@@ -58,7 +58,7 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: var(--accent-color);
+  background: var(--accent-fill);
   color: white;
   display: flex;
   align-items: center;
@@ -148,7 +148,7 @@
 }
 
 .appointment-card p {
-  color: #6c757d;
+  color: var(--text-secondary);
   font-size: 0.9rem;
 }
 
@@ -160,7 +160,7 @@
 
 .timestamps {
   font-size: 0.75rem;
-  color: #6c757d;
+  color: var(--text-secondary);
 }
 
 /* Actions */
@@ -218,8 +218,8 @@
 }
 
 .appointment-card.completed {
-  background-color: #d4edda; /* light green */
-  border: 1px solid #28a745;
+  background-color: color-mix(in srgb, var(--success-color) 14%, var(--bg-secondary));
+  border: 1px solid color-mix(in srgb, var(--success-color) 40%, var(--border-color));
   opacity: 0.9;
   text-decoration: line-through;
 }
@@ -354,11 +354,11 @@
 
 @supports (backdrop-filter: blur(14px)) {
   .saas-header {
-    background: rgba(246, 247, 251, 0.86);
+    background: color-mix(in srgb, var(--bg-primary) 86%, transparent);
     backdrop-filter: blur(14px);
   }
   :root[data-theme="dark"] .saas-header {
-    background: rgba(11, 18, 32, 0.86);
+    background: rgba(7, 11, 18, 0.82);
   }
 }
 
@@ -471,7 +471,7 @@
 }
 
 .btn-new-task {
-  background: var(--accent-color);
+  background: var(--accent-fill);
   color: #fff;
   border: 0;
   border-radius: 10px;

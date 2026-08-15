@@ -32,10 +32,13 @@ function buildOtpClientPayload(result, env = process.env) {
     };
   }
 
+  const testingOnly = result.emailError === "resend_own_email_only";
   return {
     ok: false,
     status: 503,
-    message: "Unable to send verification email. Please try again later.",
+    message: testingOnly
+      ? "Resend can only email the address on your Resend account until you verify a domain. Register with that email, or add a domain at resend.com/domains."
+      : "Unable to send verification email. Please try again later.",
   };
 }
 

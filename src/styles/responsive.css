@@ -101,29 +101,10 @@ span {
   word-break: break-word;
 }
 
-.auth-shell {
-  min-height: 100vh;
-  min-height: 100dvh;
-  width: 100%;
-  max-width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  padding-bottom: max(16px, env(safe-area-inset-bottom));
-}
-
 .auth-card {
-  width: min(520px, 100%);
+  width: min(480px, 100%);
   max-width: 100%;
   min-width: 0;
-  padding: 20px;
-}
-
-@media (min-width: 576px) {
-  .auth-card {
-    padding: 32px;
-  }
 }
 
 .auth-footer {

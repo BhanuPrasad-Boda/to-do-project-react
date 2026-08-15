@@ -1,21 +1,4 @@
-html, body {
-  height: 100%;
-}
-
-
-/* ===============================
-
-   RESET & BASE
-================================ */
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: "Inter", "Segoe UI", sans-serif;
-  color: #1f2937;
-}
+/* Login-specific leftovers. Theme tokens live in theme.css. */
 
 
 /* ===============================
@@ -287,9 +270,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 14px;
-
-  /* 🔥 ADD THIS */
-  background: linear-gradient(180deg, #f7f9fc, #eef2f7);
+  background: var(--bg-primary);
 }
 /* ===== Forgot Credentials Area ===== */
 

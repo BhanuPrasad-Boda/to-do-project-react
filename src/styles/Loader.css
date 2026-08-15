@@ -2,7 +2,7 @@
 .lux-loader {
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at top, #f7f9ff, #eef2ff);
+  background: var(--bg-primary);
   display: flex;
   align-items: center;
   justify-content: center;

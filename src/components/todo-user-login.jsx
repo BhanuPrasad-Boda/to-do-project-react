@@ -5,6 +5,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
 import { saveAuthSession } from "../utils/authSession";
+import { AuthLayout } from "./AuthLayout";
+import { AuthWaitCover } from "./AuthWaiter";
 import "../styles/loginStyles.css";
 
 function loginErrorMessage(error) {
@@ -40,17 +42,12 @@ export function ToDoUserLogin() {
   });
 
   return (
-    <div className="auth-shell position-relative" style={{ background: "var(--bg-primary)" }}>
-      <div className="position-absolute top-0 start-0 w-100 h-100" style={{ zIndex: 0, opacity: 0.5, overflow: "clip", pointerEvents: "none" }}>
-        <div className="position-absolute bg-primary rounded-circle blur-circle" style={{ width: "300px", height: "300px", top: "10%", left: "10%", filter: "blur(60px)" }}></div>
-        <div className="position-absolute bg-warning rounded-circle blur-circle" style={{ width: "250px", height: "250px", bottom: "10%", right: "10%", filter: "blur(60px)" }}></div>
-      </div>
-
-      <div className="glass-panel-glow auth-card animate-slide-up position-relative" style={{ zIndex: 1 }}>
+    <AuthLayout>
+      <div className="glass-panel-glow auth-card animate-slide-up">
+        <AuthWaitCover active={loading} kind="login">
         <div className="text-center mb-4">
-          <div className="display-4 mb-2 animate-fade-in">🔐</div>
-          <h2 className="fw-bold mb-1">Welcome Back!</h2>
-          <p className="text-secondary small">Login to manage your tasks</p>
+          <h2 className="fw-bold mb-1">Welcome back</h2>
+          <p className="text-secondary small mb-0">Sign in to pick up your tasks</p>
         </div>
 
         <form onSubmit={formik.handleSubmit} className="d-flex flex-column gap-3">
@@ -106,11 +103,7 @@ export function ToDoUserLogin() {
             className="btn btn-premium w-100 mt-3"
             disabled={loading}
           >
-            {loading ? (
-              <><span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Logging in...</>
-            ) : (
-              "Login"
-            )}
+            {loading ? "Working…" : "Login"}
           </button>
         </form>
 
@@ -122,7 +115,8 @@ export function ToDoUserLogin() {
             Create Account
           </Link>
         </div>
+        </AuthWaitCover>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

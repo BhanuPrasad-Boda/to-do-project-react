@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 import "../styles/forgotPassword.css";
 import "../styles/appExtras.css";
 import { AuthOtpPanel } from "./AuthOtpPanel";
+import { AuthLayout } from "./AuthLayout";
+import { AuthWaitCover } from "./AuthWaiter";
 
 export function ForgotPassword() {
   const navigate = useNavigate();
@@ -118,10 +120,10 @@ export function ForgotPassword() {
   };
 
   return (
-    <div className="forgot-wrapper auth-shell" style={{ background: "var(--bg-primary)" }}>
+    <AuthLayout>
       <div className="forgot-card glass-panel-glow auth-card">
         {step === "email" && (
-          <>
+          <AuthWaitCover active={loading} kind="send">
             <h2 className="forgot-title">Forgot Password</h2>
             <p className="forgot-desc">Enter your registered email to receive a 6-digit verification code.</p>
             <form onSubmit={requestCode}>
@@ -129,11 +131,11 @@ export function ForgotPassword() {
                 <input className="floating-input" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" placeholder="Email" />
                 <label className="floating-label">Email</label>
               </div>
-              <button className="forgot-btn w-100" disabled={loading}>
-                <span>{loading ? "Sending..." : "Send verification code"}</span>
+              <button className="btn btn-premium w-100" disabled={loading}>
+                {loading ? "Working…" : "Send verification code"}
               </button>
             </form>
-          </>
+          </AuthWaitCover>
         )}
 
         {step === "otp" && (
@@ -146,7 +148,6 @@ export function ForgotPassword() {
             cooldown={cooldown}
             loading={loading}
             devCode={devCode}
-            verifyLabel="Verify OTP"
             onVerify={verifyCode}
             onResend={resendCode}
             onBack={() => setStep("email")}
@@ -154,6 +155,7 @@ export function ForgotPassword() {
         )}
 
         {step === "password" && (
+          <AuthWaitCover active={loading} kind="login">
           <form onSubmit={savePassword}>
             <h2 className="forgot-title">Create New Password</h2>
             <p className="forgot-desc">Use at least 6 characters with letters and numbers.</p>
@@ -165,22 +167,23 @@ export function ForgotPassword() {
               <input className="floating-input" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required autoComplete="new-password" placeholder="Confirm password" />
               <label className="floating-label">Confirm Password</label>
             </div>
-            <button className="forgot-btn w-100" disabled={loading}>{loading ? "Saving..." : "Update Password"}</button>
+            <button className="btn btn-premium w-100" disabled={loading}>{loading ? "Working…" : "Update Password"}</button>
           </form>
+          </AuthWaitCover>
         )}
 
         {step === "done" && (
           <div className="text-center">
             <h2 className="forgot-title">Password Updated</h2>
             <p className="forgot-desc">You can now log in with your new password.</p>
-            <button className="forgot-btn w-100" onClick={() => navigate("/login")}>Login</button>
+            <button className="btn btn-premium w-100" onClick={() => navigate("/login")}>Login</button>
           </div>
         )}
 
         <div className="mt-3 text-center">
-          <Link to="/login" className="small">Back to login</Link>
+          <Link to="/login" className="small text-primary">Back to login</Link>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

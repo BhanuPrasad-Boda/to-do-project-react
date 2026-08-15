@@ -39,6 +39,15 @@ describe("OTP delivery policy", () => {
     assert.equal(payload.devCode, undefined);
   });
 
+  it("explains when Resend can only email the account owner", () => {
+    const payload = buildOtpClientPayload(
+      { ...result, emailError: "resend_own_email_only" },
+      { NODE_ENV: "production" }
+    );
+    assert.equal(payload.ok, false);
+    assert.match(payload.message, /Resend account/);
+  });
+
   it("returns a normal OTP challenge when email is delivered", () => {
     const payload = buildOtpClientPayload({ ...result, delivered: true }, { NODE_ENV: "production" });
     assert.equal(payload.ok, true);

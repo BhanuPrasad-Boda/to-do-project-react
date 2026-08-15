@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import { useSmartPreview } from "../utils/useSmartPreview";
 import { generateAiSuggestions, toDatetimeLocal } from "../utils/aiSuggestions";
 import { SmartSuggestion } from "./SmartSuggestion";
+import { AuthLayout } from "./AuthLayout";
 import { useCompanion } from "../companion/CompanionContext";
 import "../styles/addTodo.css";
 import "../styles/appExtras.css";
@@ -169,8 +170,8 @@ export function ToDoAddAppointment() {
   };
 
   return (
-    <div className="add-todo-page auth-shell" style={{ background: "var(--bg-primary)" }}>
-      <div className="glass-panel-glow auth-card animate-slide-up my-4">
+    <AuthLayout>
+      <div className="glass-panel-glow auth-card animate-slide-up">
         <div className="text-center mb-4">
           <h2 className="fw-bold mb-1">Add New Task</h2>
           <p className="text-secondary small">Try: “Submit project report next Friday at 5 PM”</p>
@@ -288,6 +289,6 @@ export function ToDoAddAppointment() {
           </div>
         </form>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

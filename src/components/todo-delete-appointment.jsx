@@ -2,6 +2,7 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
+import { AuthLayout } from "./AuthLayout";
 import "../styles/deleteAppointment.css";
 
 export function ToDoDeleteAppointment() {
@@ -36,31 +37,32 @@ export function ToDoDeleteAppointment() {
     }
   };
 
-  if (!todo) return <div className="delete-loader">Loading...</div>;
+  if (!todo) {
+    return (
+      <AuthLayout>
+        <p className="text-secondary mb-0">Loading...</p>
+      </AuthLayout>
+    );
+  }
 
   return (
-    <div className="delete-page">
-      <div className="delete-card animate-scale">
-        <h3>Delete Task</h3>
-
-        <p className="warning-text">
-          Are you sure you want to delete this Task?
-        </p>
-
+    <AuthLayout>
+      <div className="delete-card glass-panel-glow auth-card">
+        <h3>Delete task</h3>
+        <p className="warning-text">This cannot be undone.</p>
         <div className="info-box">
           <p><strong>Title:</strong> {todo.Title}</p>
-          <p><strong>Description:</strong> {todo.Description}</p>
+          <p><strong>Description:</strong> {todo.Description || "—"}</p>
         </div>
-
-        <div className="btn-group">
-          <button onClick={handleDeleteClick} className="btn-delete">
-            Yes, Delete
-          </button>
-          <Link to="/user-dashboard" className="btn-cancel">
+        <div className="form-actions">
+          <Link to="/user-dashboard" className="btn btn-outline-secondary">
             Cancel
           </Link>
+          <button onClick={handleDeleteClick} className="btn btn-delete">
+            Delete
+          </button>
         </div>
       </div>
-    </div>
+    </AuthLayout>
   );
 }

@@ -16,6 +16,16 @@ function fromAddress() {
 }
 
 let resend = null;
+let lastEmailError = "";
+
+function getLastEmailError() {
+  return lastEmailError;
+}
+
+function resendAccepted(result) {
+  if (!result || result.error) return false;
+  return Boolean(result.data && result.data.id);
+}
 
 function getResend() {
   const { type, key } = getProvider();
@@ -25,17 +35,20 @@ function getResend() {
 }
 
 const sendEmail = async (to, subject, html) => {
+  lastEmailError = "";
   if (!to || !subject) return false;
 
   const { type, key } = getProvider();
   const from = fromAddress();
 
   if (type === "none") {
+    lastEmailError = "no_provider";
     console.warn("Email skipped: no SendGrid or Resend API key configured");
     return false;
   }
 
   if (type === "sendgrid" && /resend\.dev/i.test(from)) {
+    lastEmailError = "sendgrid_resend_from";
     console.warn("Email skipped: SendGrid key is set, but EMAIL_FROM is a Resend address. Set EMAIL_FROM to a verified SendGrid sender.");
     return false;
   }
@@ -50,9 +63,16 @@ const sendEmail = async (to, subject, html) => {
 
     const client = getResend();
     if (!client) return false;
-    await client.emails.send({ from, to, subject, html });
+    const result = await client.emails.send({ from, to, subject, html });
+    if (!resendAccepted(result)) {
+      const detail = result?.error?.message || result?.error?.error || "";
+      lastEmailError = /own email address/i.test(detail) ? "resend_own_email_only" : "resend_rejected";
+      console.error("Email delivery failed");
+      return false;
+    }
     return true;
   } catch (error) {
+    lastEmailError = "email_exception";
     console.error("Email delivery failed");
     return false;
   }
@@ -69,3 +89,5 @@ function isEmailReady() {
 module.exports = sendEmail;
 module.exports.isEmailConfigured = () => getProvider().type !== "none";
 module.exports.isEmailReady = isEmailReady;
+module.exports.resendAccepted = resendAccepted;
+module.exports.getLastEmailError = getLastEmailError;
