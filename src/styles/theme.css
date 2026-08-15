@@ -490,56 +490,6 @@
     line-height: 1.45;
   }
 
-  .landing-preview {
-    padding: 22px;
-    min-height: 320px;
-    text-align: left;
-  }
-
-  .landing-preview-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 18px;
-    color: var(--text-secondary);
-    font-size: 0.78rem;
-    font-weight: 600;
-  }
-
-  .landing-task {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 14px;
-    border-radius: 12px;
-    background: var(--bg-input);
-    border: 1px solid var(--border-color);
-    margin-bottom: 10px;
-  }
-
-  .landing-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--accent-fill);
-    flex-shrink: 0;
-  }
-
-  .landing-dot.is-done {
-    background: var(--success-color);
-  }
-
-  .landing-dot.is-warn {
-    background: var(--warning-color);
-  }
-
-  @media (min-width: 900px) {
-    .landing-hero {
-      grid-template-columns: 1.1fr 0.9fr;
-      align-items: center;
-    }
-  }
-
   @media (max-width: 699px) {
     .landing-features {
       grid-template-columns: 1fr;

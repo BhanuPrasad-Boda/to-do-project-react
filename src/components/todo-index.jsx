@@ -34,29 +34,6 @@ export function ToDoIndex() {
             </div>
           </div>
         </div>
-        <div className="glass-panel-glow landing-preview">
-          <div className="landing-task">
-            <span className="landing-dot is-warn" />
-            <div>
-              <div className="fw-semibold">Submit project report</div>
-              <div className="small text-secondary">Friday · 5:00 PM · High</div>
-            </div>
-          </div>
-          <div className="landing-task">
-            <span className="landing-dot" />
-            <div>
-              <div className="fw-semibold">Team standup</div>
-              <div className="small text-secondary">Tomorrow · 10:00 AM</div>
-            </div>
-          </div>
-          <div className="landing-task">
-            <span className="landing-dot is-done" />
-            <div>
-              <div className="fw-semibold text-secondary">Inbox zero</div>
-              <div className="small text-secondary">Completed</div>
-            </div>
-          </div>
-        </div>
       </section>
     </AuthLayout>
   );
