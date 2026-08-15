@@ -11,118 +11,138 @@ export function ToDoEditAppointment() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [priority, setPriority] = useState("Medium");
+  const [category, setCategory] = useState("General");
+  const [recurrence, setRecurrence] = useState("none");
+  const [reminderOffsetMinutes, setReminderOffsetMinutes] = useState(30);
+  const [notes, setNotes] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // 🔹 LOAD TODO
-      useEffect(() => {
-  const token = localStorage.getItem("token");
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      toast.error("Please login again");
+      navigate("/login");
+      return;
+    }
 
-  if (!token) {
-    toast.error("Please login again");
-    navigate("/login");
-    return;
-  }
+    axios
+      .get(`/appointments/single/${id}`)
+      .then((res) => {
+        const todo = res.data;
+        setTitle(todo.Title);
+        setDescription(todo.Description || "");
+        setPriority(todo.Priority || "Medium");
+        setCategory(todo.category || "General");
+        setRecurrence(todo.recurrence || "none");
+        setReminderOffsetMinutes(todo.reminderOffsetMinutes ?? 30);
+        setNotes(todo.notes || "");
+        if (todo.Date) {
+          const d = new Date(todo.Date);
+          const offset = d.getTimezoneOffset() * 60000;
+          setDueDate(new Date(d - offset).toISOString().slice(0, 16));
+        }
+      })
+      .catch(() => toast.error("Failed to load Task"))
+      .finally(() => setLoading(false));
+  }, [id, navigate]);
 
-  axios
-    .get(`/appointments/single/${id}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((res) => {
-      const todo = res.data;
-      setTitle(todo.Title);
-      setDescription(todo.Description || "");
-
-      if (todo.Date) {
-        const d = new Date(todo.Date);
-        const offset = d.getTimezoneOffset() * 60000;
-        const localTime = new Date(d - offset)
-          .toISOString()
-          .slice(0, 16);
-
-        setDueDate(localTime);
-      }
-    })
-    .catch(() => toast.error("Failed to load Task"));
-}, [id, navigate]);
-
-
-  // 🔹 UPDATE TODO
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
-      const token = localStorage.getItem("token");
-
-      await axios.put(
-        `/appointments/${id}`,
-        {
-          Title: title.trim(),
-          Description: description.trim(),
-          Date: dueDate ? new Date(dueDate) : null,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
+      await axios.put(`/appointments/${id}`, {
+        Title: title.trim(),
+        Description: description.trim(),
+        Date: dueDate ? new Date(dueDate) : null,
+        Priority: priority,
+        category,
+        recurrence,
+        reminderOffsetMinutes: Number(reminderOffsetMinutes),
+        notes,
+      });
       toast.success("Task updated");
       navigate("/user-dashboard");
-    } catch (err) {
+    } catch {
       toast.error("Update failed");
     }
   };
 
+  if (loading) {
+    return <div className="edit-page d-flex min-vh-100 align-items-center justify-content-center">Loading...</div>;
+  }
+
   return (
-  <div className="edit-page">
-    <div className="edit-card">
-      <h2 className="edit-title">✏️ Edit Task</h2>
-      <p className="edit-subtitle">Update your task details</p>
-
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Title</label>
-          <input
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter task title"
-            required
-          />
+    <div className="edit-page auth-shell" style={{ background: "var(--bg-primary)" }}>
+      <div className="glass-panel-glow auth-card animate-slide-up my-4">
+        <div className="text-center mb-4">
+          <h2 className="fw-bold mb-1">Edit Task</h2>
+          <p className="text-secondary small">Update your task details</p>
         </div>
 
-        <div className="form-group">
-          <label>Description</label>
-          <textarea
-            rows="3"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="Optional description"
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Due Date</label>
-          <input
-            type="datetime-local"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-          />
-        </div>
-
-        <div className="btn-row">
-          <button type="submit" className="btn-primary">
-            Update Task
-          </button>
-          <button
-            type="button"
-            className="btn-outline"
-            onClick={() => navigate("/user-dashboard")}
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
+        <form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
+          <div className="floating-label-group mb-0">
+            <input type="text" className="floating-input" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Task Title" required />
+            <label className="floating-label">Title</label>
+          </div>
+          <div className="floating-label-group mb-0">
+            <textarea className="floating-input" rows="3" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Optional description" style={{ minHeight: "100px" }} />
+            <label className="floating-label">Description</label>
+          </div>
+          <div className="floating-label-group mb-0">
+            <input type="datetime-local" className="floating-input" value={dueDate} onChange={(e) => setDueDate(e.target.value)} />
+            <label className="floating-label">Due Date</label>
+          </div>
+          <div className="row g-2">
+            <div className="col-12 col-sm-6">
+              <label className="small fw-semibold" htmlFor="edit-priority">Priority</label>
+              <select id="edit-priority" className="input-premium" value={priority} onChange={(e) => setPriority(e.target.value)}>
+                <option>Low</option>
+                <option>Medium</option>
+                <option>High</option>
+              </select>
+            </div>
+            <div className="col-12 col-sm-6">
+              <label className="small fw-semibold" htmlFor="edit-category">Category</label>
+              <select id="edit-category" className="input-premium" value={category} onChange={(e) => setCategory(e.target.value)}>
+                <option>General</option>
+                <option>Work</option>
+                <option>Personal</option>
+                <option>Health</option>
+                <option>Shopping</option>
+                <option>Finance</option>
+                <option>Learning</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <label className="small fw-semibold" htmlFor="edit-reminder">Reminder</label>
+            <select id="edit-reminder" className="input-premium" value={reminderOffsetMinutes} onChange={(e) => setReminderOffsetMinutes(Number(e.target.value))}>
+              <option value={15}>15 minutes before</option>
+              <option value={30}>30 minutes before</option>
+              <option value={60}>1 hour before</option>
+              <option value={1440}>1 day before</option>
+            </select>
+          </div>
+          <div>
+            <label className="small fw-semibold" htmlFor="edit-recurrence">Repeat</label>
+            <select id="edit-recurrence" className="input-premium" value={recurrence} onChange={(e) => setRecurrence(e.target.value)}>
+              <option value="none">Does not repeat</option>
+              <option value="daily">Every day</option>
+              <option value="weekdays">Every weekday</option>
+              <option value="weekly">Every week</option>
+              <option value="monthly">Every month</option>
+            </select>
+          </div>
+          <div className="floating-label-group mb-0">
+            <textarea className="floating-input" value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notes" />
+            <label className="floating-label">Notes</label>
+          </div>
+          <div className="form-actions mt-3">
+            <button type="button" className="btn btn-outline-secondary rounded-pill fw-bold" onClick={() => navigate("/user-dashboard")}>Cancel</button>
+            <button type="submit" className="btn btn-premium">Update Task</button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
-);
-
+  );
 }

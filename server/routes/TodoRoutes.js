@@ -1,35 +1,51 @@
 const express = require("express");
 const router = express.Router();
 const Todo = require("../models/Todo");
+const authMiddleware = require("../middleware/authMiddleware");
 
-// CREATE todo
+router.use(authMiddleware);
+
 router.post("/", async (req, res) => {
   try {
-    const todo = new Todo(req.body);
+    const todo = new Todo({ ...req.body, userId: req.user.UserId });
     const savedTodo = await todo.save();
     res.status(201).json(savedTodo);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
+  } catch {
+    res.status(400).json({ message: "Unable to create todo" });
   }
 });
 
-// GET all todos
 router.get("/", async (req, res) => {
   try {
-    const todos = await Todo.find().sort({ createdAt: -1 });
+    const todos = await Todo.find({ userId: req.user.UserId }).sort({ createdAt: -1 });
     res.json(todos);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch {
+    res.status(500).json({ message: "Something went wrong. Please try again." });
   }
 });
 
-// DELETE todo
+router.get("/single/:id", async (req, res) => {
+  try {
+    const todo = await Todo.findById(req.params.id);
+    if (!todo || todo.userId !== req.user.UserId) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
+    res.json(todo);
+  } catch {
+    res.status(500).json({ message: "Something went wrong. Please try again." });
+  }
+});
+
 router.delete("/:id", async (req, res) => {
   try {
+    const todo = await Todo.findById(req.params.id);
+    if (!todo || todo.userId !== req.user.UserId) {
+      return res.status(404).json({ message: "Todo not found" });
+    }
     await Todo.findByIdAndDelete(req.params.id);
     res.json({ message: "Todo deleted" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+  } catch {
+    res.status(500).json({ message: "Something went wrong. Please try again." });
   }
 });
 

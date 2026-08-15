@@ -9,21 +9,29 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
-
+import { ThemeProvider } from './context/ThemeContext';
+import './styles/theme.css';
+import './styles/appExtras.css';
+import './styles/responsive.css';
 
   const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider>
+      <App />
       <ToastContainer
-      position="top-right"
-      autoClose={3000}
-      hideProgressBar={false}
-      closeOnClick
-      pauseOnHover
-      draggable
-    />
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        closeOnClick
+        pauseOnHover
+        draggable
+        newestOnTop
+        limit={3}
+        style={{ zIndex: 100 }}
+      />
+    </ThemeProvider>
   </React.StrictMode>
 );
 

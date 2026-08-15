@@ -18,9 +18,7 @@ export function ToDoDeleteAppointment() {
     }
 
     axios
-      .get(`/todos/single/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      .get(`/appointments/single/${id}`)
       .then((res) => setTodo(res.data))
       .catch(() => {
         toast.error("Failed to load To-Do");
@@ -30,10 +28,7 @@ export function ToDoDeleteAppointment() {
 
   const handleDeleteClick = async () => {
     try {
-      const token = localStorage.getItem("token");
-      await axios.delete(`/todos/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axios.delete(`/appointments/${id}`);
       toast.success("To-Do deleted");
       navigate("/user-dashboard");
     } catch {

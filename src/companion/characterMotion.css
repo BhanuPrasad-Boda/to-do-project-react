@@ -1,0 +1,821 @@
+.char-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  max-width: none;
+}
+
+.char-figure,
+.char-torso,
+.char-head,
+.char-hair-group,
+.char-arm,
+.char-forearm,
+.char-leg,
+.char-shin,
+.char-hand-right,
+.char-eyes,
+.char-eye-socket,
+.char-lid,
+.char-mouth,
+.char-object,
+.char-jacket-shade,
+.char-shadow {
+  transform-box: view-box;
+  transform-origin: center;
+}
+
+.char-torso { transform-origin: 40px 58px; }
+.char-head { transform-origin: 40px 20px; }
+.char-hair-group { transform-origin: 40px 12px; }
+.char-jacket-shade { transform-origin: 28px 56px; }
+.char-arm-left { transform-origin: 26.2px 39.2px; }
+.char-arm-right { transform-origin: 53.8px 39.2px; }
+.char-forearm-left { transform-origin: 25.4px 55.2px; }
+.char-forearm-right { transform-origin: 54.6px 55.2px; }
+.char-leg-left { transform-origin: 34.2px 76px; }
+.char-leg-right { transform-origin: 45.8px 76px; }
+.char-shin-left { transform-origin: 34.2px 93.2px; }
+.char-shin-right { transform-origin: 45.8px 93.2px; }
+.char-hand-right { transform-origin: 54.6px 69px; }
+.char-mouth { transform-origin: 40px 25.6px; }
+.char-lid { transform-origin: center; transform-box: fill-box; }
+.char-eye-socket { transform-box: fill-box; }
+
+.char-pants {
+  fill: #1e293b;
+}
+
+.char-shoe {
+  fill: #0f172a;
+}
+
+.char-sleeve,
+.char-sleeve-fore {
+  fill: color-mix(in srgb, var(--accent-color) 70%, #122033);
+}
+
+.char-jacket-shade {
+  fill: rgba(8, 15, 28, 0.16);
+}
+
+.char-collar {
+  fill: color-mix(in srgb, var(--accent-color) 42%, #0b1220);
+}
+
+.char-button {
+  fill: color-mix(in srgb, var(--accent-color) 30%, #e2e8f0);
+}
+
+.char-hand,
+.char-ear,
+.guide-head-fill,
+.guide-neck {
+  fill: #efd0b6;
+}
+
+.char-blush {
+  fill: #f0a08a;
+  opacity: 0.28;
+}
+
+.char-hair,
+.char-hair-side {
+  fill: #243044;
+}
+
+.char-brow,
+.char-nose,
+.char-finger {
+  fill: none;
+  stroke: #3f4b5f;
+  stroke-width: 1.15;
+  stroke-linecap: round;
+}
+
+.char-mouth-closed {
+  fill: none;
+  stroke: #b4534a;
+  stroke-width: 1.25;
+  stroke-linecap: round;
+}
+
+.char-mouth-open {
+  fill: #9f3d3d;
+  stroke: none;
+  opacity: 0;
+}
+
+.char-eye-white {
+  fill: #fff;
+}
+
+.char-iris {
+  fill: #3b6cb5;
+}
+
+.char-shine {
+  fill: #fff;
+}
+
+.char-lid {
+  fill: #efd0b6;
+  transform: scaleY(0);
+}
+
+.char-finger {
+  opacity: 0;
+  stroke: #efd0b6;
+  stroke-width: 1.8;
+}
+
+.char-root.is-point-right .char-finger,
+.char-root.is-point-up .char-finger,
+.char-root.is-point-down .char-finger {
+  opacity: 1;
+}
+
+.char-object-card {
+  fill: var(--bg-secondary);
+  stroke: var(--border-color);
+  stroke-width: 1;
+  filter: drop-shadow(0 1px 1.4px rgba(15, 23, 42, 0.18));
+}
+
+.char-object-accent {
+  fill: var(--accent-color);
+}
+
+.char-object-mark {
+  fill: none;
+  stroke: var(--text-secondary);
+  stroke-width: 1.05;
+  stroke-linecap: round;
+}
+
+.char-object-dot {
+  fill: var(--accent-color);
+}
+
+.char-object,
+.char-grip {
+  opacity: 0;
+}
+
+.char-root.is-hold .char-object,
+.char-root.is-show .char-object,
+.char-root.is-holding .char-object,
+.char-root.is-hold .char-grip,
+.char-root.is-show .char-grip,
+.char-root.is-holding .char-grip {
+  opacity: 1;
+}
+
+.char-root.is-talk .char-mouth-open,
+.char-root.is-talking .char-mouth-open {
+  opacity: 1;
+}
+
+.char-root.is-talk .char-mouth-closed,
+.char-root.is-talking .char-mouth-closed {
+  opacity: 0;
+}
+
+.char-shadow {
+  fill: rgba(15, 23, 42, 0.2);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .char-root.is-idle .char-torso,
+  .char-root.is-talk .char-torso,
+  .char-root.is-listen .char-torso {
+    animation: char-breathe 6.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .char-root.is-idle .char-head {
+    animation: char-head-idle 9.5s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .char-root.is-idle .char-hair-group,
+  .char-root.is-talk .char-hair-group,
+  .char-root.is-walk .char-hair-group {
+    animation: char-hair-drift 3.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .char-root.is-idle .char-jacket-shade {
+    animation: char-coat-drift 6.4s ease-in-out infinite;
+  }
+
+  .char-root.is-idle .char-lid,
+  .char-root.is-talk .char-lid,
+  .char-root.is-listen .char-lid,
+  .char-root.is-think .char-lid {
+    animation: char-blink 6.4s ease-in-out infinite;
+  }
+
+  .char-root.is-idle .char-arm-left {
+    animation: char-arm-idle-l 7.2s ease-in-out infinite;
+  }
+
+  .char-root.is-idle .char-arm-right {
+    animation: char-arm-idle-r 7.2s ease-in-out infinite;
+  }
+
+  .char-root.is-walk .char-leg-left {
+    animation: char-stride-l 0.68s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .char-root.is-walk .char-leg-right {
+    animation: char-stride-r 0.68s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .char-root.is-walk .char-shin-left {
+    animation: char-shin-l 0.68s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .char-root.is-walk .char-shin-right {
+    animation: char-shin-r 0.68s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .char-root.is-walk .char-arm-left {
+    animation: char-swing-l 0.68s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .char-root.is-walk .char-arm-right {
+    animation: char-swing-r 0.68s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .char-root.is-walk .char-forearm-left {
+    animation: char-fore-swing-l 0.68s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+    animation-delay: 0.04s;
+  }
+
+  .char-root.is-walk .char-forearm-right {
+    animation: char-fore-swing-r 0.68s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+    animation-delay: 0.04s;
+  }
+
+  .char-root.is-walk .char-torso {
+    animation: char-walk-bob 0.68s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .char-root.is-walk .char-head {
+    animation: char-walk-head 0.68s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+    animation-delay: 0.07s;
+  }
+
+  .char-root.is-walk .char-shadow {
+    animation: char-shadow-step 0.68s ease-in-out infinite;
+  }
+
+  .char-root.is-walk.is-dir-left .char-figure {
+    animation: char-lean-left 0.42s cubic-bezier(0.65, 0.05, 0.18, 1) forwards;
+  }
+
+  .char-root.is-walk.is-dir-right .char-figure {
+    animation: char-lean-right 0.42s cubic-bezier(0.65, 0.05, 0.18, 1) forwards;
+  }
+
+  .char-root.is-wave .char-arm-right,
+  .char-root.is-goodbye .char-arm-right {
+    animation: char-wave-raise 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .char-root.is-wave .char-forearm-right,
+  .char-root.is-goodbye .char-forearm-right {
+    animation: char-wave-hand 0.9s cubic-bezier(0.45, 0.05, 0.55, 0.95) 0.12s 2 both;
+  }
+
+  .char-root.is-talk .char-mouth-open,
+  .char-root.is-talking .char-mouth-open {
+    animation: char-talk 0.42s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .char-root.is-talk .char-head,
+  .char-root.is-talking .char-head {
+    animation: char-talk-head 3.4s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .char-root.is-talk .char-forearm-left,
+  .char-root.is-talking .char-forearm-left {
+    animation: char-talk-hand 2.6s cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+  }
+
+  .char-root.is-look-left .char-head {
+    animation: char-look-left 0.58s cubic-bezier(0.65, 0.05, 0.18, 1) forwards;
+  }
+
+  .char-root.is-look-right .char-head {
+    animation: char-look-right 0.58s cubic-bezier(0.65, 0.05, 0.18, 1) forwards;
+  }
+
+  .char-root.is-look-up .char-head {
+    animation: char-look-up 0.5s cubic-bezier(0.65, 0.05, 0.18, 1) forwards;
+  }
+
+  .char-root.is-look-down .char-head {
+    animation: char-look-down 0.5s cubic-bezier(0.65, 0.05, 0.18, 1) forwards;
+  }
+
+  .char-root.is-point-right .char-arm-right {
+    animation: char-point-shoulder 0.92s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .char-root.is-point-right .char-forearm-right {
+    animation: char-point-elbow 0.92s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
+  }
+
+  .char-root.is-point-left .char-arm-left {
+    animation: char-point-shoulder-l 0.92s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .char-root.is-point-left .char-forearm-left {
+    animation: char-point-elbow-l 0.92s cubic-bezier(0.22, 1, 0.36, 1) 0.06s both;
+  }
+
+  .char-root.is-point-up .char-arm-right {
+    animation: char-point-up 0.88s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .char-root.is-point-up .char-forearm-right {
+    animation: char-point-up-elbow 0.88s cubic-bezier(0.22, 1, 0.36, 1) 0.05s both;
+  }
+
+  .char-root.is-point-down .char-arm-right {
+    animation: char-point-down 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .char-root.is-hold .char-arm-right {
+    animation: char-reach-hold 0.78s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .char-root.is-hold .char-forearm-right {
+    animation: char-hold-elbow 0.78s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+  }
+
+  .char-root.is-show .char-arm-right {
+    animation: char-show 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .char-root.is-show .char-forearm-right {
+    animation: char-show-elbow 0.72s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .char-root.is-think .char-arm-right {
+    animation: char-think-arm 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .char-root.is-think .char-forearm-right {
+    animation: char-think-elbow 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+  }
+
+  .char-root.is-think .char-head {
+    animation: char-think-head 3.8s ease-in-out infinite;
+  }
+
+  .char-root.is-listen .char-head {
+    animation: char-listen-head 4.2s ease-in-out infinite;
+  }
+
+  .char-root.is-celebrate .char-arm-left,
+  .char-root.is-success .char-arm-left {
+    animation: char-celebrate-l 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .char-root.is-celebrate .char-arm-right,
+  .char-root.is-success .char-arm-right {
+    animation: char-celebrate-r 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .char-root.is-celebrate .char-torso,
+  .char-root.is-success .char-torso {
+    animation: char-celebrate-bob 0.85s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .char-root.is-concerned .char-head {
+    animation: char-concern 3.2s ease-in-out infinite;
+  }
+
+  .char-root.is-concerned .char-brow {
+    animation: char-brow-concern 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .char-root.is-surprised .char-head {
+    animation: char-surprise 0.55s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .char-root.is-anticipate .char-figure {
+    animation: char-prepare-walk 0.28s cubic-bezier(0.65, 0.05, 0.18, 1);
+  }
+
+  .char-root.is-settle.is-walk .char-leg-left,
+  .char-root.is-settle.is-walk .char-leg-right,
+  .char-root.is-settle.is-walk .char-arm-left,
+  .char-root.is-settle.is-walk .char-arm-right,
+  .char-root.is-settle.is-walk .char-shin-left,
+  .char-root.is-settle.is-walk .char-shin-right,
+  .char-root.is-settle.is-walk .char-forearm-left,
+  .char-root.is-settle.is-walk .char-forearm-right {
+    animation: char-settle-limb 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+
+  .char-root.is-settle.is-walk .char-torso,
+  .char-root.is-settle.is-walk .char-head {
+    animation: char-settle-body 0.26s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  }
+}
+
+.char-root.is-look-left .char-eye-socket,
+.char-root.is-face-left .char-eye-socket,
+.char-root.is-point-left .char-eye-socket,
+.char-root.is-walk.is-dir-left .char-eye-socket {
+  transform: translateX(-1.15px);
+}
+
+.char-root.is-look-right .char-eye-socket,
+.char-root.is-face-right .char-eye-socket,
+.char-root.is-point-right .char-eye-socket,
+.char-root.is-walk.is-dir-right .char-eye-socket {
+  transform: translateX(1.15px);
+}
+
+.char-root.is-look-up .char-eye-socket,
+.char-root.is-point-up .char-eye-socket,
+.char-root.is-walk.is-dir-up .char-eye-socket {
+  transform: translateY(-0.9px);
+}
+
+.char-root.is-look-down .char-eye-socket,
+.char-root.is-point-down .char-eye-socket,
+.char-root.is-walk.is-dir-down .char-eye-socket {
+  transform: translateY(0.9px);
+}
+
+.char-root.is-point-left .char-head,
+.char-root.is-look-left .char-head {
+  transform: rotate(-7deg);
+}
+
+.char-root.is-point-right .char-head,
+.char-root.is-look-right .char-head {
+  transform: rotate(7deg);
+}
+
+.char-root.is-look-up .char-head,
+.char-root.is-point-up .char-head {
+  transform: rotate(-2deg) translateY(-0.7px);
+}
+
+.char-root.is-look-down .char-head,
+.char-root.is-point-down .char-head {
+  transform: rotate(2deg) translateY(0.7px);
+}
+
+@keyframes char-breathe {
+  0%, 100% { transform: translateY(0) scaleY(1); }
+  50% { transform: translateY(-0.9px) scaleY(1.01); }
+}
+
+@keyframes char-head-idle {
+  0%, 100% { transform: rotate(0deg); }
+  28% { transform: rotate(-1.6deg); }
+  62% { transform: rotate(1.2deg); }
+  84% { transform: rotate(-0.4deg); }
+}
+
+@keyframes char-hair-drift {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-1.4deg); }
+}
+
+@keyframes char-coat-drift {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(0.4px); }
+}
+
+@keyframes char-blink {
+  0%, 38%, 46%, 100% { transform: scaleY(0); }
+  42% { transform: scaleY(1); }
+}
+
+@keyframes char-arm-idle-l {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(2.4deg); }
+}
+
+@keyframes char-arm-idle-r {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(-2.4deg); }
+}
+
+@keyframes char-stride-l {
+  0% { transform: rotate(13deg); }
+  18% { transform: rotate(8deg); }
+  50% { transform: rotate(-12deg); }
+  72% { transform: rotate(-3deg); }
+  100% { transform: rotate(13deg); }
+}
+
+@keyframes char-stride-r {
+  0% { transform: rotate(-12deg); }
+  18% { transform: rotate(-3deg); }
+  50% { transform: rotate(13deg); }
+  72% { transform: rotate(8deg); }
+  100% { transform: rotate(-12deg); }
+}
+
+@keyframes char-shin-l {
+  0% { transform: rotate(-6deg); }
+  22% { transform: rotate(11deg); }
+  50% { transform: rotate(3deg); }
+  78% { transform: rotate(-4deg); }
+  100% { transform: rotate(-6deg); }
+}
+
+@keyframes char-shin-r {
+  0% { transform: rotate(3deg); }
+  22% { transform: rotate(-4deg); }
+  50% { transform: rotate(-6deg); }
+  78% { transform: rotate(11deg); }
+  100% { transform: rotate(3deg); }
+}
+
+@keyframes char-swing-l {
+  0% { transform: rotate(-11deg); }
+  50% { transform: rotate(10deg); }
+  100% { transform: rotate(-11deg); }
+}
+
+@keyframes char-swing-r {
+  0% { transform: rotate(10deg); }
+  50% { transform: rotate(-11deg); }
+  100% { transform: rotate(10deg); }
+}
+
+@keyframes char-fore-swing-l {
+  0% { transform: rotate(-6deg); }
+  50% { transform: rotate(5deg); }
+  100% { transform: rotate(-6deg); }
+}
+
+@keyframes char-fore-swing-r {
+  0% { transform: rotate(5deg); }
+  50% { transform: rotate(-6deg); }
+  100% { transform: rotate(5deg); }
+}
+
+@keyframes char-walk-bob {
+  0%, 100% { transform: translateY(0) rotate(-0.8deg); }
+  50% { transform: translateY(-1.4px) rotate(0.8deg); }
+}
+
+@keyframes char-walk-head {
+  0%, 100% { transform: rotate(1.4deg); }
+  50% { transform: rotate(-1.4deg); }
+}
+
+@keyframes char-shadow-step {
+  0%, 100% { transform: scaleX(1); opacity: 0.2; }
+  50% { transform: scaleX(0.88); opacity: 0.13; }
+}
+
+@keyframes char-lean-left {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(-4deg); }
+}
+
+@keyframes char-lean-right {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(4deg); }
+}
+
+@keyframes char-wave-raise {
+  0% { transform: rotate(0deg); }
+  62% { transform: rotate(-84deg); }
+  100% { transform: rotate(-76deg); }
+}
+
+@keyframes char-wave-hand {
+  0%, 100% { transform: rotate(6deg); }
+  50% { transform: rotate(-18deg); }
+}
+
+@keyframes char-talk {
+  0%, 100% { transform: scaleX(1) scaleY(0.62); }
+  35% { transform: scaleX(0.94) scaleY(1.18); }
+  70% { transform: scaleX(1) scaleY(0.8); }
+}
+
+@keyframes char-talk-head {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  30% { transform: rotate(1.6deg) translateY(0.25px); }
+  68% { transform: rotate(-0.9deg) translateY(0); }
+}
+
+@keyframes char-talk-hand {
+  0%, 100% { transform: rotate(0deg); }
+  45% { transform: rotate(8deg); }
+}
+
+@keyframes char-look-left {
+  0% { transform: rotate(0deg); }
+  70% { transform: rotate(-8deg); }
+  100% { transform: rotate(-6.5deg); }
+}
+
+@keyframes char-look-right {
+  0% { transform: rotate(0deg); }
+  70% { transform: rotate(8deg); }
+  100% { transform: rotate(6.5deg); }
+}
+
+@keyframes char-look-up {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-2deg) translateY(-0.7px); }
+}
+
+@keyframes char-look-down {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(2deg) translateY(0.7px); }
+}
+
+@keyframes char-point-shoulder {
+  0% { transform: rotate(0deg); }
+  22% { transform: rotate(-8deg); }
+  58% { transform: rotate(-48deg); }
+  78% { transform: rotate(-38deg); }
+  100% { transform: rotate(-41deg); }
+}
+
+@keyframes char-point-elbow {
+  0% { transform: rotate(0deg); }
+  35% { transform: rotate(-4deg); }
+  100% { transform: rotate(-15deg); }
+}
+
+@keyframes char-point-shoulder-l {
+  0% { transform: rotate(0deg); }
+  22% { transform: rotate(8deg); }
+  58% { transform: rotate(48deg); }
+  78% { transform: rotate(38deg); }
+  100% { transform: rotate(41deg); }
+}
+
+@keyframes char-point-elbow-l {
+  0% { transform: rotate(0deg); }
+  35% { transform: rotate(4deg); }
+  100% { transform: rotate(15deg); }
+}
+
+@keyframes char-point-up {
+  0% { transform: rotate(0deg); }
+  40% { transform: rotate(-28deg); }
+  80% { transform: rotate(-86deg); }
+  100% { transform: rotate(-80deg); }
+}
+
+@keyframes char-point-up-elbow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-12deg); }
+}
+
+@keyframes char-point-down {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(14deg); }
+}
+
+@keyframes char-reach-hold {
+  0% { transform: rotate(0deg); }
+  28% { transform: rotate(8deg); }
+  100% { transform: rotate(-24deg); }
+}
+
+@keyframes char-hold-elbow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-18deg); }
+}
+
+@keyframes char-show {
+  0% { transform: rotate(-24deg); }
+  70% { transform: rotate(-58deg); }
+  100% { transform: rotate(-52deg); }
+}
+
+@keyframes char-show-elbow {
+  0% { transform: rotate(-18deg); }
+  100% { transform: rotate(-8deg); }
+}
+
+@keyframes char-think-arm {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-42deg); }
+}
+
+@keyframes char-think-elbow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-48deg); }
+}
+
+@keyframes char-think-head {
+  0%, 100% { transform: rotate(4deg); }
+  50% { transform: rotate(7deg) translateY(0.3px); }
+}
+
+@keyframes char-listen-head {
+  0%, 100% { transform: rotate(-2.4deg); }
+  50% { transform: rotate(-5deg); }
+}
+
+@keyframes char-celebrate-l {
+  0% { transform: rotate(0deg); }
+  55% { transform: rotate(34deg); }
+  100% { transform: rotate(28deg); }
+}
+
+@keyframes char-celebrate-r {
+  0% { transform: rotate(0deg); }
+  55% { transform: rotate(-34deg); }
+  100% { transform: rotate(-28deg); }
+}
+
+@keyframes char-celebrate-bob {
+  0% { transform: translateY(0); }
+  45% { transform: translateY(-2px); }
+  100% { transform: translateY(-0.4px); }
+}
+
+@keyframes char-concern {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  50% { transform: rotate(-2.4deg) translateY(0.6px); }
+}
+
+@keyframes char-brow-concern {
+  to { transform: translateY(0.5px) rotate(-5deg); }
+}
+
+@keyframes char-surprise {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-1.2px) scale(1.02); }
+}
+
+@keyframes char-prepare-walk {
+  0% { transform: translateY(0) scaleX(1); }
+  100% { transform: translateY(1.1px) scaleX(0.985); }
+}
+
+@keyframes char-settle-limb {
+  to { transform: rotate(0deg); }
+}
+
+@keyframes char-settle-body {
+  to { transform: translateY(0) rotate(0deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .char-root .char-figure,
+  .char-root .char-torso,
+  .char-root .char-head,
+  .char-root .char-arm,
+  .char-root .char-forearm,
+  .char-root .char-leg,
+  .char-root .char-shin,
+  .char-root .char-lid,
+  .char-root .char-mouth,
+  .char-root .char-hair-group,
+  .char-root .char-shadow {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .char-root.is-walk .char-leg-left,
+  .char-root.is-walk .char-leg-right,
+  .char-root.is-walk .char-shin-left,
+  .char-root.is-walk .char-shin-right,
+  .char-root.is-walk .char-arm-left,
+  .char-root.is-walk .char-arm-right,
+  .char-root.is-walk .char-forearm-left,
+  .char-root.is-walk .char-forearm-right,
+  .char-root.is-walk .char-torso,
+  .char-root.is-walk .char-head {
+    animation-duration: 0.58s;
+  }
+}
+
+:root[data-theme="dark"] .guide-head-fill,
+:root[data-theme="dark"] .guide-neck,
+:root[data-theme="dark"] .char-hand,
+:root[data-theme="dark"] .char-ear,
+:root[data-theme="dark"] .char-lid {
+  fill: #e2b48f;
+}
+
+:root[data-theme="dark"] .char-hair,
+:root[data-theme="dark"] .char-hair-side {
+  fill: #0f172a;
+}
+
+:root[data-theme="dark"] .char-pants {
+  fill: #0b1220;
+}

@@ -1,0 +1,284 @@
+/* Responsive QA layer — imported last. Fixes cropping, overlap, and overflow. */
+
+:root {
+  --z-base: 1;
+  --z-header: 40;
+  --z-sidebar: 50;
+  --z-dropdown: 60;
+  --z-fab: 70;
+  --z-nav: 80;
+  --z-modal: 90;
+  --z-toast: 100;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root,
+.App,
+section {
+  max-width: 100%;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+.App {
+  text-align: left;
+  width: 100%;
+  min-width: 0;
+}
+
+img,
+svg,
+video,
+canvas,
+iframe {
+  max-width: 100%;
+}
+
+button,
+a,
+.btn,
+.btn-premium,
+.btn-new-task,
+.forgot-btn {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.pref-toggle {
+  width: 48px;
+  min-width: 48px;
+  max-width: 48px;
+  height: 28px;
+  overflow: hidden;
+  overflow-wrap: normal;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.cal-day,
+.task-calendar-nav .icon-btn {
+  overflow-wrap: normal;
+  max-width: 100%;
+}
+
+.icon-btn {
+  flex-shrink: 0;
+  overflow-wrap: normal;
+  white-space: nowrap;
+}
+
+input,
+select,
+textarea {
+  max-width: 100%;
+  min-width: 0;
+}
+
+input[type="datetime-local"],
+input[type="date"],
+input[type="time"] {
+  width: 100%;
+  min-width: 0;
+}
+
+p,
+h1, h2, h3, h4, h5, h6,
+label,
+li,
+span {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.auth-shell {
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+.auth-card {
+  width: min(520px, 100%);
+  max-width: 100%;
+  min-width: 0;
+  padding: 20px;
+}
+
+@media (min-width: 576px) {
+  .auth-card {
+    padding: 32px;
+  }
+}
+
+.auth-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.form-actions > * {
+  flex: 1 1 140px;
+  min-width: 0;
+}
+
+.otp-group {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: clamp(4px, 1.6vw, 8px);
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.otp-cell {
+  width: 100%;
+  min-width: 0;
+  height: auto;
+  min-height: 44px;
+  aspect-ratio: 0.82;
+  font-size: clamp(1rem, 3.6vw, 1.35rem);
+}
+
+.saas-sidebar {
+  z-index: var(--z-sidebar);
+}
+
+.saas-header,
+.mobile-topbar {
+  z-index: var(--z-header);
+}
+
+.notification-panel {
+  z-index: var(--z-dropdown);
+}
+
+.mobile-fab,
+.mobile-fab-raised {
+  z-index: var(--z-fab);
+}
+
+.bottom-nav {
+  z-index: var(--z-nav);
+}
+
+.avatar-modal-overlay {
+  z-index: var(--z-modal);
+}
+
+.avatar-modal {
+  max-height: min(90dvh, 720px);
+  overflow-y: auto;
+  width: min(420px, 100%);
+}
+
+.Toastify__toast-container {
+  z-index: var(--z-toast) !important;
+  width: min(360px, calc(100% - 24px)) !important;
+}
+
+.Toastify__toast {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+@media (max-width: 575.98px) {
+  .Toastify__toast-container--top-right {
+    top: auto !important;
+    bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+    right: 12px !important;
+    left: 12px !important;
+    width: auto !important;
+  }
+}
+
+.hero-title {
+  font-size: clamp(1.75rem, 7vw, 3.5rem) !important;
+  line-height: 1.15;
+}
+
+.hero-lead {
+  font-size: clamp(1rem, 3.4vw, 1.35rem) !important;
+}
+
+.filter-pill {
+  white-space: normal;
+}
+
+.notification-item,
+.notification-item * {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.datetime-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.datetime-row .input-premium {
+  flex: 1 1 180px;
+}
+
+.datetime-row .btn-new-task {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 479.98px) {
+  .kpi-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .datetime-row .btn-new-task {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .task-row {
+    grid-template-columns: 32px minmax(0, 1fr);
+    grid-template-areas:
+      "check body"
+      ". actions";
+  }
+
+  .task-check {
+    grid-area: check;
+  }
+
+  .task-body {
+    grid-area: body;
+    min-width: 0;
+  }
+
+  .task-actions {
+    grid-area: actions;
+    justify-content: flex-start;
+    opacity: 1;
+  }
+}
