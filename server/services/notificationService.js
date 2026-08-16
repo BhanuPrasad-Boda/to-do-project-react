@@ -74,7 +74,11 @@ async function notify({
   });
 
   if (!queued && prefs.emailNotifications && owner.Email) {
-    await sendNotificationEmail(owner.Email, title, body);
+    try {
+      await sendNotificationEmail(owner.Email, title, body);
+    } catch {
+      console.error("Notification email failed");
+    }
   }
 
   return doc;
@@ -94,7 +98,11 @@ async function flushQueued(now = new Date()) {
     const owner = await User.findOne({ UserId: item.userId }).lean();
     const prefs = defaultPrefs(owner);
     if (prefs.emailNotifications && owner?.Email) {
-      await sendNotificationEmail(owner.Email, item.title, item.body);
+      try {
+        await sendNotificationEmail(owner.Email, item.title, item.body);
+      } catch {
+        console.error("Queued notification email failed");
+      }
     }
   }
 
@@ -102,14 +110,14 @@ async function flushQueued(now = new Date()) {
 }
 
 async function listForUser(userId, { category, unreadOnly } = {}) {
-  const query = { userId, queued: false };
+  const query = { userId };
   if (category && category !== "all") query.category = category;
   if (unreadOnly) query.read = false;
   return Notification.find(query).sort({ createdAt: -1 }).limit(100);
 }
 
 async function unreadCount(userId) {
-  return Notification.countDocuments({ userId, read: false, queued: false });
+  return Notification.countDocuments({ userId, read: false });
 }
 
 async function markRead(userId, id) {
@@ -122,7 +130,7 @@ async function markRead(userId, id) {
 
 async function markAllRead(userId) {
   const result = await Notification.updateMany(
-    { userId, read: false, queued: false },
+    { userId, read: false },
     { $set: { read: true, readAt: new Date() } }
   );
   return result.modifiedCount;

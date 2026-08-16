@@ -65,10 +65,6 @@ function validateEnv(env = process.env) {
   if (isProd && /resend\.dev/i.test(env.EMAIL_FROM || "")) {
     issues.push("EMAIL_FROM uses resend.dev. Use a verified domain sender in production.");
   }
-  const aiProvider = String(env.AI_PROVIDER || "").trim().toLowerCase();
-  if (aiProvider && aiProvider !== "none" && aiProvider !== "off" && !String(env.AI_API_KEY || "").trim()) {
-    issues.push("AI_PROVIDER is set but AI_API_KEY is missing. The assistant will use deterministic fallback.");
-  }
 
   return { ok: fatal.length === 0, fatal, issues };
 }

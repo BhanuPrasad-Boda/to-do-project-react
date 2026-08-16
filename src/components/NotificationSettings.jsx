@@ -207,7 +207,7 @@ export function NotificationSettings({ preferences = {}, onSaved }) {
         <h4>Quiet hours</h4>
         <PrefRow
           title="Pause overnight"
-          hint="Hold non-urgent reminders until morning"
+          hint="Hold email and desktop popups until morning. The in-app inbox still updates."
           checked={Boolean(prefs.quietHoursEnabled)}
           onChange={(value) => togglePref("quietHoursEnabled", value)}
         />

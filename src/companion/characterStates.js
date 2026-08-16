@@ -53,7 +53,8 @@ const GESTURE_MAP = {
   listening: CHAR.LISTEN,
   working: CHAR.HOLD_OBJECT,
   guiding: CHAR.TALK,
-  asking_confirmation: CHAR.SURPRISED,
+  asking_confirmation: CHAR.THINK,
+  confused: CHAR.CONCERNED,
   error: CHAR.CONCERNED,
 };
 

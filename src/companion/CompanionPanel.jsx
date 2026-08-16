@@ -129,13 +129,24 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
       if (action.id === "plan" || action.id === "show-overdue") onAction?.(action, lastAssistant);
       return;
     }
+    if (action.id === "try-again") {
+      setQuery("");
+      inputRef.current?.focus();
+      return;
+    }
+    if (action.id === "add-manually") {
+      onAction?.(
+        { id: "create", draft: action.draft || lastAssistant?.draft || {} },
+        lastAssistant
+      );
+      return;
+    }
     if (action.id === "create" && lastAssistant?.tool?.name === "createTask") {
       onAction?.(action, lastAssistant);
       return;
     }
     if (action.id === "create") {
-      setMessages((prev) => [...prev, { id: uid(), role: "user", text: action.label }]);
-      interpretAndReply("create a task");
+      onAction?.({ id: "create", draft: lastAssistant?.draft || {} }, lastAssistant);
       return;
     }
     onAction?.(action, lastAssistant);
@@ -149,7 +160,7 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
   };
 
   return (
-    <section id="companion-panel" className="companion-panel" aria-label="TaskFlow AI">
+    <section id="companion-panel" className="companion-panel" aria-label="TaskFlow Assistant">
       <div className="companion-panel-head">
         <div className="companion-panel-identity">
           <CompanionCharacter
@@ -161,7 +172,7 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
             burst={burst}
           />
           <div>
-            <strong>TaskFlow AI</strong>
+            <strong>TaskFlow Assistant</strong>
             <span>
               <i className="companion-status-dot" aria-hidden="true" />
               Online · using your tasks
@@ -223,7 +234,7 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
       ) : null}
       <form className="companion-ask companion-composer" onSubmit={submit}>
         <label className="visually-hidden" htmlFor="companion-ask-input">
-          Message TaskFlow AI
+          Message TaskFlow Assistant
         </label>
         <input
           ref={inputRef}
@@ -231,7 +242,7 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
           type="text"
           value={query}
           maxLength={800}
-          placeholder="Message TaskFlow AI…"
+          placeholder="Message TaskFlow Assistant…"
           onChange={(e) => setQuery(e.target.value)}
           autoComplete="off"
           disabled={thinking}

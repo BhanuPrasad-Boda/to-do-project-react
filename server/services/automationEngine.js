@@ -72,11 +72,29 @@ function normalizeTaskInput(raw, user) {
   return payload;
 }
 
+async function safeNotify(payload) {
+  try {
+    return await notificationService.notify(payload);
+  } catch (err) {
+    console.error("Notification create failed");
+    return null;
+  }
+}
+
 async function onTaskCreated(task, user) {
   if (task.Date) {
     const hoursUntil = (new Date(task.Date) - Date.now()) / 36e5;
-    if (hoursUntil > 0 && hoursUntil <= 24) {
-      await notificationService.notify({
+    if (hoursUntil <= 0) {
+      await safeNotify({
+        userId: task.UserId,
+        user,
+        type: "overdue",
+        title: "Task overdue",
+        body: `"${task.Title}" is already due.`,
+        taskId: task.Appointment_Id,
+      });
+    } else if (hoursUntil <= 24) {
+      await safeNotify({
         userId: task.UserId,
         user,
         type: "upcoming",
@@ -86,7 +104,7 @@ async function onTaskCreated(task, user) {
       });
     }
     if (task.Priority === "High" && hoursUntil > 0 && hoursUntil <= 6) {
-      await notificationService.notify({
+      await safeNotify({
         userId: task.UserId,
         user,
         type: "high_priority",
@@ -110,14 +128,14 @@ async function onTaskCompleted(task, user) {
   if (task.recurrence && task.recurrence !== "none") {
     const next = await spawnNextOccurrence(task);
     if (next) {
-      await notificationService.notify({
-        userId: task.UserId,
-        user,
-        type: "recurring",
-        title: "Next occurrence scheduled",
-        body: `"${task.Title}" is scheduled again for ${new Date(next.Date).toLocaleString()}.`,
-        taskId: next.Appointment_Id,
-      });
+    await safeNotify({
+      userId: task.UserId,
+      user,
+      type: "recurring",
+      title: "Next occurrence scheduled",
+      body: `"${task.Title}" is scheduled again for ${new Date(next.Date).toLocaleString()}.`,
+      taskId: next.Appointment_Id,
+    });
     }
   }
 
@@ -140,36 +158,51 @@ async function processReminders(now = new Date()) {
     completed: false,
     cancelledReminders: { $ne: true },
     reminderSent: { $ne: true },
-    reminderAt: { $lte: now, $ne: null },
     status: { $ne: "cancelled" },
-  }).limit(100);
+    Date: { $ne: null },
+    $or: [
+      { reminderAt: { $lte: now, $ne: null } },
+      { reminderAt: { $exists: false } },
+      { reminderAt: null },
+    ],
+  }).limit(200);
 
   let count = 0;
   for (const task of due) {
-    const user = await User.findOne({ UserId: task.UserId });
-    const mins = Math.max(
-      0,
-      Math.round((new Date(task.Date) - now) / 60000)
-    );
-    const when =
-      mins <= 1
-        ? "now"
-        : mins < 60
-          ? `in ${mins} minutes`
-          : `in ${Math.round(mins / 60)} hour${mins >= 90 ? "s" : ""}`;
+    try {
+      if (!task.reminderAt) {
+        task.reminderAt = computeReminderAt(task.Date, task.reminderOffsetMinutes ?? 30);
+        if (task.reminderAt && task.reminderAt > now) {
+          await task.save();
+          continue;
+        }
+      }
+      if (!task.reminderAt || task.reminderAt > now) continue;
 
-    await notificationService.notify({
-      userId: task.UserId,
-      user,
-      type: task.Priority === "High" ? "high_priority" : "task_reminder",
-      title: "Task reminder",
-      body: `Your task "${task.Title}" is due ${when}.`,
-      taskId: task.Appointment_Id,
-    });
+      const user = await User.findOne({ UserId: task.UserId });
+      const mins = Math.max(0, Math.round((new Date(task.Date) - now) / 60000));
+      const when =
+        mins <= 1
+          ? "now"
+          : mins < 60
+            ? `in ${mins} minutes`
+            : `in ${Math.round(mins / 60)} hour${mins >= 90 ? "s" : ""}`;
 
-    task.reminderSent = true;
-    await task.save();
-    count += 1;
+      await safeNotify({
+        userId: task.UserId,
+        user,
+        type: task.Priority === "High" ? "high_priority" : "task_reminder",
+        title: "Task reminder",
+        body: `Your task "${task.Title}" is due ${when}.`,
+        taskId: task.Appointment_Id,
+      });
+
+      task.reminderSent = true;
+      await task.save();
+      count += 1;
+    } catch {
+      console.error("Reminder job item failed");
+    }
   }
   return count;
 }
@@ -193,7 +226,7 @@ async function processOverdue(now = new Date()) {
   for (const [userId, list] of byUser.entries()) {
     const user = await User.findOne({ UserId: userId });
     const count = list.length;
-    await notificationService.notify({
+    await safeNotify({
       userId,
       user,
       type: "overdue",
@@ -249,7 +282,7 @@ async function processRollover(now = new Date()) {
       moved += 1;
     }
 
-    await notificationService.notify({
+    await safeNotify({
       userId,
       user,
       type: "auto_rollover",
@@ -297,7 +330,7 @@ async function processRecurringAdvance(now = new Date()) {
     }
 
     if (createdForUser > 0) {
-      await notificationService.notify({
+      await safeNotify({
         userId,
         user,
         type: "recurring",
@@ -421,7 +454,7 @@ async function processDailyPlanning(now = new Date()) {
     if (high.length) bodyParts.push(`High priority: ${high.join(", ")}.`);
     if (plan.overdueCount) bodyParts.push(`${plan.overdueCount} overdue.`);
 
-    await notificationService.notify({
+    await safeNotify({
       userId: user.UserId,
       user,
       type: "daily_planning",
@@ -461,7 +494,7 @@ async function processEndOfDay(now = new Date()) {
     });
     if (unfinished === 0) continue;
 
-    await notificationService.notify({
+    await safeNotify({
       userId: user.UserId,
       user,
       type: "end_of_day",
@@ -497,7 +530,7 @@ async function processWeeklySummary(now = new Date()) {
     const completed = due.filter((t) => t.completed).length;
     const pct = Math.round((completed / due.length) * 100);
 
-    await notificationService.notify({
+    await safeNotify({
       userId: user.UserId,
       user,
       type: "weekly_summary",
@@ -511,15 +544,24 @@ async function processWeeklySummary(now = new Date()) {
   return sent;
 }
 
+async function runOne(name, fn) {
+  try {
+    return await fn();
+  } catch (err) {
+    console.error(`Scheduled job ${name} failed`);
+    return 0;
+  }
+}
+
 async function runScheduledJobs(now = new Date()) {
-  const reminders = await processReminders(now);
-  const overdue = await processOverdue(now);
-  const rolled = await processRollover(now);
-  const recurring = await processRecurringAdvance(now);
-  const flushed = await notificationService.flushQueued(now);
-  const daily = await processDailyPlanning(now);
-  const eod = await processEndOfDay(now);
-  const weekly = await processWeeklySummary(now);
+  const reminders = await runOne("reminders", () => processReminders(now));
+  const overdue = await runOne("overdue", () => processOverdue(now));
+  const rolled = await runOne("rollover", () => processRollover(now));
+  const recurring = await runOne("recurring", () => processRecurringAdvance(now));
+  const flushed = await runOne("flush", () => notificationService.flushQueued(now));
+  const daily = await runOne("daily", () => processDailyPlanning(now));
+  const eod = await runOne("endOfDay", () => processEndOfDay(now));
+  const weekly = await runOne("weekly", () => processWeeklySummary(now));
   return { reminders, overdue, rolled, recurring, flushed, daily, eod, weekly };
 }
 

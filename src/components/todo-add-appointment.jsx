@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "../api/axiosConfig";
 import { toast } from "react-toastify";
 import { useSmartPreview } from "../utils/useSmartPreview";
@@ -12,6 +12,7 @@ import "../styles/appExtras.css";
 
 export function ToDoAddAppointment() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { publishSnapshot, emitEvent } = useCompanion();
 
   const [title, setTitle] = useState("");
@@ -42,6 +43,24 @@ export function ToDoAddAppointment() {
   useEffect(() => {
     publishSnapshot({ pathname: "/add-appointment", view: "create" });
   }, [publishSnapshot]);
+
+  useEffect(() => {
+    const draft = location.state?.draft;
+    if (!draft || typeof draft !== "object") return;
+    if (draft.Title || draft.title) setTitle(String(draft.Title || draft.title));
+    if (draft.Date || draft.dueDate) {
+      setDueDate(toDatetimeLocal(draft.Date || draft.dueDate));
+      setDueTouched(true);
+    }
+    if (draft.Priority || draft.priority) {
+      setPriority(draft.Priority || draft.priority);
+      setPriorityTouched(true);
+    }
+    if (draft.category) {
+      setCategory(draft.category);
+      setCategoryTouched(true);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");

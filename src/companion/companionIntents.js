@@ -60,13 +60,52 @@ const CREATE_STRIP = [
   /^i need to\s+/i,
 ];
 
+const UNKNOWN_TEXT =
+  "I'm sorry, I couldn't understand your request.\n\nI can help with the areas below. Would you like to try again or add it manually?";
+
+const UNKNOWN_ITEMS = [
+  { title: "Tasks" },
+  { title: "Reminders" },
+  { title: "Appointments" },
+  { title: "Notifications" },
+  { title: "Priorities" },
+  { title: "Daily planning" },
+];
+
+function unknownReply(draft = {}) {
+  return {
+    text: UNKNOWN_TEXT,
+    mood: "confused",
+    items: UNKNOWN_ITEMS,
+    draft,
+    actions: [
+      { id: "try-again", label: "Try again", variant: "primary" },
+      { id: "add-manually", label: "Add manually" },
+    ],
+  };
+}
+
+function isOutOfScope(q) {
+  if (/\b(task|tasks|todo|overdue|today|plan my day|reminder|appointment|notification|priority)\b/.test(q)) {
+    if (!/^(what is|who is|explain|define|tell me a joke|write (a |an )?(essay|poem|story))/.test(q)) return false;
+  }
+  if (/\b(that thing|this thing|handle that|i was thinking|was cancelled|tell me a joke|quantum physics|machine learning)\b/.test(q)) {
+    return true;
+  }
+  return /^(what is|who is|explain|define|tell me a joke|write (a |an )?(essay|poem|story|email))/.test(q);
+}
+
 export function interpretCompanionQuery(text, ctx = {}) {
   const raw = String(text || "").trim();
   const q = raw.toLowerCase();
 
+  if (isOutOfScope(q)) {
+    return unknownReply();
+  }
+
   if (!q || /^(hi|hello|hey|yo)\b/.test(q)) {
     return {
-      text: "Hello. I'm TaskFlow AI — I work from your live tasks, not generic advice. Tell me what you need in plain language.",
+      text: "Hello. I'm TaskFlow Assistant. I work from your live tasks. Tell me what you need in plain language.",
       mood: "helping",
     };
   }
@@ -459,7 +498,12 @@ export function interpretCompanionQuery(text, ctx = {}) {
   }
 
   const parsed = parseNaturalTask(raw, ctx.now);
-  const looksLikeTask = parsed?.title && raw.length >= 8 && !/\?$/.test(raw) && !/^(please\s+)?(can you|could you|would you)\b/.test(q);
+  const looksLikeTask =
+    parsed?.title &&
+    raw.length >= 8 &&
+    !/\?$/.test(raw) &&
+    !isOutOfScope(q) &&
+    /^(please\s+)?(create|add|make|schedule|remind me|remember)\b/.test(q);
   if (looksLikeTask) {
     return {
       text: `I can add this as a task:\n\n${formatTaskPreview(parsed, formatDue)}\n\nConfirm and I’ll create it in your list.`,
@@ -484,15 +528,7 @@ export function interpretCompanionQuery(text, ctx = {}) {
     };
   }
 
-  return {
-    text: "I don’t have a direct action for that yet. I can plan your day, search your tasks, or turn what you typed into a to-do.",
-    mood: "helping",
-    actions: [
-      { id: "plan", label: "Plan my day" },
-      { id: "show-overdue", label: "Show overdue" },
-      { id: "create", label: "New task" },
-    ],
-  };
+  return unknownReply();
 }
 
 export const ASSISTANT_SHORTCUTS = [

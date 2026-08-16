@@ -1,9 +1,6 @@
 const { runAssistantTool, TOOLS, CONFIRM_TOOLS } = require("./assistantTools");
-const { classifyRequest, ROUTE, MODE, GENERAL_MODES } = require("./assistantRouter");
-const { addTurn, getSession, setPending, clearSession } = require("./assistantMemory");
-const { getAiProvider } = require("./ai/aiProvider");
-const { getSearchProvider } = require("./ai/searchProvider");
-const { validateAiOutput, DESTRUCTIVE_TOOLS, INTENT_TO_TOOL, SEARCH_TOOL, GENERAL_INTENTS } = require("./ai/aiSchema");
+const { classifyRequest, ROUTE, MODE } = require("./assistantRouter");
+const { addTurn, getSession, setPending, setLastReferent, clearSession } = require("./assistantMemory");
 const metrics = require("./ai/aiMetrics");
 
 const READ_TOOLS = new Set([
@@ -17,14 +14,19 @@ const READ_TOOLS = new Set([
   "getNotifications",
 ]);
 
-const FALLBACK_TEXT =
-  "I'm having trouble understanding that request right now. You can try something like 'create a task for tomorrow at 10 AM'.";
+const UNKNOWN_TEXT =
+  "I'm sorry, I couldn't understand your request.\n\nI can help with the areas below. Would you like to try again or add it manually?";
 
-const GENERAL_FALLBACK =
-  "I can help with that once the AI service is available. I can still manage your TaskFlow tasks in the meantime.";
+const UNKNOWN_ITEMS = [
+  { title: "Tasks" },
+  { title: "Reminders" },
+  { title: "Appointments" },
+  { title: "Notifications" },
+  { title: "Priorities" },
+  { title: "Daily planning" },
+];
 
-const NO_LIVE_DATA =
-  "I don't have live web access configured, so I won't guess at current news, prices, weather, or scores.";
+const FALLBACK_TEXT = UNKNOWN_TEXT;
 
 function slimTasks(tasks = []) {
   return (tasks || []).slice(0, 16).map((task) => ({
@@ -64,6 +66,7 @@ function confirmLabels(tool) {
     return { confirmLabel: "Reschedule", cancelLabel: "Not now", variant: "primary", mood: "asking_confirmation" };
   }
   if (tool === "applyPlan") return { confirmLabel: "Apply plan", cancelLabel: "Not now", variant: "primary", mood: "asking_confirmation" };
+  if (tool === "setPriority") return { confirmLabel: "Change priority", cancelLabel: "Keep current", variant: "primary", mood: "asking_confirmation" };
   return { confirmLabel: "Confirm", cancelLabel: "Cancel", variant: "primary", mood: "asking_confirmation" };
 }
 
@@ -80,14 +83,42 @@ function reply({ text, mood = "helping", actions = [], items = [], tool = null, 
   };
 }
 
+function safeDraft(classified) {
+  const draft = classified.draft || {};
+  const args = classified.toolArguments || {};
+  const title = String(draft.title || args.Title || args.query || "").trim();
+  const DateValue = draft.Date || args.Date || null;
+  const Priority = draft.Priority || args.Priority || null;
+  if (classified.reason === "open_domain") return {};
+  const out = {};
+  if (title && title.length >= 3 && !/^(what is|explain|tell me|who is)/i.test(title)) out.Title = title;
+  if (DateValue) out.Date = DateValue;
+  if (Priority && Priority !== "Medium") out.Priority = Priority;
+  return out;
+}
+
+function unknownReply(classified = {}) {
+  return reply({
+    text: UNKNOWN_TEXT,
+    mood: "confused",
+    items: UNKNOWN_ITEMS,
+    actions: [
+      { id: "try-again", label: "Try again", variant: "primary" },
+      { id: "add-manually", label: "Add manually" },
+    ],
+    extra: { draft: safeDraft(classified), unknown: true },
+  });
+}
+
 function smalltalk(text) {
   const q = String(text || "").toLowerCase();
   if (/^(thanks|thank you|thx)\b/.test(q)) {
     return reply({ text: "You're welcome. I'll be here when the next decision comes up.", mood: "happy" });
   }
-  if (/^help\b/.test(q)) {
+  if (/^(help|what can you do)/.test(q) || q === "help") {
     return reply({
-      text: "I can manage your TaskFlow tasks, plan your day, and also answer general questions, explain topics, or help you write something.",
+      text: "I can help you manage tasks, reminders, appointments, notifications, priorities, and your daily plan. Tell me what you need in plain language.",
+      mood: "guiding",
       actions: [
         { id: "plan", label: "Plan my day" },
         { id: "today-tasks", label: "What should I do?" },
@@ -96,7 +127,8 @@ function smalltalk(text) {
     });
   }
   return reply({
-    text: "Hello. I'm TaskFlow AI. Ask me to manage your tasks, or ask a general question — I'll figure out which you mean.",
+    text: "Hello. I'm TaskFlow Assistant. I can manage your tasks, reminders, and daily plan — I won't guess if I'm unsure.",
+    mood: "helping",
   });
 }
 
@@ -106,36 +138,62 @@ function clarificationFor(classified) {
       return reply({
         text: "I can remove tasks, but I won't delete a whole group at once. Tell me the exact title or task number.",
         mood: "asking_confirmation",
-        actions: [{ id: "show-overdue", label: "Show overdue" }],
+        actions: [{ id: "show-overdue", label: "Show overdue" }, { id: "add-manually", label: "Add manually" }],
       });
     }
     return reply({
-      text: "I can remove the task, but which task do you mean? Include the title or task number.",
+      text: "Which task would you like me to delete?",
       mood: "asking_confirmation",
     });
   }
   if (classified.intent === "complete_task") {
-    return reply({ text: "Which task should I mark complete? Include the title or task number." });
+    return reply({ text: "Which task should I mark complete? Include the title or task number.", mood: "asking_confirmation" });
   }
   if (classified.intent === "reschedule_task") {
-    return reply({ text: "Tell me which task to move and when — for example, “Move report to Monday”." });
+    return reply({
+      text: "Tell me which task to move and when — for example, “Move report to Monday”.",
+      mood: "asking_confirmation",
+    });
   }
   if (classified.intent === "schedule_reminder") {
-    return reply({ text: "When should I remind you? For example, “Remind me 1 hour before”." });
+    return reply({
+      text: classified.reason === "missing_title"
+        ? "What would you like me to remind you about?"
+        : "When should I remind you? For example, “Remind me 1 hour before”.",
+      mood: "asking_confirmation",
+    });
+  }
+  if (classified.intent === "set_priority") {
+    return reply({ text: "Which task should I change the priority for?", mood: "asking_confirmation" });
   }
   if (classified.intent === "create_task") {
     return reply({
-      text: "Tell me what to add — for example, “Submit the report tomorrow at 5 PM”.",
-      actions: [{ id: "create", label: "Create a task" }],
+      text: "What task would you like me to add?",
+      mood: "asking_confirmation",
+      actions: [
+        { id: "try-again", label: "Try again" },
+        { id: "add-manually", label: "Add manually", variant: "primary" },
+      ],
     });
   }
-  return reply({ text: "I need a bit more detail before I change anything." });
+  if (classified.intent === "mark_notification_read") {
+    return reply({ text: "Which notification should I mark as read?", mood: "asking_confirmation" });
+  }
+  return reply({
+    text: "I need a bit more detail before I change anything.",
+    mood: "asking_confirmation",
+    actions: [
+      { id: "try-again", label: "Try again" },
+      { id: "add-manually", label: "Add manually" },
+    ],
+  });
 }
 
 function uiIntentReply(intent) {
   if (intent === "open_notifications") {
     return reply({
       text: "Opening your notifications.",
+      mood: "guiding",
       actions: [{ id: "show-notifications", label: "Open notifications", variant: "primary" }],
     });
   }
@@ -145,7 +203,7 @@ function uiIntentReply(intent) {
       actions: [{ id: "view-tasks", label: "Back to tasks" }],
     });
   }
-  return reply({ text: FALLBACK_TEXT });
+  return unknownReply();
 }
 
 function confirmationReply(tool, payload, text) {
@@ -185,9 +243,10 @@ function fromToolResult(result, tool) {
       mood: "error",
     });
   }
+  const mood = READ_TOOLS.has(tool) ? "helping" : "success";
   return reply({
     text: result.message || "Done.",
-    mood: "success",
+    mood,
     items: taskItems(result.tasks || (result.task ? [result.task] : [])),
     actions: READ_TOOLS.has(tool)
       ? tool === "getOverdueTasks"
@@ -202,10 +261,10 @@ function fromToolResult(result, tool) {
 
 async function executeOrConfirm({ user, tool, toolArguments, now, runTool, spoken }) {
   if (!tool || !TOOLS.includes(tool)) {
-    return reply({ text: spoken || FALLBACK_TEXT });
+    return unknownReply();
   }
 
-  if (CONFIRM_TOOLS.has(tool) || DESTRUCTIVE_TOOLS.has(tool)) {
+  if (CONFIRM_TOOLS.has(tool)) {
     if (tool === "deleteTask" && !toolArguments.id && !toolArguments.query) {
       return clarificationFor({ intent: "delete_task" });
     }
@@ -217,116 +276,35 @@ async function executeOrConfirm({ user, tool, toolArguments, now, runTool, spoke
   return fromToolResult(result, tool);
 }
 
-function buildAiContext(clientContext = {}) {
-  return {
-    now: clientContext.now || new Date().toISOString(),
-    route: clientContext.route || "dashboard",
-    selectedTaskId: clientContext.selectedTaskId || null,
-    counts: clientContext.counts || {},
-    tasks: slimTasks(clientContext.tasks || clientContext.todos || []),
-  };
+function spokenFor(classified) {
+  const args = classified.toolArguments || {};
+  if (classified.intent === "create_task") {
+    return `I drafted “${args.Title || args.text}”. I’ll create it once you confirm.`;
+  }
+  if (classified.intent === "delete_task") {
+    return "This will permanently delete that task. Confirm if I have the right one.";
+  }
+  if (classified.intent === "reschedule_task") {
+    return args.Date
+      ? `I’ll move that task to ${formatDue(args.Date)}. Confirm if that date is correct.`
+      : "I’ll reschedule that task once you confirm.";
+  }
+  if (classified.intent === "set_priority") {
+    return `I’ll set that task to ${args.Priority} priority. Confirm if that’s right.`;
+  }
+  return null;
 }
 
-async function interpretWithAi({ provider, message, context, history, allowTaskTools = true, mode, searchResults }) {
-  const started = Date.now();
-  const raw = await provider.interpret({
-    message,
-    context,
-    history,
-    allowedTools: TOOLS,
-    allowTaskTools,
-    mode,
-    searchResults,
+function remember(userId, classified) {
+  const args = classified.toolArguments || {};
+  if (!args.id && !args.query && !args.Title) return;
+  setLastReferent(userId, {
+    id: args.id || null,
+    query: args.query || args.Title || null,
+    title: args.Title || args.query || null,
+    intent: classified.intent,
+    tool: classified.tool,
   });
-  metrics.recordAi(Date.now() - started);
-  const validated = validateAiOutput(raw, { allowTaskTools });
-  if (!validated.ok) {
-    const error = new Error("AI_MALFORMED");
-    error.reason = validated.reason;
-    throw error;
-  }
-  return validated.value;
-}
-
-function noLiveDataReply() {
-  return reply({ text: NO_LIVE_DATA, mood: "helping" });
-}
-
-async function answerFromSearch({ provider, message, history, now, search, userId, query }) {
-  const found = await search.search(query || message, { userId });
-  if (!found.available) return noLiveDataReply();
-  if (!found.results.length) {
-    return reply({
-      text: "I couldn't find reliable live sources for that, so I won't invent an answer.",
-      mood: "helping",
-    });
-  }
-  if (!provider.isAvailable()) {
-    return reply({
-      text: found.results
-        .slice(0, 3)
-        .map((item) => item.snippet || item.title)
-        .filter(Boolean)
-        .join("\n\n") || NO_LIVE_DATA,
-      mood: "helping",
-      items: found.results.map((item) => ({ title: item.title })),
-    });
-  }
-  const ai = await interpretWithAi({
-    provider,
-    message,
-    context: { now: now.toISOString(), mode: MODE.CURRENT_INFORMATION },
-    history,
-    allowTaskTools: false,
-    mode: MODE.CURRENT_INFORMATION,
-    searchResults: found.results,
-  });
-  return reply({
-    text: ai.response,
-    mood: "helping",
-    items: found.results.map((item) => ({ title: item.title })),
-  });
-}
-
-async function handleOpenDomain({ user, message, classified, provider, search, history, now }) {
-  if (!provider.isAvailable() && classified.mode !== MODE.CURRENT_INFORMATION) {
-    return reply({ text: GENERAL_FALLBACK, mood: "helping" });
-  }
-
-  if (classified.mode === MODE.CURRENT_INFORMATION) {
-    return answerFromSearch({
-      provider,
-      message,
-      history,
-      now,
-      search,
-      userId: user.UserId,
-      query: message,
-    });
-  }
-
-  const ai = await interpretWithAi({
-    provider,
-    message,
-    context: { now: now.toISOString(), mode: classified.mode },
-    history,
-    allowTaskTools: false,
-    mode: classified.mode,
-  });
-
-  if (ai.tool === SEARCH_TOOL) {
-    return answerFromSearch({
-      provider,
-      message,
-      history,
-      now,
-      search,
-      userId: user.UserId,
-      query: ai.toolArguments.query || message,
-    });
-  }
-
-  return reply({ text: ai.response, mood: "helping" });
 }
 
 async function handleAssistantChat(input, deps = {}) {
@@ -335,8 +313,6 @@ async function handleAssistantChat(input, deps = {}) {
   const now = input.now || new Date();
   const clientContext = input.context || {};
   const runTool = deps.runTool || runAssistantTool;
-  const provider = deps.provider || getAiProvider();
-  const search = deps.search || getSearchProvider();
 
   metrics.recordTotal();
 
@@ -356,54 +332,38 @@ async function handleAssistantChat(input, deps = {}) {
   const classified = classifyRequest(message, {
     now,
     pending: session.pending,
+    lastReferent: session.lastReferent,
     selectedTaskId: clientContext.selectedTaskId,
   });
 
-  let outcome;
-  let usedAi = false;
+  metrics.recordDeterministic();
+  remember(user.UserId, classified);
 
-  if (classified.intent === "chat" && classified.reason === "smalltalk") {
-    metrics.recordDeterministic();
-    outcome = smalltalk(message);
+  let outcome;
+
+  if ((classified.intent === "chat" && classified.reason === "smalltalk") || classified.intent === "help") {
+    outcome = smalltalk(classified.intent === "help" ? "help" : message);
+  } else if (classified.intent === "unknown" || classified.route === ROUTE.UNSUPPORTED || classified.confidence < 0.6) {
+    if (classified.route === ROUTE.CLARIFICATION_REQUIRED) {
+      outcome = clarificationFor(classified);
+    } else {
+      outcome = unknownReply(classified);
+    }
   } else if (classified.route === ROUTE.CLARIFICATION_REQUIRED) {
-    metrics.recordDeterministic();
     outcome = clarificationFor(classified);
   } else if (classified.intent === "open_notifications" || classified.intent === "logout") {
-    metrics.recordDeterministic();
     outcome = uiIntentReply(classified.intent);
-  } else if (classified.allowTaskTool === false || GENERAL_MODES.has(classified.mode)) {
-    try {
-      outcome = await handleOpenDomain({
-        user,
-        message,
-        classified,
-        provider,
-        search,
-        history: session.turns,
-        now,
-      });
-      usedAi = provider.isAvailable() && classified.mode !== MODE.CURRENT_INFORMATION
-        ? outcome.text !== GENERAL_FALLBACK
-        : Boolean(search.isAvailable?.() && outcome.text !== NO_LIVE_DATA);
-      if (!provider.isAvailable() && classified.mode !== MODE.CURRENT_INFORMATION) {
-        metrics.recordDeterministic();
-        usedAi = false;
-      }
-    } catch (error) {
-      metrics.recordAiFailure();
-      console.error("assistant.ai_failed", { reason: error.reason || error.message, status: error.status || 0 });
-      outcome = reply({ text: GENERAL_FALLBACK, mood: "error" });
-    }
-  } else if (classified.route === ROUTE.DETERMINISTIC && classified.confidence >= 0.9) {
-    metrics.recordDeterministic();
-    if (classified.intent === "create_task" && !classified.toolArguments?.Date && /tomorrow|today|monday|at\s+\d/i.test(message) === false) {
+  } else if (classified.tool && classified.confidence >= 0.8) {
+    if (classified.intent === "create_task") {
       setPending(user.UserId, {
         intent: "create_task",
         tool: "createTask",
         toolArguments: classified.toolArguments,
       });
     } else {
-      setPending(user.UserId, classified.tool ? { intent: classified.intent, tool: classified.tool, toolArguments: classified.toolArguments } : null);
+      setPending(user.UserId, classified.tool
+        ? { intent: classified.intent, tool: classified.tool, toolArguments: classified.toolArguments }
+        : null);
     }
     outcome = await executeOrConfirm({
       user,
@@ -411,107 +371,26 @@ async function handleAssistantChat(input, deps = {}) {
       toolArguments: classified.toolArguments,
       now,
       runTool,
-      spoken: classified.intent === "create_task"
-        ? `I drafted “${classified.toolArguments.Title || classified.toolArguments.text}”. I’ll create it once you confirm.`
-        : classified.intent === "delete_task"
-          ? "This will permanently delete that task. Confirm if I have the right one."
-          : null,
-    });
-  } else if (classified.route === ROUTE.AI_REQUIRED && provider.isAvailable()) {
-    try {
-      const ai = await interpretWithAi({
-        provider,
-        message,
-        context: buildAiContext({ ...clientContext, now: now.toISOString() }),
-        history: session.turns,
-      });
-      usedAi = true;
-      if (GENERAL_INTENTS.has(ai.intent) || ai.tool === SEARCH_TOOL) {
-        if (ai.tool === SEARCH_TOOL) {
-          outcome = await answerFromSearch({
-            provider,
-            message,
-            history: session.turns,
-            now,
-            search,
-            userId: user.UserId,
-            query: ai.toolArguments.query || message,
-          });
-        } else {
-          outcome = reply({ text: ai.response, mood: "helping" });
-        }
-      } else if (ai.intent === "clarify" || (!ai.tool && ai.confidence < 0.6)) {
-        outcome = reply({ text: ai.response, mood: "asking_confirmation" });
-      } else if (ai.intent === "open_notifications" || ai.intent === "logout") {
-        outcome = uiIntentReply(ai.intent);
-      } else {
-        const tool = ai.tool || INTENT_TO_TOOL[ai.intent] || null;
-        if (!classified.allowTaskTool || !tool) {
-          outcome = reply({ text: ai.response, mood: "helping" });
-        } else {
-          setPending(user.UserId, { intent: ai.intent, tool, toolArguments: ai.toolArguments });
-          outcome = await executeOrConfirm({
-            user,
-            tool,
-            toolArguments: ai.toolArguments,
-            now,
-            runTool,
-            spoken: ai.response,
-          });
-        }
-      }
-    } catch (error) {
-      metrics.recordAiFailure();
-      console.error("assistant.ai_failed", { reason: error.reason || error.message, status: error.status || 0 });
-      if (classified.tool && classified.confidence >= 0.6) {
-        outcome = await executeOrConfirm({
-          user,
-          tool: classified.tool,
-          toolArguments: classified.toolArguments,
-          now,
-          runTool,
-        });
-      } else {
-        outcome = reply({ text: FALLBACK_TEXT, mood: "error" });
-      }
-    }
-  } else if (classified.tool && classified.confidence >= 0.6) {
-    metrics.recordDeterministic();
-    outcome = await executeOrConfirm({
-      user,
-      tool: classified.tool,
-      toolArguments: classified.toolArguments,
-      now,
-      runTool,
+      spoken: spokenFor(classified),
     });
   } else {
-    metrics.recordDeterministic();
-    outcome = reply({
-      text: FALLBACK_TEXT,
-      mood: "helping",
-      actions: [
-        { id: "plan", label: "Plan my day" },
-        { id: "show-overdue", label: "Show overdue" },
-        { id: "create", label: "New task" },
-      ],
-    });
+    outcome = unknownReply(classified);
   }
 
-  addTurn(user.UserId, "assistant", outcome?.text || FALLBACK_TEXT);
+  addTurn(user.UserId, "assistant", outcome?.text || UNKNOWN_TEXT);
   return {
-    ...(outcome || reply({ text: FALLBACK_TEXT, mood: "error" })),
+    ...(outcome || unknownReply(classified)),
     route: classified.route,
     mode: classified.mode || outcome.mode,
-    usedAi,
+    usedAi: false,
     confidence: classified.confidence,
   };
 }
 
 module.exports = {
   handleAssistantChat,
-  buildAiContext,
   slimTasks,
   FALLBACK_TEXT,
-  GENERAL_FALLBACK,
-  NO_LIVE_DATA,
+  UNKNOWN_TEXT,
+  MODE,
 };

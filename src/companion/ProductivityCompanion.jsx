@@ -431,7 +431,9 @@ export default function ProductivityCompanion() {
           if (location.pathname !== "/user-dashboard") navigate("/user-dashboard");
           break;
         case "create":
-          navigate("/add-appointment");
+          navigate("/add-appointment", {
+            state: { draft: action.draft || source?.draft || {} },
+          });
           setPanelOpen(false);
           break;
         case "catch-up":

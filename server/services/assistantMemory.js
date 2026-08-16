@@ -12,6 +12,7 @@ function emptySession() {
   return {
     turns: [],
     pending: null,
+    lastReferent: null,
     updatedAt: Date.now(),
   };
 }
@@ -42,6 +43,13 @@ function setPending(userId, pending) {
   return session;
 }
 
+function setLastReferent(userId, referent) {
+  const session = getSession(userId);
+  session.lastReferent = referent || null;
+  session.updatedAt = Date.now();
+  return session;
+}
+
 function clearSession(userId) {
   sessions.delete(String(userId || ""));
 }
@@ -55,6 +63,7 @@ module.exports = {
   getSession,
   addTurn,
   setPending,
+  setLastReferent,
   clearSession,
   resetMemory,
 };

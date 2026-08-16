@@ -105,6 +105,17 @@ describe("automationRules", () => {
   });
 });
 
+describe("notifications", () => {
+  it("accepts auto_rollover as a notification type", () => {
+    const Notification = require("../models/Notification");
+    const typePath = Notification.schema.path("type");
+    const values = typePath.enumValues || typePath.options.enum;
+    assert.ok(values.includes("auto_rollover"));
+    assert.ok(values.includes("task_reminder"));
+    assert.ok(values.includes("overdue"));
+  });
+});
+
 describe("recurrence", () => {
   it("jumps a stale daily task to the next future day", () => {
     const next = nextFutureOccurrence(

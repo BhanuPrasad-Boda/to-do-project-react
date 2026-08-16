@@ -32,7 +32,8 @@ test("assistant mode uses listen, think, and talk", () => {
   expect(resolveCharacterState({ talking: true })).toBe(CHAR.TALK);
   expect(resolveCharacterState({ mood: "celebrating" })).toBe(CHAR.CELEBRATE);
   expect(resolveCharacterState({ mood: "warning" })).toBe(CHAR.CONCERNED);
-  expect(resolveCharacterState({ mood: "asking_confirmation" })).toBe(CHAR.SURPRISED);
+  expect(resolveCharacterState({ mood: "asking_confirmation" })).toBe(CHAR.THINK);
+  expect(resolveCharacterState({ mood: "confused" })).toBe(CHAR.CONCERNED);
   expect(resolveCharacterState({ mood: "error" })).toBe(CHAR.CONCERNED);
   expect(resolveCharacterState({ mood: "working" })).toBe(CHAR.HOLD_OBJECT);
 });

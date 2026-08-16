@@ -1,9 +1,25 @@
-const DEFAULT_MODEL = "gemini-2.5-flash";
+const DEFAULT_MODEL = "gemini-3.6-flash";
+const FALLBACK_MODELS = ["gemini-3.6-flash", "gemini-flash-latest"];
 const TIMEOUT_MS = 12000;
 const MAX_RETRIES = 1;
 
 function modelName(env = process.env) {
   return String(env.AI_MODEL || DEFAULT_MODEL).trim() || DEFAULT_MODEL;
+}
+
+function modelsToTry(env = process.env) {
+  const primary = modelName(env);
+  return [primary, ...FALLBACK_MODELS.filter((name) => name !== primary)];
+}
+
+function classifyGoogleError(status, data) {
+  const message = String(data?.error?.message || "").slice(0, 220);
+  const billing = /credit|billing|prepayment/i.test(message);
+  return {
+    status,
+    reason: message || `HTTP_${status}`,
+    retryable: status >= 500 || (status === 429 && !billing),
+  };
 }
 
 function isConfigured(env = process.env) {
@@ -49,9 +65,11 @@ async function postGemini({ url, body, signal }) {
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
+    const classified = classifyGoogleError(res.status, data);
     const error = new Error("AI_PROVIDER_ERROR");
-    error.status = res.status;
-    error.retryable = res.status === 429 || res.status >= 500;
+    error.status = classified.status;
+    error.reason = classified.reason;
+    error.retryable = classified.retryable;
     throw error;
   }
   const text = data?.candidates?.[0]?.content?.parts?.map((part) => part.text).join("") || "";
@@ -71,10 +89,6 @@ function createGeminiProvider(env = process.env) {
         error.status = 503;
         throw error;
       }
-
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
-        modelName(env)
-      )}:generateContent?key=${encodeURIComponent(env.AI_API_KEY)}`;
 
       const contents = [];
       (history || []).slice(-6).forEach((turn) => {
@@ -119,24 +133,30 @@ function createGeminiProvider(env = process.env) {
       };
 
       let lastError;
-      for (let attempt = 0; attempt <= MAX_RETRIES; attempt += 1) {
-        const controller = new AbortController();
-        const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-        try {
-          return await postGemini({ url, body, signal: controller.signal });
-        } catch (error) {
-          lastError =
-            error.name === "AbortError"
-              ? Object.assign(new Error("AI_PROVIDER_ERROR"), { status: 504, retryable: false })
-              : error;
-          if (!lastError.retryable || attempt === MAX_RETRIES) break;
-        } finally {
-          clearTimeout(timer);
+      for (const model of modelsToTry(env)) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(
+          model
+        )}:generateContent?key=${encodeURIComponent(env.AI_API_KEY)}`;
+        for (let attempt = 0; attempt <= MAX_RETRIES; attempt += 1) {
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+          try {
+            return await postGemini({ url, body, signal: controller.signal });
+          } catch (error) {
+            lastError =
+              error.name === "AbortError"
+                ? Object.assign(new Error("AI_PROVIDER_ERROR"), { status: 504, retryable: false, reason: "timeout" })
+                : error;
+            if (!lastError.retryable || attempt === MAX_RETRIES) break;
+          } finally {
+            clearTimeout(timer);
+          }
         }
+        if (lastError?.status !== 404) break;
       }
       throw lastError;
     },
   };
 }
 
-module.exports = { createGeminiProvider, DEFAULT_MODEL, isConfigured };
+module.exports = { createGeminiProvider, DEFAULT_MODEL, FALLBACK_MODELS, isConfigured };

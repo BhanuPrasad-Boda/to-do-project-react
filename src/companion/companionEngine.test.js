@@ -88,3 +88,18 @@ test("intent parser uses task data instead of an API", () => {
   expect(reply.text).toMatch(/1 overdue/);
   expect(reply.actions.some((item) => item.id === "show-overdue")).toBe(true);
 });
+
+test("unknown requests never become commands and offer add manually", () => {
+  const ctx = buildCompanionContext({
+    pathname: "/user-dashboard",
+    todos: [],
+    now: new Date("2026-08-16T10:00:00"),
+  });
+  ["what is quantum physics?", "tell me a joke", "explain React", "handle that thing tomorrow"].forEach((text) => {
+    const reply = interpretCompanionQuery(text, ctx);
+    expect(reply.mood).toBe("confused");
+    expect(reply.tool).toBeFalsy();
+    expect(reply.actions.some((item) => item.id === "try-again")).toBe(true);
+    expect(reply.actions.some((item) => item.id === "add-manually")).toBe(true);
+  });
+});

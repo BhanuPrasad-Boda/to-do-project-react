@@ -2,6 +2,18 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { ThemeProvider } from './context/ThemeContext';
 
+if (!window.matchMedia) {
+  window.matchMedia = () => ({
+    matches: false,
+    media: "",
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    addListener: () => {},
+    removeListener: () => {},
+    dispatchEvent: () => false,
+  });
+}
+
 jest.mock('./api/axiosConfig', () => ({
   __esModule: true,
   default: {

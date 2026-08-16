@@ -15,6 +15,7 @@ const notificationSchema = new mongoose.Schema(
         "end_of_day",
         "high_priority",
         "weekly_summary",
+        "auto_rollover",
         "system",
       ],
     },

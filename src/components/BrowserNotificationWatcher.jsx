@@ -50,8 +50,9 @@ export function BrowserNotificationWatcher() {
           primed.current = true;
           return;
         }
+        const deliverable = items.filter((item) => !item.queued);
         if (getNotificationPermission() === "granted" && localStorage.getItem("tf_browser_notify") !== "0") {
-          await notifyNewItems(items);
+          await notifyNewItems(deliverable);
         }
       } catch {
         /* stay quiet while logged out or offline */

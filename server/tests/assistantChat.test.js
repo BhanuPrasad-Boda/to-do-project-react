@@ -1,6 +1,6 @@
 const { describe, it, beforeEach } = require("node:test");
 const assert = require("node:assert/strict");
-const { handleAssistantChat, FALLBACK_TEXT, GENERAL_FALLBACK, NO_LIVE_DATA } = require("../services/assistantChat");
+const { handleAssistantChat, UNKNOWN_TEXT } = require("../services/assistantChat");
 const { resetMemory } = require("../services/assistantMemory");
 const { resetMetrics, snapshot } = require("../services/ai/aiMetrics");
 const { allow } = require("../middleware/rateLimiter");
@@ -8,42 +8,17 @@ const { requireConfirm } = require("../services/assistantTools");
 
 const user = { UserId: "user-1", UserName: "Ada" };
 
-function unavailableProvider() {
-  return {
-    name: "none",
-    isAvailable() {
-      return false;
-    },
-    async interpret() {
-      throw new Error("AI_NOT_CONFIGURED");
-    },
-  };
-}
-
-function scriptedProvider(payload) {
-  return {
-    name: "gemini",
-    isAvailable() {
-      return true;
-    },
-    async interpret() {
-      return payload;
-    },
-  };
-}
-
-describe("hybrid assistant chat", () => {
+describe("deterministic assistant chat", () => {
   beforeEach(() => {
     resetMemory();
     resetMetrics();
   });
 
-  it("completes an explicit task id without calling AI", async () => {
+  it("completes an explicit task id without calling an external model", async () => {
     let called = null;
     const result = await handleAssistantChat(
       { user, message: "complete task 123" },
       {
-        provider: unavailableProvider(),
         runTool: async (_user, tool, payload) => {
           called = { tool, payload };
           return { ok: true, message: "Nice work. “Report” is completed." };
@@ -63,7 +38,6 @@ describe("hybrid assistant chat", () => {
     const result = await handleAssistantChat(
       { user, message: "delete task 123" },
       {
-        provider: unavailableProvider(),
         runTool: async () => {
           ran = true;
           return { ok: true };
@@ -82,7 +56,6 @@ describe("hybrid assistant chat", () => {
     const result = await handleAssistantChat(
       { user, message: "delete that" },
       {
-        provider: unavailableProvider(),
         runTool: async () => {
           ran = true;
           return { ok: true };
@@ -94,50 +67,27 @@ describe("hybrid assistant chat", () => {
     assert.equal(result.tool, null);
   });
 
-  it("falls back when the AI provider fails", async () => {
+  it("plans the day locally instead of calling an AI provider", async () => {
+    let called = null;
     const result = await handleAssistantChat(
       { user, message: "Help me plan my day around my 2 PM meeting." },
       {
-        provider: {
-          name: "gemini",
-          isAvailable() {
-            return true;
-          },
-          async interpret() {
-            throw Object.assign(new Error("AI_PROVIDER_ERROR"), { status: 503, retryable: true });
-          },
+        runTool: async (_user, tool) => {
+          called = tool;
+          return { ok: true, message: "Here is your plan." };
         },
-        runTool: async () => ({ ok: true, message: "unused" }),
       }
     );
     assert.equal(result.usedAi, false);
-    assert.equal(result.text, FALLBACK_TEXT);
-    assert.equal(snapshot().aiFailures, 1);
+    assert.equal(called, "getDailySummary");
+    assert.equal(snapshot().aiRequests, 0);
   });
 
-  it("rejects malformed AI output and keeps TaskFlow working", async () => {
-    const result = await handleAssistantChat(
-      { user, message: "Which task should I focus on first?" },
-      {
-        provider: scriptedProvider("<<<not json>>>"),
-        runTool: async () => ({ ok: true }),
-      }
-    );
-    assert.equal(result.usedAi, false);
-    assert.equal(result.text, FALLBACK_TEXT);
-  });
-
-  it("never trusts an AI-selected unknown tool", async () => {
+  it("never trusts an unknown tool name from the parser", async () => {
     let ran = false;
     const result = await handleAssistantChat(
-      { user, message: "Help me organize tomorrow around my meeting." },
+      { user, message: "tell me a joke" },
       {
-        provider: scriptedProvider({
-          intent: "create_task",
-          confidence: 0.9,
-          tool: "dropDatabase",
-          response: "Deleted everything",
-        }),
         runTool: async () => {
           ran = true;
           return { ok: true };
@@ -145,14 +95,15 @@ describe("hybrid assistant chat", () => {
       }
     );
     assert.equal(ran, false);
-    assert.equal(result.text, FALLBACK_TEXT);
+    assert.equal(result.text, UNKNOWN_TEXT);
+    assert.ok(result.actions.some((item) => item.id === "try-again"));
+    assert.ok(result.actions.some((item) => item.id === "add-manually"));
   });
 
   it("does not treat an unauthorized task id as owned", async () => {
     const result = await handleAssistantChat(
       { user, message: "complete task 999" },
       {
-        provider: unavailableProvider(),
         runTool: async (owner, tool, payload) => {
           assert.equal(owner.UserId, "user-1");
           assert.equal(tool, "completeTask");
@@ -167,28 +118,23 @@ describe("hybrid assistant chat", () => {
     assert.equal(result.mood, "error");
   });
 
-  it("answers general questions without executing TaskFlow tools", async () => {
+  it("does not answer open-domain questions or run tools for them", async () => {
     let ran = false;
-    const result = await handleAssistantChat(
-      { user, message: "What is React?" },
-      {
-        provider: scriptedProvider({
-          intent: "create_task",
-          confidence: 0.99,
-          tool: "createTask",
-          toolArguments: { Title: "Learn React" },
-          response: "React is a JavaScript library for building user interfaces.",
-        }),
-        runTool: async () => {
-          ran = true;
-          return { ok: true };
-        },
-      }
-    );
-    assert.equal(ran, false);
-    assert.equal(result.tool, null);
-    assert.match(result.text, /React is a JavaScript library/i);
-    assert.equal(result.mode, "GENERAL_EXPLANATION");
+    for (const message of ["What is React?", "explain React", "what is quantum physics?"]) {
+      const result = await handleAssistantChat(
+        { user, message },
+        {
+          runTool: async () => {
+            ran = true;
+            return { ok: true };
+          },
+        }
+      );
+      assert.equal(ran, false, message);
+      assert.equal(result.tool, null, message);
+      assert.equal(result.mood, "confused", message);
+      assert.ok(result.actions.some((item) => item.id === "add-manually"), message);
+    }
   });
 
   it("does not delete a task when the user asks a hypothetical", async () => {
@@ -196,13 +142,6 @@ describe("hybrid assistant chat", () => {
     const result = await handleAssistantChat(
       { user, message: "What would happen if I deleted my task?" },
       {
-        provider: scriptedProvider({
-          intent: "delete_task",
-          confidence: 0.95,
-          tool: "deleteTask",
-          toolArguments: { query: "my task" },
-          response: "Deleting a task removes it from your list after you confirm.",
-        }),
         runTool: async () => {
           ran = true;
           return { ok: true };
@@ -211,83 +150,25 @@ describe("hybrid assistant chat", () => {
     );
     assert.equal(ran, false);
     assert.equal(result.tool, null);
-    assert.match(result.text, /Deleting a task/i);
+    assert.equal(result.mood, "confused");
   });
 
-  it("does not invent current information without a search provider", async () => {
-    let ran = false;
-    const result = await handleAssistantChat(
-      { user, message: "What's the latest information about React 19?" },
+  it("remembers the previous task for it/that follow-ups", async () => {
+    await handleAssistantChat(
+      { user, message: "Add a task to finish the presentation." },
       {
-        provider: scriptedProvider({
-          intent: "current_information",
-          confidence: 0.9,
-          response: "React 19 launched yesterday with secret APIs.",
-        }),
-        search: {
-          name: "none",
-          isAvailable() {
-            return false;
-          },
-          async search() {
-            return { available: false, reason: "not_configured", results: [] };
-          },
-        },
-        runTool: async () => {
-          ran = true;
-          return { ok: true };
-        },
-      }
-    );
-    assert.equal(ran, false);
-    assert.equal(result.text, NO_LIVE_DATA);
-  });
-
-  it("answers current questions from search results only", async () => {
-    let ran = false;
-    const result = await handleAssistantChat(
-      { user, message: "What's the latest information about React 19?" },
-      {
-        provider: scriptedProvider({
-          intent: "current_information",
-          confidence: 0.9,
-          tool: null,
-          response: "According to sources, React 19 is generally available.",
-        }),
-        search: {
-          name: "stub",
-          isAvailable() {
-            return true;
-          },
-          async search() {
-            return {
-              available: true,
-              reason: "ok",
-              results: [{ title: "React 19", url: "https://example.com", snippet: "React 19 is generally available." }],
-            };
-          },
-        },
-        runTool: async () => {
-          ran = true;
-          return { ok: true };
-        },
-      }
-    );
-    assert.equal(ran, false);
-    assert.match(result.text, /generally available/i);
-    assert.equal(result.mode, "CURRENT_INFORMATION");
-  });
-
-  it("uses a general fallback when AI is down for open-domain questions", async () => {
-    const result = await handleAssistantChat(
-      { user, message: "Write a professional email." },
-      {
-        provider: unavailableProvider(),
         runTool: async () => ({ ok: true }),
       }
     );
-    assert.equal(result.text, GENERAL_FALLBACK);
-    assert.notEqual(result.text, FALLBACK_TEXT);
+    const moved = await handleAssistantChat(
+      { user, message: "Move it to tomorrow." },
+      {
+        now: new Date("2026-08-16T09:00:00"),
+        runTool: async () => ({ ok: true }),
+      }
+    );
+    assert.equal(moved.tool?.name, "rescheduleTask");
+    assert.equal(moved.tool.needsConfirm, true);
   });
 
   it("rate-limits assistant chat keys", () => {
