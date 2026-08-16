@@ -2,6 +2,7 @@ const Appointment = require("../models/Appointment");
 const automation = require("./automationEngine");
 const { getProductivity } = require("./analyticsService");
 const { deriveStatus } = require("./automationRules");
+const notificationService = require("./notificationService");
 
 const TOOLS = [
   "createTask",
@@ -20,6 +21,9 @@ const TOOLS = [
   "createSubtasks",
   "catchUpOverdue",
   "applyPlan",
+  "getDailySummary",
+  "getNotifications",
+  "markNotificationRead",
 ];
 
 const CONFIRM_TOOLS = new Set([
@@ -350,6 +354,51 @@ async function runAssistantTool(user, tool, payload = {}, now = new Date()) {
             : `Applied times to ${result.updated} task${result.updated === 1 ? "" : "s"}.`,
         updated: result.updated,
       };
+    }
+
+    case "getDailySummary": {
+      const data = await automation.buildAssistant(user, now);
+      const tasks = (data.plan?.suggestedSchedule || []).slice(0, 8).map(summarize);
+      return {
+        ok: true,
+        message: `${data.headline}. ${data.detail}`,
+        summary: {
+          headline: data.headline,
+          detail: data.detail,
+          overdueCount: data.overdueCount,
+          todayRemaining: data.todayRemaining,
+        },
+        tasks: tasks.length ? tasks : data.nextTask ? [data.nextTask] : [],
+      };
+    }
+
+    case "getNotifications": {
+      const items = await notificationService.listForUser(userId, {
+        unreadOnly: payload.unreadOnly === true,
+      });
+      const list = items.slice(0, 8).map((item) => ({
+        id: String(item._id),
+        title: item.title,
+        body: item.body,
+        read: Boolean(item.read),
+        type: item.type,
+      }));
+      return {
+        ok: true,
+        message: list.length
+          ? `You have ${list.length} recent notification${list.length === 1 ? "" : "s"}.`
+          : "No notifications right now.",
+        notifications: list,
+        tasks: list.map((item) => ({ Title: item.title })),
+      };
+    }
+
+    case "markNotificationRead": {
+      const id = payload.id;
+      if (!id) return { ok: false, status: 400, message: "Which notification should I mark as read?" };
+      const item = await notificationService.markRead(userId, id);
+      if (!item) return { ok: false, status: 404, message: "I could not find a notification you own." };
+      return { ok: true, message: "Marked that notification as read." };
     }
 
     default:

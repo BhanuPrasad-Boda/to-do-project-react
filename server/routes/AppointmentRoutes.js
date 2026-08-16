@@ -8,6 +8,15 @@ const { parseNaturalTask, suggestReschedule } = require("../services/taskParser"
 const { buildDailyPlan, deriveStatus, computeReminderAt } = require("../services/automationRules");
 const { getProductivity } = require("../services/analyticsService");
 const { runAssistantTool } = require("../services/assistantTools");
+const { handleAssistantChat } = require("../services/assistantChat");
+const { rateLimit, clientKey } = require("../middleware/rateLimiter");
+
+const assistantChatLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  keyGenerator: (req) => `assistant-chat:${req.user?.UserId || clientKey(req)}`,
+  message: "Too many assistant requests. Please wait a moment.",
+});
 
 router.use(authMiddleware);
 
@@ -229,6 +238,27 @@ router.post("/assistant/act", async (req, res) => {
     return res.status(status).json(result);
   } catch {
     res.status(500).json({ message: "Something went wrong. Please try again." });
+  }
+});
+
+router.post("/assistant/chat", assistantChatLimiter, async (req, res) => {
+  try {
+    const user = await User.findOne({ UserId: req.user.UserId });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    const body = req.body || {};
+    const raw = JSON.stringify(body);
+    if (raw.length > 8000) {
+      return res.status(400).json({ message: "Request is too large" });
+    }
+    const result = await handleAssistantChat({
+      user,
+      message: body.message,
+      context: body.context || {},
+      reset: body.reset === true,
+    });
+    return res.json(result);
+  } catch {
+    res.status(500).json({ message: "Sorry, I couldn't complete that action. Please try again." });
   }
 });
 

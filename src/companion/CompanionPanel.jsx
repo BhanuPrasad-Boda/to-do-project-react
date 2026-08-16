@@ -4,7 +4,7 @@ import { ASSISTANT_SHORTCUTS, interpretCompanionQuery } from "./companionIntents
 import { CompanionMessage } from "./CompanionMessage";
 import { CompanionActions } from "./CompanionActions";
 import { CompanionCharacter } from "./CompanionCharacter";
-import { runAssistantTool } from "./assistantClient";
+import { resetAssistantChat, runAssistantTool, sendAssistantChat } from "./assistantClient";
 
 function uid() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -65,10 +65,12 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
   const interpretAndReply = async (text) => {
     setThinkLabel(thinkingPhrase(text));
     setThinking(true);
-    await new Promise((resolve) => setTimeout(resolve, thinkDelay(text)));
     try {
-      const reply = interpretCompanionQuery(text, ctx);
+      const reply = await sendAssistantChat(text, ctx);
       pushAssistant(reply);
+    } catch {
+      await new Promise((resolve) => setTimeout(resolve, thinkDelay(text)));
+      pushAssistant(interpretCompanionQuery(text, ctx));
     } finally {
       setThinking(false);
     }
@@ -142,6 +144,7 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
   const clear = () => {
     pendingTool.current = null;
     setMessages([seedMessage(ctx)]);
+    resetAssistantChat().catch(() => {});
     onClear?.();
   };
 
@@ -151,7 +154,7 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
         <div className="companion-panel-identity">
           <CompanionCharacter
             compact
-            mood={mood || "helping"}
+            mood={lastAssistant?.mood || mood || "helping"}
             thinking={thinking}
             listening={Boolean(query) && !thinking}
             talking={!thinking && !query}
@@ -227,7 +230,7 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
           id="companion-ask-input"
           type="text"
           value={query}
-          maxLength={240}
+          maxLength={800}
           placeholder="Message TaskFlow AI…"
           onChange={(e) => setQuery(e.target.value)}
           autoComplete="off"

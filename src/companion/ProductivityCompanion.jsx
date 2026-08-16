@@ -426,6 +426,10 @@ export default function ProductivityCompanion() {
           actions.showTasks?.("all");
           if (location.pathname !== "/user-dashboard") navigate("/user-dashboard");
           break;
+        case "show-notifications":
+          actions.showNotifications?.();
+          if (location.pathname !== "/user-dashboard") navigate("/user-dashboard");
+          break;
         case "create":
           navigate("/add-appointment");
           setPanelOpen(false);

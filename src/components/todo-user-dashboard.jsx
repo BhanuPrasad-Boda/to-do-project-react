@@ -293,6 +293,7 @@ export function ToDoUserDashBoard() {
   useEffect(() => {
     registerActions({
       goPlan: () => setView("plan"),
+      showNotifications: () => setView("notifications"),
       showTasks: (nextFilter) => {
         setView("tasks");
         setFilter(nextFilter || "all");

@@ -705,6 +705,7 @@
 .chip.danger { color: var(--danger-color); background: rgba(220, 38, 38, 0.08); border-color: transparent; }
 .chip.success { color: var(--success-color); background: rgba(5, 150, 105, 0.1); border-color: transparent; }
 .chip.warn { color: #b45309; background: rgba(245, 158, 11, 0.14); border-color: transparent; }
+.chip.info { color: #2563eb; background: rgba(37, 99, 235, 0.1); border-color: transparent; }
 
 .task-actions {
   display: flex;
@@ -1205,23 +1206,106 @@
   border-color: var(--accent-color);
 }
 
+.plan-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.plan-stat {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+
+.plan-stat.is-open {
+  color: #2563eb;
+  background: rgba(37, 99, 235, 0.1);
+}
+
+.plan-stat.is-high {
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.16);
+}
+
+.plan-stat.is-overdue {
+  color: var(--danger-color);
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.plan-stat.is-done {
+  color: var(--success-color);
+  background: rgba(5, 150, 105, 0.12);
+}
+
 .plan-item {
   display: grid;
   grid-template-columns: 72px minmax(0, 1fr);
   gap: 12px;
   align-items: center;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--border-color);
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  background: var(--bg-secondary);
+  box-shadow: inset 3px 0 0 #2563eb;
 }
 
 .plan-item:last-child {
-  border-bottom: 0;
+  margin-bottom: 0;
+}
+
+.plan-item.is-open {
+  box-shadow: inset 3px 0 0 #2563eb;
+}
+
+.plan-item.is-high {
+  box-shadow: inset 3px 0 0 #f59e0b;
+  background: color-mix(in srgb, #f59e0b 10%, var(--bg-secondary));
+}
+
+.plan-item.is-overdue {
+  box-shadow: inset 3px 0 0 var(--danger-color);
+  background: color-mix(in srgb, var(--danger-color) 10%, var(--bg-secondary));
+}
+
+.plan-item.is-done {
+  box-shadow: inset 3px 0 0 var(--success-color);
+  background: color-mix(in srgb, var(--success-color) 8%, var(--bg-secondary));
+}
+
+.plan-item.is-done .fw-semibold {
+  color: var(--text-secondary);
+  text-decoration: line-through;
+}
+
+.plan-item-main {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
 }
 
 .plan-time {
   font-size: 0.8rem;
   font-weight: 700;
-  color: var(--accent-color);
+  color: #2563eb;
+}
+
+.plan-item.is-high .plan-time {
+  color: #b45309;
+}
+
+.plan-item.is-overdue .plan-time {
+  color: var(--danger-color);
+}
+
+.plan-item.is-done .plan-time {
+  color: var(--success-color);
 }
 
 .chart-box {

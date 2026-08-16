@@ -49,6 +49,12 @@ const GESTURE_MAP = {
   goodbye: CHAR.GOODBYE,
   helping: CHAR.TALK,
   quiet: CHAR.IDLE,
+  speaking: CHAR.TALK,
+  listening: CHAR.LISTEN,
+  working: CHAR.HOLD_OBJECT,
+  guiding: CHAR.TALK,
+  asking_confirmation: CHAR.SURPRISED,
+  error: CHAR.CONCERNED,
 };
 
 export function gestureToState(gesture, hold) {
