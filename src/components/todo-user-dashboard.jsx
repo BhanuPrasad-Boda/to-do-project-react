@@ -39,6 +39,7 @@ export function ToDoUserDashBoard() {
   const [overdueTask, setOverdueTask] = useState(null);
   const [rescheduleOptions, setRescheduleOptions] = useState([]);
   const [assistant, setAssistant] = useState(null);
+  const [autopilotBusy, setAutopilotBusy] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -246,33 +247,42 @@ export function ToDoUserDashBoard() {
   };
 
   const handleSnooze = async (id) => {
-    const when = new Date(Date.now() + 60 * 60 * 1000);
+    setAutopilotBusy(true);
     try {
-      await axios.put(`/appointments/reschedule/${id}`, { Date: when });
-      toast.success("Snoozed for 1 hour");
+      const res = await axios.put(`/appointments/snooze/${id}`, { minutes: 60 });
+      if (res.data.assistant) setAssistant(res.data.assistant);
+      toast.success("Paused for 1 hour. It stays on your list and comes back to Autopilot after that.");
       loadDashboard();
     } catch {
       toast.error("Unable to snooze");
+    } finally {
+      setAutopilotBusy(false);
     }
   };
 
   const handleCatchUp = async () => {
+    setAutopilotBusy(true);
     try {
       const res = await axios.post("/appointments/catch-up");
-      toast.success(res.data.message || "Overdue tasks moved");
+      toast.success(res.data.message || "Leftovers lined up");
       loadDashboard();
     } catch {
-      toast.error("Could not catch up overdue tasks");
+      toast.error("Could not line up leftover tasks");
+    } finally {
+      setAutopilotBusy(false);
     }
   };
 
   const handleApplyPlan = async () => {
+    setAutopilotBusy(true);
     try {
       const res = await axios.post("/appointments/apply-plan");
-      toast.success(res.data.message || "Schedule applied");
+      toast.success(res.data.message || "Untimed tasks scheduled");
       loadDashboard();
     } catch {
-      toast.error("Could not apply suggested times");
+      toast.error("Could not schedule untimed tasks");
+    } finally {
+      setAutopilotBusy(false);
     }
   };
 
@@ -503,9 +513,12 @@ export function ToDoUserDashBoard() {
               <QuickCapture onCreated={() => { emitEvent("created"); loadDashboard(); }} />
               <AutoPilotBar
                 assistant={assistant}
+                busy={autopilotBusy}
                 onComplete={handleToggleComplete}
                 onSnooze={handleSnooze}
                 onCatchUp={handleCatchUp}
+                onReschedule={openOverdue}
+                onReview={() => setView("plan")}
               />
               <div className="kpi-grid" data-guide="guide-overview">
                 <article className="kpi-card">
@@ -729,7 +742,9 @@ export function ToDoUserDashBoard() {
               plan={plan}
               tasks={todos}
               onApply={handleApplyPlan}
+              onCatchUp={handleCatchUp}
               onToggleComplete={handleToggleComplete}
+              busy={autopilotBusy}
             />
           )}
           {view === "notifications" && (

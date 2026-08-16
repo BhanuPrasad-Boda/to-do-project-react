@@ -276,7 +276,7 @@ export function interpretCompanionQuery(text, ctx = {}) {
       actions: ctx.counts.overdue
         ? [
             { id: "show-overdue", label: "View tasks" },
-            { id: "catch-up", label: "Reschedule", variant: "primary" },
+            { id: "catch-up", label: "Line up leftovers", variant: "primary" },
             { id: "dismiss", label: "Not now" },
           ]
         : [{ id: "dismiss", label: "Thanks" }],
@@ -340,7 +340,7 @@ export function interpretCompanionQuery(text, ctx = {}) {
     if (/\b(overdue|leftover|all)\b/.test(q) || (!matchTasks(ctx.todos, strip(raw, [/\b(move|reschedule)\b/gi])).length && ctx.counts.overdue)) {
       return {
         text: ctx.counts.overdue
-          ? `You have ${ctx.counts.overdue} overdue task${ctx.counts.overdue === 1 ? "" : "s"}. I’ll shift them into the next open slot only if you confirm.`
+          ? `You have leftover work from earlier days. I’ll line ${ctx.counts.overdue === 1 ? "it" : "them"} into the next open slot only if you confirm.`
           : "Nothing needs rescheduling. Your dates still look current.",
         mood: "helping",
         tool: ctx.counts.overdue
@@ -348,12 +348,12 @@ export function interpretCompanionQuery(text, ctx = {}) {
               name: "catchUpOverdue",
               payload: {},
               needsConfirm: true,
-              confirmLabel: "Reschedule",
+              confirmLabel: "Line up",
             }
           : null,
         actions: ctx.counts.overdue
           ? [
-              { id: "confirm-tool", label: "Reschedule", variant: "primary" },
+              { id: "confirm-tool", label: "Line up", variant: "primary" },
               { id: "show-overdue", label: "View tasks" },
               { id: "dismiss", label: "Not now" },
             ]

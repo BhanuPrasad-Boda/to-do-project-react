@@ -10,6 +10,8 @@ const {
   pickNextTask,
   smartReminderOffset,
   nextCatchUpDate,
+  leftoverTasks,
+  buildAutopilotView,
 } = require("../services/automationRules");
 const { nextFutureOccurrence } = require("../services/recurrenceService");
 const { allow } = require("../middleware/rateLimiter");
@@ -102,6 +104,59 @@ describe("automationRules", () => {
     assert.equal(morning.getHours(), 9);
     const afternoon = nextCatchUpDate(new Date("2026-08-14T13:00:00"));
     assert.equal(afternoon.getHours(), 15);
+  });
+
+  it("treats yesterday as leftover and today-overdue as focus", () => {
+    const now = new Date("2026-08-14T10:00:00");
+    const leftoverOnly = leftoverTasks([
+      { Title: "Old", Date: new Date("2026-08-13T09:00:00"), completed: false },
+      { Title: "Today missed", Date: new Date("2026-08-14T08:00:00"), completed: false },
+    ], now);
+    assert.equal(leftoverOnly.length, 1);
+    assert.equal(leftoverOnly[0].Title, "Old");
+
+    const lineup = buildAutopilotView([
+      { Appointment_Id: 1, Title: "Old", Date: new Date("2026-08-13T09:00:00"), Priority: "Medium", completed: false },
+      { Appointment_Id: 2, Title: "Report", Date: new Date("2026-08-14T16:00:00"), Priority: "High", completed: false },
+    ], now);
+    assert.equal(lineup.phase, "lineup");
+    assert.equal(lineup.leftoverCount, 1);
+
+    const focus = buildAutopilotView([
+      { Appointment_Id: 2, Title: "Report", Date: new Date("2026-08-14T16:00:00"), Priority: "High", completed: false },
+    ], now);
+    assert.equal(focus.phase, "focus");
+    assert.equal(focus.nextTask.Title, "Report");
+
+    const clear = buildAutopilotView([], now);
+    assert.equal(clear.phase, "clear");
+  });
+
+  it("hides a snoozed task from Autopilot until the hour is up", () => {
+    const now = new Date("2026-08-14T10:00:00");
+    const snoozed = {
+      Appointment_Id: 1,
+      Title: "Call",
+      Date: new Date("2026-08-14T08:00:00"),
+      Priority: "High",
+      completed: false,
+      snoozedUntil: new Date("2026-08-14T11:00:00"),
+    };
+    const later = {
+      Appointment_Id: 2,
+      Title: "Report",
+      Date: new Date("2026-08-14T16:00:00"),
+      Priority: "Medium",
+      completed: false,
+    };
+    assert.equal(pickNextTask([snoozed, later], now).Title, "Report");
+    assert.equal(pickNextTask([snoozed], now), null);
+    assert.equal(pickNextTask([snoozed], new Date("2026-08-14T11:01:00")).Title, "Call");
+
+    const paused = buildAutopilotView([snoozed], now);
+    assert.equal(paused.phase, "clear");
+    assert.equal(paused.snoozedCount, 1);
+    assert.equal(paused.nextTask, null);
   });
 });
 

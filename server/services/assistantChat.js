@@ -62,10 +62,13 @@ function confirmLabels(tool) {
   if (tool === "deleteTask") return { confirmLabel: "Delete task", cancelLabel: "Cancel", variant: "danger", mood: "asking_confirmation" };
   if (tool === "createTask") return { confirmLabel: "Create task", cancelLabel: "Cancel", variant: "primary", mood: "asking_confirmation" };
   if (tool === "createSubtasks") return { confirmLabel: "Create tasks", cancelLabel: "Cancel", variant: "primary", mood: "asking_confirmation" };
-  if (tool === "catchUpOverdue" || tool === "rescheduleTask") {
+  if (tool === "catchUpOverdue") {
+    return { confirmLabel: "Line up leftovers", cancelLabel: "Not now", variant: "primary", mood: "asking_confirmation" };
+  }
+  if (tool === "rescheduleTask") {
     return { confirmLabel: "Reschedule", cancelLabel: "Not now", variant: "primary", mood: "asking_confirmation" };
   }
-  if (tool === "applyPlan") return { confirmLabel: "Apply plan", cancelLabel: "Not now", variant: "primary", mood: "asking_confirmation" };
+  if (tool === "applyPlan") return { confirmLabel: "Schedule untimed", cancelLabel: "Not now", variant: "primary", mood: "asking_confirmation" };
   if (tool === "setPriority") return { confirmLabel: "Change priority", cancelLabel: "Keep current", variant: "primary", mood: "asking_confirmation" };
   return { confirmLabel: "Confirm", cancelLabel: "Cancel", variant: "primary", mood: "asking_confirmation" };
 }
@@ -252,7 +255,7 @@ function fromToolResult(result, tool) {
       ? tool === "getOverdueTasks"
         ? [
             { id: "show-overdue", label: "View tasks" },
-            { id: "catch-up", label: "Reschedule", variant: "primary" },
+            { id: "catch-up", label: "Line up leftovers", variant: "primary" },
           ]
         : [{ id: "view-tasks", label: "View tasks" }]
       : [{ id: "view-tasks", label: "View tasks" }],

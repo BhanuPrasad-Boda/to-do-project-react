@@ -222,7 +222,7 @@ export function selectProactiveMessage(ctx, memory = {}, event = null) {
       text: `You have ${ctx.counts.overdue} overdue task${ctx.counts.overdue === 1 ? "" : "s"}. Would you like me to help reschedule them?`,
       taskId: ctx.firstOverdue?.Appointment_Id,
       actions: [
-        { id: "catch-up", label: "Reschedule" },
+        { id: "catch-up", label: "Line up leftovers" },
         { id: "show-overdue", label: "View tasks" },
         { id: "dismiss", label: "Not now" },
       ],
@@ -278,11 +278,10 @@ export function selectProactiveMessage(ctx, memory = {}, event = null) {
     return {
       id: "eod",
       mood: COMPANION_STATES.REMINDER,
-      text: `You still have ${ctx.counts.today} task${ctx.counts.today === 1 ? "" : "s"} left today. We can move them to tomorrow if you would like.`,
+      text: `You still have ${ctx.counts.today} task${ctx.counts.today === 1 ? "" : "s"} left today.`,
       actions: [
-        { id: "catch-up", label: "Move to tomorrow" },
         { id: "plan", label: "Review plan" },
-        { id: "dismiss", label: "Keep them" },
+        { id: "dismiss", label: "Keep going" },
       ],
     };
   }
@@ -302,8 +301,8 @@ export function selectProactiveMessage(ctx, memory = {}, event = null) {
       mood: COMPANION_STATES.HELPING,
       text: "Would you like help rescheduling these?",
       actions: [
-        { id: "catch-up", label: "Catch up" },
-        { id: "reschedule", label: "Reschedule" },
+        { id: "catch-up", label: "Line up leftovers" },
+        { id: "reschedule", label: "Reschedule one" },
         { id: "dismiss", label: "Not now" },
       ],
     };

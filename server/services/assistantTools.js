@@ -338,8 +338,8 @@ async function runAssistantTool(user, tool, payload = {}, now = new Date()) {
         ok: true,
         message:
           result.moved === 0
-            ? "Nothing overdue to move"
-            : `Moved ${result.moved} task${result.moved === 1 ? "" : "s"} into your next open slot.`,
+            ? "No leftover tasks from earlier days to move."
+            : `Lined up ${result.moved} leftover task${result.moved === 1 ? "" : "s"} into the next open slots.`,
         moved: result.moved,
       };
     }
@@ -350,8 +350,8 @@ async function runAssistantTool(user, tool, payload = {}, now = new Date()) {
         ok: true,
         message:
           result.updated === 0
-            ? "No suggested times to apply"
-            : `Applied times to ${result.updated} task${result.updated === 1 ? "" : "s"}.`,
+            ? "No untimed tasks to place on today’s calendar."
+            : `Scheduled ${result.updated} untimed task${result.updated === 1 ? "" : "s"} into today.`,
         updated: result.updated,
       };
     }

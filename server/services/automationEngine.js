@@ -11,7 +11,10 @@ const {
   startOfDay,
   smartReminderOffset,
   nextCatchUpDate,
-  pickNextTask,
+  leftoverTasks,
+  undatedTasks,
+  buildAutopilotView,
+  isSnoozed,
 } = require("./automationRules");
 
 function applyParsedDefaults(payload, parsed) {
@@ -123,6 +126,7 @@ async function onTaskCompleted(task, user) {
   task.completedAt = task.completedAt || new Date();
   task.cancelledReminders = true;
   task.reminderSent = true;
+  task.snoozedUntil = undefined;
   await task.save();
 
   if (task.recurrence && task.recurrence !== "none") {
@@ -147,8 +151,16 @@ async function onTaskReopened(task) {
   task.completedAt = undefined;
   task.cancelledReminders = false;
   task.reminderSent = false;
+  task.snoozedUntil = undefined;
   task.status = deriveStatus(task);
   task.reminderAt = computeReminderAt(task.Date, task.reminderOffsetMinutes);
+  await task.save();
+  return task;
+}
+
+async function snoozeTask(task, minutes = 60, now = new Date()) {
+  const mins = Number.isFinite(Number(minutes)) ? Number(minutes) : 60;
+  task.snoozedUntil = new Date(now.getTime() + Math.max(15, mins) * 60 * 1000);
   await task.save();
   return task;
 }
@@ -178,6 +190,7 @@ async function processReminders(now = new Date()) {
         }
       }
       if (!task.reminderAt || task.reminderAt > now) continue;
+      if (isSnoozed(task, now)) continue;
 
       const user = await User.findOne({ UserId: task.UserId });
       const mins = Math.max(0, Math.round((new Date(task.Date) - now) / 60000));
@@ -346,18 +359,24 @@ async function processRecurringAdvance(now = new Date()) {
 }
 
 async function catchUpOverdue(user, now = new Date()) {
-  const overdue = await Appointment.find({
+  const open = await Appointment.find({
     UserId: user.UserId,
     completed: false,
     status: { $ne: "cancelled" },
-    Date: { $lt: now, $ne: null },
-  }).limit(100);
+    Date: { $ne: null },
+  }).limit(200);
 
-  const when = nextCatchUpDate(now);
-  for (const task of overdue) {
+  const leftover = leftoverTasks(open, now);
+  let when = nextCatchUpDate(now);
+  for (const task of leftover) {
     await rolloverTask(task, when, now);
+    when = new Date(when.getTime() + 30 * 60 * 1000);
   }
-  return { moved: overdue.length, date: when, tasks: overdue };
+  return {
+    moved: leftover.length,
+    date: leftover.length ? leftover[0].Date : nextCatchUpDate(now),
+    tasks: leftover,
+  };
 }
 
 async function applySuggestedPlan(user, now = new Date()) {
@@ -365,32 +384,31 @@ async function applySuggestedPlan(user, now = new Date()) {
     UserId: user.UserId,
     status: { $ne: "cancelled" },
   });
-  const plan = buildDailyPlan(tasks, now);
+  const todayStart = startOfDay(now);
+  const tomorrow = new Date(todayStart);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const occupied = new Set(
+    tasks
+      .filter((task) => !task.completed && task.Date && new Date(task.Date) >= todayStart && new Date(task.Date) < tomorrow)
+      .map((task) => new Date(task.Date).getTime())
+  );
+
+  let cursor = nextCatchUpDate(now);
   let updated = 0;
-  for (const item of plan.suggestedSchedule || []) {
-    const task = tasks.find((t) => t.Appointment_Id === item.Appointment_Id);
-    if (!task || task.completed) continue;
-    task.Date = new Date(item.suggestedAt);
+  for (const task of undatedTasks(tasks)) {
+    while (occupied.has(cursor.getTime())) {
+      cursor = new Date(cursor.getTime() + 90 * 60 * 1000);
+    }
+    task.Date = new Date(cursor);
     task.status = deriveStatus(task, now);
     task.reminderSent = false;
     task.reminderAt = computeReminderAt(task.Date, task.reminderOffsetMinutes);
     await task.save();
+    occupied.add(cursor.getTime());
+    cursor = new Date(cursor.getTime() + 90 * 60 * 1000);
     updated += 1;
   }
-  return { updated, plan };
-}
-
-function summarizeTask(task) {
-  if (!task) return null;
-  return {
-    Appointment_Id: task.Appointment_Id,
-    Title: task.Title,
-    Date: task.Date,
-    Priority: task.Priority,
-    category: task.category,
-    status: task.status,
-    completed: task.completed,
-  };
+  return { updated, plan: buildDailyPlan(tasks, now) };
 }
 
 async function buildAssistant(user, now = new Date()) {
@@ -399,34 +417,9 @@ async function buildAssistant(user, now = new Date()) {
     UserId: user.UserId,
     status: { $ne: "cancelled" },
   }).lean();
-  const nextTask = pickNextTask(tasks, now);
-  const overdue = tasks.filter((t) => !t.completed && t.Date && new Date(t.Date) < now);
-  const todayStart = startOfDay(now);
-  const leftover = overdue.filter((t) => new Date(t.Date) < todayStart);
-  const plan = buildDailyPlan(tasks, now);
-
-  let headline = "You're clear";
-  let detail = "No open work needs attention right now.";
-  if (nextTask) {
-    const due = nextTask.Date ? new Date(nextTask.Date) : null;
-    const overdueNow = due && due < now;
-    headline = overdueNow ? `Catch up: ${nextTask.Title}` : `Next up: ${nextTask.Title}`;
-    detail = overdueNow
-      ? "This is the highest-priority leftover. Finish it or move it with Catch up."
-      : due
-        ? `Due ${due.toLocaleString([], { weekday: "short", hour: "numeric", minute: "2-digit" })}.`
-        : "No due date — a good candidate to do now.";
-  }
-
   return {
     autoPilot: prefs.autoPilot !== false,
-    headline,
-    detail,
-    nextTask: summarizeTask(nextTask),
-    overdueCount: overdue.length,
-    leftoverCount: leftover.length,
-    todayRemaining: plan.totalToday,
-    plan,
+    ...buildAutopilotView(tasks, now),
   };
 }
 
@@ -570,6 +563,7 @@ module.exports = {
   onTaskCreated,
   onTaskCompleted,
   onTaskReopened,
+  snoozeTask,
   processReminders,
   processOverdue,
   processRollover,

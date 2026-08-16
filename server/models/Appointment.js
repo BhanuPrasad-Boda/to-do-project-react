@@ -115,6 +115,10 @@ const appointmentSchema = new mongoose.Schema(
     lastAutoRolledAt: {
       type: Date,
     },
+
+    snoozedUntil: {
+      type: Date,
+    },
   },
   { timestamps: true }
 );

@@ -47,7 +47,7 @@ export const TOUR_STEPS = [
     gesture: "hold-card",
     hold: "task",
     talk: true,
-    text: "I'll help automate reminders, deadlines, recurring tasks, and notifications.",
+    text: "Autopilot lines up leftover work first, then shows one next action. Finish it, snooze it, or move leftovers into today.",
   },
   {
     id: "notifications",

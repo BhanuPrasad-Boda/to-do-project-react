@@ -175,30 +175,37 @@ export function NotificationSettings({ preferences = {}, onSaved }) {
 
       <div className="pref-group">
         <h4>Autopilot</h4>
+        <p className="pref-lead">
+          One flow: leftover work is lined up first, then you get a single next action. Repeating tasks and reminder timing stay in the background.
+        </p>
         <PrefRow
           title="Autopilot"
-          hint="Let TaskFlow schedule leftovers, repeating work, and smarter reminders"
+          hint="Line up leftovers, keep repeating work going, and time reminders for you"
           checked={prefs.autoPilot !== false}
           onChange={(value) => togglePref("autoPilot", value)}
         />
-        <PrefRow
-          title="Move leftover tasks"
-          hint="Each morning, unfinished non-urgent tasks slide into today’s next open slot"
-          checked={prefs.autoRolloverOverdue !== false}
-          onChange={(value) => togglePref("autoRolloverOverdue", value)}
-        />
-        <PrefRow
-          title="Keep repeating tasks going"
-          hint="Schedule the next occurrence even if yesterday’s wasn’t checked off"
-          checked={prefs.autoAdvanceRecurring !== false}
-          onChange={(value) => togglePref("autoAdvanceRecurring", value)}
-        />
-        <PrefRow
-          title="Smart reminders"
-          hint="High-priority work reminds you 2 hours ahead; low-priority stays light"
-          checked={prefs.smartReminders !== false}
-          onChange={(value) => togglePref("smartReminders", value)}
-        />
+        {prefs.autoPilot !== false ? (
+          <div className="pref-sub">
+            <PrefRow
+              title="Line up leftovers each morning"
+              hint="Unfinished non-urgent tasks from earlier days slide into the next open slot"
+              checked={prefs.autoRolloverOverdue !== false}
+              onChange={(value) => togglePref("autoRolloverOverdue", value)}
+            />
+            <PrefRow
+              title="Advance repeating tasks"
+              hint="Schedule the next occurrence even if yesterday’s wasn’t checked off"
+              checked={prefs.autoAdvanceRecurring !== false}
+              onChange={(value) => togglePref("autoAdvanceRecurring", value)}
+            />
+            <PrefRow
+              title="Smarter reminder timing"
+              hint="High-priority work reminds you 2 hours ahead; low-priority stays light"
+              checked={prefs.smartReminders !== false}
+              onChange={(value) => togglePref("smartReminders", value)}
+            />
+          </div>
+        ) : null}
       </div>
 
       <CompanionSettings prefs={prefs} onToggle={togglePref} />

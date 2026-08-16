@@ -294,8 +294,8 @@ router.post("/catch-up", async (req, res) => {
     res.json({
       message:
         result.moved === 0
-          ? "Nothing overdue to move"
-          : `Moved ${result.moved} task${result.moved === 1 ? "" : "s"} into your next open slot`,
+          ? "No leftover tasks from earlier days"
+          : `Lined up ${result.moved} leftover task${result.moved === 1 ? "" : "s"} into the next open slots`,
       moved: result.moved,
       date: result.date,
     });
@@ -312,8 +312,8 @@ router.post("/apply-plan", async (req, res) => {
     res.json({
       message:
         result.updated === 0
-          ? "No suggested times to apply"
-          : `Applied times to ${result.updated} task${result.updated === 1 ? "" : "s"}`,
+          ? "No untimed tasks to place"
+          : `Scheduled ${result.updated} untimed task${result.updated === 1 ? "" : "s"} into today`,
       updated: result.updated,
       plan: result.plan,
     });
@@ -357,6 +357,30 @@ router.put("/toggle-complete/:id", async (req, res) => {
   }
 });
 
+router.put("/snooze/:id", async (req, res) => {
+  try {
+    const todo = await Appointment.findOne({ Appointment_Id: Number(req.params.id) });
+    if (notOwner(todo, req.user.UserId)) {
+      return res.status(todo ? 403 : 404).json({ message: todo ? "Forbidden" : "Todo not found" });
+    }
+    if (todo.completed || todo.status === "cancelled") {
+      return res.status(400).json({ message: "That task cannot be snoozed" });
+    }
+    const user = await User.findOne({ UserId: req.user.UserId });
+    if (!user) return res.status(404).json({ message: "User not found" });
+    const minutes = Math.min(60, Math.max(15, Number(req.body?.minutes) || 60));
+    await automation.snoozeTask(todo, minutes);
+    const assistant = await automation.buildAssistant(user);
+    res.json({
+      message: "Paused for 1 hour",
+      snoozedUntil: todo.snoozedUntil,
+      assistant,
+    });
+  } catch {
+    res.status(400).json({ message: "Unable to snooze" });
+  }
+});
+
 router.put("/reschedule/:id", async (req, res) => {
   try {
     const todo = await Appointment.findOne({ Appointment_Id: Number(req.params.id) });
@@ -372,6 +396,7 @@ router.put("/reschedule/:id", async (req, res) => {
     const normalized = automation.normalizeTaskInput(todo.toObject(), user);
     Object.assign(todo, normalized);
     todo.status = "pending";
+    todo.snoozedUntil = undefined;
     await todo.save();
     res.json(todo);
   } catch {

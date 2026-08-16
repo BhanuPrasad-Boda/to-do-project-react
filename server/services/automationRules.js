@@ -52,8 +52,91 @@ function nextCatchUpDate(now = new Date()) {
   return slot;
 }
 
+function isOpenTask(task) {
+  return Boolean(task) && !task.completed && task.status !== "cancelled";
+}
+
+function isSnoozed(task, now = new Date()) {
+  return Boolean(task?.snoozedUntil && new Date(task.snoozedUntil) > now);
+}
+
+function leftoverTasks(tasks = [], now = new Date()) {
+  const start = startOfDay(now);
+  return tasks.filter((task) => isOpenTask(task) && !isSnoozed(task, now) && task.Date && new Date(task.Date) < start);
+}
+
+function undatedTasks(tasks = [], now = new Date()) {
+  return tasks.filter((task) => isOpenTask(task) && !isSnoozed(task, now) && !task.Date);
+}
+
+function summarizeAutopilotTask(task) {
+  if (!task) return null;
+  return {
+    Appointment_Id: task.Appointment_Id,
+    Title: task.Title,
+    Date: task.Date,
+    Priority: task.Priority,
+    category: task.category,
+    status: task.status,
+    completed: task.completed,
+  };
+}
+
+function buildAutopilotView(tasks = [], now = new Date()) {
+  const nextTask = pickNextTask(tasks, now);
+  const leftover = leftoverTasks(tasks, now);
+  const overdue = tasks.filter((task) => isOpenTask(task) && !isSnoozed(task, now) && task.Date && new Date(task.Date) < now);
+  const undated = undatedTasks(tasks, now);
+  const snoozed = tasks.filter((task) => isOpenTask(task) && isSnoozed(task, now));
+  const snoozeUntil = snoozed
+    .map((task) => new Date(task.snoozedUntil))
+    .sort((a, b) => a - b)[0] || null;
+  const catchUpAt = nextCatchUpDate(now);
+  const plan = buildDailyPlan(tasks, now);
+
+  let phase = "clear";
+  if (leftover.length) phase = "lineup";
+  else if (nextTask) phase = "focus";
+
+  let headline = "You're clear";
+  let detail = "Nothing needs Autopilot right now. Reminders will still fire on time.";
+  if (phase === "clear" && snoozed.length) {
+    headline = "Paused for 1 hour";
+    detail = "Autopilot will bring this back when the snooze ends. It stays on your task list.";
+  } else if (phase === "lineup") {
+    headline =
+      leftover.length === 1 ? "1 leftover task" : `${leftover.length} leftover tasks`;
+    detail = "Work from earlier days. Line it up into the next open slot, then do one thing at a time.";
+  } else if (phase === "focus" && nextTask) {
+    const due = nextTask.Date ? new Date(nextTask.Date) : null;
+    const overdueNow = due && due < now;
+    headline = nextTask.Title;
+    detail = overdueNow
+      ? "This was due earlier today. Finish it, snooze it, or pick a new time."
+      : due
+        ? "Focus on this next, then come back to Autopilot for the following task."
+        : "No due date — a good candidate to do now.";
+  }
+
+  return {
+    phase,
+    headline,
+    detail,
+    nextTask: summarizeAutopilotTask(nextTask),
+    leftoverCount: leftover.length,
+    overdueCount: overdue.length,
+    undatedCount: undated.length,
+    todayRemaining: plan.totalToday,
+    catchUpAt,
+    leftoverTitles: leftover.slice(0, 3).map((task) => task.Title),
+    snoozedCount: snoozed.length,
+    snoozeUntil,
+    plan,
+  };
+}
+
 function pickNextTask(tasks = [], now = new Date()) {
-  const open = tasks.filter((t) => !t.completed && t.status !== "cancelled");
+  const open = tasks.filter((t) => isOpenTask(t) && !isSnoozed(t, now));
   const rank = { High: 0, Medium: 1, Low: 2 };
   const byRankThenDue = (a, b) => {
     const pd = (rank[a.Priority] ?? 1) - (rank[b.Priority] ?? 1);
@@ -207,4 +290,8 @@ module.exports = {
   smartReminderOffset,
   nextCatchUpDate,
   pickNextTask,
+  leftoverTasks,
+  undatedTasks,
+  buildAutopilotView,
+  isSnoozed,
 };

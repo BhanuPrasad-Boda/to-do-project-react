@@ -38,6 +38,7 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
   const [messages, setMessages] = useState(() => [seedMessage(ctx)]);
   const [thinking, setThinking] = useState(false);
   const [thinkLabel, setThinkLabel] = useState("Thinking…");
+  const [startersOpen, setStartersOpen] = useState(true);
   const threadRef = useRef(null);
   const inputRef = useRef(null);
   const pendingTool = useRef(null);
@@ -46,7 +47,7 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
     () => [...messages].reverse().find((item) => item.role === "assistant"),
     [messages]
   );
-  const showSuggestions = messages.filter((item) => item.role === "user").length === 0 && !thinking;
+  const showSuggestions = startersOpen && messages.filter((item) => item.role === "user").length === 0 && !thinking;
 
   useEffect(() => {
     const node = threadRef.current;
@@ -56,6 +57,17 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  const focusComposer = () => {
+    requestAnimationFrame(() => inputRef.current?.focus());
+  };
+
+  const consumeActions = (messageId) => {
+    if (!messageId) return;
+    setMessages((prev) =>
+      prev.map((item) => (item.id === messageId ? { ...item, actions: [] } : item))
+    );
+  };
 
   const pushAssistant = (reply) => {
     pendingTool.current = reply.tool || null;
@@ -73,6 +85,7 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
       pushAssistant(interpretCompanionQuery(text, ctx));
     } finally {
       setThinking(false);
+      focusComposer();
     }
   };
 
@@ -83,6 +96,7 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
     setQuery("");
     setMessages((prev) => [...prev, { id: uid(), role: "user", text: value }]);
     interpretAndReply(value);
+    focusComposer();
   };
 
   const executeTool = async (tool) => {
@@ -108,10 +122,14 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
       });
     } finally {
       setThinking(false);
+      focusComposer();
     }
   };
 
   const handleAction = async (action) => {
+    setStartersOpen(false);
+    consumeActions(lastAssistant?.id);
+
     if (action.id === "confirm-tool") {
       const tool = lastAssistant?.tool || pendingTool.current;
       if (tool) await executeTool(tool);
@@ -131,7 +149,7 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
     }
     if (action.id === "try-again") {
       setQuery("");
-      inputRef.current?.focus();
+      focusComposer();
       return;
     }
     if (action.id === "add-manually") {
@@ -154,6 +172,7 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
 
   const clear = () => {
     pendingTool.current = null;
+    setStartersOpen(true);
     setMessages([seedMessage(ctx)]);
     resetAssistantChat().catch(() => {});
     onClear?.();
@@ -193,12 +212,13 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
           <div key={item.id} className={`companion-msg is-${item.role}`}>
             {item.role === "assistant" ? <span className="companion-ai-tag">AI</span> : null}
             <CompanionMessage text={item.text} items={item.items} />
-            {item.role === "assistant" && item.id === lastAssistant?.id ? (
+            {item.role === "assistant" && item.id === lastAssistant?.id && !thinking ? (
               <CompanionActions
                 actions={item.actions}
                 onAction={handleAction}
                 onDismiss={() => {
                   pendingTool.current = null;
+                  consumeActions(item.id);
                 }}
               />
             ) : null}
@@ -245,7 +265,7 @@ export function CompanionPanel({ ctx, mood, burst, onAction, onClose, onClear })
           placeholder="Message TaskFlow Assistant…"
           onChange={(e) => setQuery(e.target.value)}
           autoComplete="off"
-          disabled={thinking}
+          readOnly={thinking}
         />
         <button type="submit" className="companion-send" disabled={thinking || !query.trim()} aria-label="Send message">
           <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
